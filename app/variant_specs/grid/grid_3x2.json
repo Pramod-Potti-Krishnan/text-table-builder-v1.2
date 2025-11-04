@@ -1,0 +1,211 @@
+{
+  "variant_id": "grid_3x2",
+  "slide_type": "grid",
+  "template_path": "app/templates/grid/grid_3x2.html",
+  "description": "3x2 grid layout with 6 boxes, each containing icon, title and description",
+  "elements": [
+    {
+      "element_id": "box_1",
+      "element_type": "icon_card",
+      "required_fields": [
+        "icon",
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "icon": "box_1_icon",
+        "title": "box_1_title",
+        "description": "box_1_description"
+      },
+      "character_requirements": {
+        "icon": {
+          "baseline": 1,
+          "min": 1,
+          "max": 2,
+          "format": "professional_icon",
+          "instruction": "Use a single professional icon character that semantically represents the card's topic. Choose from business/tech icons like: \ud83d\udcac (communication), \ud83d\udc41\ufe0f (vision/monitoring), \ud83d\udcca (analytics/data), \u2699\ufe0f (automation/settings), \ud83d\udd0c (integration/API), \ud83d\udcc8 (growth/metrics), \ud83c\udfaf (goals/targeting), \ud83d\udd12 (security), \u2601\ufe0f (cloud), \ud83e\udd16 (AI/automation), \ud83d\udcf1 (mobile/digital), \ud83c\udf10 (global/web), \u26a1 (performance/speed), \ud83d\udd0d (search/discovery). The icon MUST be relevant to the card title and maintain a professional appearance."
+        },
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 96,
+          "min": 91,
+          "max": 100
+        }
+      }
+    },
+    {
+      "element_id": "box_2",
+      "element_type": "icon_card",
+      "required_fields": [
+        "icon",
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "icon": "box_2_icon",
+        "title": "box_2_title",
+        "description": "box_2_description"
+      },
+      "character_requirements": {
+        "icon": {
+          "baseline": 1,
+          "min": 1,
+          "max": 2,
+          "format": "professional_icon",
+          "instruction": "Use a single professional icon character that semantically represents the card's topic. Choose from business/tech icons like: \ud83d\udcac (communication), \ud83d\udc41\ufe0f (vision/monitoring), \ud83d\udcca (analytics/data), \u2699\ufe0f (automation/settings), \ud83d\udd0c (integration/API), \ud83d\udcc8 (growth/metrics), \ud83c\udfaf (goals/targeting), \ud83d\udd12 (security), \u2601\ufe0f (cloud), \ud83e\udd16 (AI/automation), \ud83d\udcf1 (mobile/digital), \ud83c\udf10 (global/web), \u26a1 (performance/speed), \ud83d\udd0d (search/discovery). The icon MUST be relevant to the card title and maintain a professional appearance."
+        },
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 96,
+          "min": 91,
+          "max": 100
+        }
+      }
+    },
+    {
+      "element_id": "box_3",
+      "element_type": "icon_card",
+      "required_fields": [
+        "icon",
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "icon": "box_3_icon",
+        "title": "box_3_title",
+        "description": "box_3_description"
+      },
+      "character_requirements": {
+        "icon": {
+          "baseline": 1,
+          "min": 1,
+          "max": 2,
+          "format": "professional_icon",
+          "instruction": "Use a single professional icon character that semantically represents the card's topic. Choose from business/tech icons like: \ud83d\udcac (communication), \ud83d\udc41\ufe0f (vision/monitoring), \ud83d\udcca (analytics/data), \u2699\ufe0f (automation/settings), \ud83d\udd0c (integration/API), \ud83d\udcc8 (growth/metrics), \ud83c\udfaf (goals/targeting), \ud83d\udd12 (security), \u2601\ufe0f (cloud), \ud83e\udd16 (AI/automation), \ud83d\udcf1 (mobile/digital), \ud83c\udf10 (global/web), \u26a1 (performance/speed), \ud83d\udd0d (search/discovery). The icon MUST be relevant to the card title and maintain a professional appearance."
+        },
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 96,
+          "min": 91,
+          "max": 100
+        }
+      }
+    },
+    {
+      "element_id": "box_4",
+      "element_type": "icon_card",
+      "required_fields": [
+        "icon",
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "icon": "box_4_icon",
+        "title": "box_4_title",
+        "description": "box_4_description"
+      },
+      "character_requirements": {
+        "icon": {
+          "baseline": 1,
+          "min": 1,
+          "max": 2,
+          "format": "professional_icon",
+          "instruction": "Use a single professional icon character that semantically represents the card's topic. Choose from business/tech icons like: \ud83d\udcac (communication), \ud83d\udc41\ufe0f (vision/monitoring), \ud83d\udcca (analytics/data), \u2699\ufe0f (automation/settings), \ud83d\udd0c (integration/API), \ud83d\udcc8 (growth/metrics), \ud83c\udfaf (goals/targeting), \ud83d\udd12 (security), \u2601\ufe0f (cloud), \ud83e\udd16 (AI/automation), \ud83d\udcf1 (mobile/digital), \ud83c\udf10 (global/web), \u26a1 (performance/speed), \ud83d\udd0d (search/discovery). The icon MUST be relevant to the card title and maintain a professional appearance."
+        },
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 96,
+          "min": 91,
+          "max": 100
+        }
+      }
+    },
+    {
+      "element_id": "box_5",
+      "element_type": "icon_card",
+      "required_fields": [
+        "icon",
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "icon": "box_5_icon",
+        "title": "box_5_title",
+        "description": "box_5_description"
+      },
+      "character_requirements": {
+        "icon": {
+          "baseline": 1,
+          "min": 1,
+          "max": 2,
+          "format": "professional_icon",
+          "instruction": "Use a single professional icon character that semantically represents the card's topic. Choose from business/tech icons like: \ud83d\udcac (communication), \ud83d\udc41\ufe0f (vision/monitoring), \ud83d\udcca (analytics/data), \u2699\ufe0f (automation/settings), \ud83d\udd0c (integration/API), \ud83d\udcc8 (growth/metrics), \ud83c\udfaf (goals/targeting), \ud83d\udd12 (security), \u2601\ufe0f (cloud), \ud83e\udd16 (AI/automation), \ud83d\udcf1 (mobile/digital), \ud83c\udf10 (global/web), \u26a1 (performance/speed), \ud83d\udd0d (search/discovery). The icon MUST be relevant to the card title and maintain a professional appearance."
+        },
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 96,
+          "min": 91,
+          "max": 100
+        }
+      }
+    },
+    {
+      "element_id": "box_6",
+      "element_type": "icon_card",
+      "required_fields": [
+        "icon",
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "icon": "box_6_icon",
+        "title": "box_6_title",
+        "description": "box_6_description"
+      },
+      "character_requirements": {
+        "icon": {
+          "baseline": 1,
+          "min": 1,
+          "max": 2,
+          "format": "professional_icon",
+          "instruction": "Use a single professional icon character that semantically represents the card's topic. Choose from business/tech icons like: \ud83d\udcac (communication), \ud83d\udc41\ufe0f (vision/monitoring), \ud83d\udcca (analytics/data), \u2699\ufe0f (automation/settings), \ud83d\udd0c (integration/API), \ud83d\udcc8 (growth/metrics), \ud83c\udfaf (goals/targeting), \ud83d\udd12 (security), \u2601\ufe0f (cloud), \ud83e\udd16 (AI/automation), \ud83d\udcf1 (mobile/digital), \ud83c\udf10 (global/web), \u26a1 (performance/speed), \ud83d\udd0d (search/discovery). The icon MUST be relevant to the card title and maintain a professional appearance."
+        },
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 96,
+          "min": 91,
+          "max": 100
+        }
+      }
+    }
+  ],
+  "layout": {
+    "columns": 2,
+    "rows": 3,
+    "total_boxes": 6
+  }
+}

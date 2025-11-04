@@ -1,0 +1,159 @@
+{
+  "variant_id": "grid_3x2_numbered",
+  "slide_type": "grid",
+  "template_path": "app/templates/grid/grid_3x2_numbered.html",
+  "description": "3x2 grid numbered layout with 6 cards, 70% extended content",
+  "elements": [
+    {
+      "element_id": "box_1",
+      "element_type": "numbered_card",
+      "required_fields": [
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "title": "box_1_title",
+        "description": "box_1_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 170,
+          "min": 161,
+          "max": 178
+        }
+      }
+    },
+    {
+      "element_id": "box_2",
+      "element_type": "numbered_card",
+      "required_fields": [
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "title": "box_2_title",
+        "description": "box_2_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 170,
+          "min": 161,
+          "max": 178
+        }
+      }
+    },
+    {
+      "element_id": "box_3",
+      "element_type": "numbered_card",
+      "required_fields": [
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "title": "box_3_title",
+        "description": "box_3_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 170,
+          "min": 161,
+          "max": 178
+        }
+      }
+    },
+    {
+      "element_id": "box_4",
+      "element_type": "numbered_card",
+      "required_fields": [
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "title": "box_4_title",
+        "description": "box_4_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 170,
+          "min": 161,
+          "max": 178
+        }
+      }
+    },
+    {
+      "element_id": "box_5",
+      "element_type": "numbered_card",
+      "required_fields": [
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "title": "box_5_title",
+        "description": "box_5_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 170,
+          "min": 161,
+          "max": 178
+        }
+      }
+    },
+    {
+      "element_id": "box_6",
+      "element_type": "numbered_card",
+      "required_fields": [
+        "title",
+        "description"
+      ],
+      "placeholders": {
+        "title": "box_6_title",
+        "description": "box_6_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 170,
+          "min": 161,
+          "max": 178
+        }
+      }
+    }
+  ],
+  "layout": {
+    "columns": 2,
+    "rows": 3,
+    "total_boxes": 6,
+    "style": "numbered",
+    "content_extension": "70%"
+  }
+}

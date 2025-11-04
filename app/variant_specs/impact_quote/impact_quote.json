@@ -1,0 +1,33 @@
+{
+  "variant_id": "impact_quote",
+  "slide_type": "impact_quote",
+  "template_path": "app/templates/impact_quote/impact_quote.html",
+  "description": "Customer success story layout with bordered quote box and attribution",
+  "elements": [
+    {
+      "element_id": "quote",
+      "element_type": "quote_content",
+      "required_fields": ["quote_text", "attribution"],
+      "placeholders": {
+        "quote_text": "quote_text",
+        "attribution": "attribution"
+      },
+      "character_requirements": {
+        "quote_text": {
+          "baseline": 220,
+          "min": 209,
+          "max": 231
+        },
+        "attribution": {
+          "baseline": 40,
+          "min": 38,
+          "max": 42
+        }
+      }
+    }
+  ],
+  "layout": {
+    "layout_type": "centered_quote",
+    "max_width": "70%"
+  }
+}

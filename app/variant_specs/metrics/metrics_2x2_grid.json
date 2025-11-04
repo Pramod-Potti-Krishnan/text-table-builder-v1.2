@@ -1,0 +1,185 @@
+{
+  "variant_id": "metrics_2x2_grid",
+  "slide_type": "metrics",
+  "template_path": "app/templates/metrics/metrics_2x2_grid.html",
+  "description": "2x2 grid metrics layout with 4 large metric cards and insights box at bottom",
+  "elements": [
+    {
+      "element_id": "metric_1",
+      "element_type": "metric_card",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_1_number",
+        "label": "metric_1_label",
+        "description": "metric_1_description"
+      },
+      "character_requirements": {
+        "number": {
+          "baseline": 5,
+          "min": 1,
+          "max": 10
+        },
+        "label": {
+          "baseline": 18,
+          "min": 17,
+          "max": 19
+        },
+        "description": {
+          "baseline": 70,
+          "min": 67,
+          "max": 74
+        }
+      }
+    },
+    {
+      "element_id": "metric_2",
+      "element_type": "metric_card",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_2_number",
+        "label": "metric_2_label",
+        "description": "metric_2_description"
+      },
+      "character_requirements": {
+        "number": {
+          "baseline": 5,
+          "min": 1,
+          "max": 10
+        },
+        "label": {
+          "baseline": 18,
+          "min": 17,
+          "max": 19
+        },
+        "description": {
+          "baseline": 70,
+          "min": 67,
+          "max": 74
+        }
+      }
+    },
+    {
+      "element_id": "metric_3",
+      "element_type": "metric_card",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_3_number",
+        "label": "metric_3_label",
+        "description": "metric_3_description"
+      },
+      "character_requirements": {
+        "number": {
+          "baseline": 5,
+          "min": 1,
+          "max": 10
+        },
+        "label": {
+          "baseline": 18,
+          "min": 17,
+          "max": 19
+        },
+        "description": {
+          "baseline": 70,
+          "min": 67,
+          "max": 74
+        }
+      }
+    },
+    {
+      "element_id": "metric_4",
+      "element_type": "metric_card",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_4_number",
+        "label": "metric_4_label",
+        "description": "metric_4_description"
+      },
+      "character_requirements": {
+        "number": {
+          "baseline": 5,
+          "min": 1,
+          "max": 10
+        },
+        "label": {
+          "baseline": 18,
+          "min": 17,
+          "max": 19
+        },
+        "description": {
+          "baseline": 70,
+          "min": 67,
+          "max": 74
+        }
+      }
+    },
+    {
+      "element_id": "insights_box",
+      "element_type": "insights_box",
+      "required_fields": ["heading", "insight_1", "insight_2", "insight_3", "insight_4", "insight_5", "insight_6", "insight_7", "insight_8"],
+      "placeholders": {
+        "heading": "insights_heading",
+        "insight_1": "insight_1",
+        "insight_2": "insight_2",
+        "insight_3": "insight_3",
+        "insight_4": "insight_4",
+        "insight_5": "insight_5",
+        "insight_6": "insight_6",
+        "insight_7": "insight_7",
+        "insight_8": "insight_8"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 23,
+          "min": 20,
+          "max": 25
+        },
+        "insight_1": {
+          "baseline": 50,
+          "min": 44,
+          "max": 55
+        },
+        "insight_2": {
+          "baseline": 50,
+          "min": 44,
+          "max": 55
+        },
+        "insight_3": {
+          "baseline": 50,
+          "min": 44,
+          "max": 55
+        },
+        "insight_4": {
+          "baseline": 50,
+          "min": 44,
+          "max": 55
+        },
+        "insight_5": {
+          "baseline": 50,
+          "min": 44,
+          "max": 55
+        },
+        "insight_6": {
+          "baseline": 50,
+          "min": 44,
+          "max": 55
+        },
+        "insight_7": {
+          "baseline": 50,
+          "min": 44,
+          "max": 55
+        },
+        "insight_8": {
+          "baseline": 50,
+          "min": 44,
+          "max": 55
+        }
+      }
+    }
+  ],
+  "layout": {
+    "columns": 2,
+    "rows": 2,
+    "layout_type": "metrics_grid_large",
+    "includes_insights_box": true
+  }
+}

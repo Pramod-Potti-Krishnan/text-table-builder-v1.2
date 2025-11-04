@@ -1,0 +1,35 @@
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/vertexai/generative_models/_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+======================================================================
+GENERATING REMAINING 4 GRID TEMPLATES
+======================================================================
+
+======================================================================
+Generating: grid_2x3_left
+Description: 2x3 grid left-aligned layout with 50% reduced gap
+======================================================================
+✓ grid_2x3_left generated successfully
+
+======================================================================
+Generating: grid_2x3_numbered
+Description: 2x3 grid numbered layout with 25% increased character count
+======================================================================
+✓ grid_2x3_numbered generated successfully
+
+======================================================================
+Generating: grid_3x2_numbered
+Description: 3x2 grid numbered layout with 25% increased character count
+======================================================================
+✓ grid_3x2_numbered generated successfully
+
+======================================================================
+Generating: grid_2x2_numbered
+Description: 2x2 grid numbered layout with 25% increased character count
+======================================================================
+✓ grid_2x2_numbered generated successfully
+
+======================================================================
+PUBLISHING TO RAILWAY
+======================================================================
+
+❌ Publishing failed: 404

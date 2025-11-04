@@ -1,0 +1,149 @@
+{
+  "variant_id": "hybrid_left_2x2",
+  "slide_type": "hybrid",
+  "template_path": "app/templates/hybrid/hybrid_left_2x2.html",
+  "description": "Hybrid layout with 2x2 grid on left and 7 bullet points on right",
+  "elements": [
+    {
+      "element_id": "box_1",
+      "element_type": "text_box",
+      "required_fields": ["heading", "description"],
+      "placeholders": {
+        "heading": "box_1_heading",
+        "description": "box_1_description"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 135,
+          "min": 128,
+          "max": 142
+        }
+      }
+    },
+    {
+      "element_id": "box_2",
+      "element_type": "text_box",
+      "required_fields": ["heading", "description"],
+      "placeholders": {
+        "heading": "box_2_heading",
+        "description": "box_2_description"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 135,
+          "min": 128,
+          "max": 142
+        }
+      }
+    },
+    {
+      "element_id": "box_3",
+      "element_type": "text_box",
+      "required_fields": ["heading", "description"],
+      "placeholders": {
+        "heading": "box_3_heading",
+        "description": "box_3_description"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 135,
+          "min": 128,
+          "max": 142
+        }
+      }
+    },
+    {
+      "element_id": "box_4",
+      "element_type": "text_box",
+      "required_fields": ["heading", "description"],
+      "placeholders": {
+        "heading": "box_4_heading",
+        "description": "box_4_description"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 135,
+          "min": 128,
+          "max": 142
+        }
+      }
+    },
+    {
+      "element_id": "text_box",
+      "element_type": "bullet_list",
+      "required_fields": ["bullet_1", "bullet_2", "bullet_3", "bullet_4", "bullet_5", "bullet_6", "bullet_7"],
+      "placeholders": {
+        "bullet_1": "bullet_1",
+        "bullet_2": "bullet_2",
+        "bullet_3": "bullet_3",
+        "bullet_4": "bullet_4",
+        "bullet_5": "bullet_5",
+        "bullet_6": "bullet_6",
+        "bullet_7": "bullet_7"
+      },
+      "character_requirements": {
+        "bullet_1": {
+          "baseline": 68,
+          "min": 65,
+          "max": 70
+        },
+        "bullet_2": {
+          "baseline": 68,
+          "min": 65,
+          "max": 70
+        },
+        "bullet_3": {
+          "baseline": 68,
+          "min": 65,
+          "max": 70
+        },
+        "bullet_4": {
+          "baseline": 68,
+          "min": 65,
+          "max": 70
+        },
+        "bullet_5": {
+          "baseline": 68,
+          "min": 65,
+          "max": 70
+        },
+        "bullet_6": {
+          "baseline": 68,
+          "min": 65,
+          "max": 70
+        },
+        "bullet_7": {
+          "baseline": 68,
+          "min": 65,
+          "max": 70
+        }
+      }
+    }
+  ],
+  "layout": {
+    "layout_type": "hybrid_horizontal",
+    "grid_position": "left",
+    "grid_columns": 2,
+    "grid_rows": 2
+  }
+}

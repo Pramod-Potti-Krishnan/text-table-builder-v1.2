@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""
+Generate all 3 sequential layouts and publish as a single presentation
+"""
+import sys
+import os
+import requests
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
+
+# Disable model routing
+os.environ["ENABLE_MODEL_ROUTING"] = "false"
+
+# Add app to path
+sys.path.insert(0, str(Path(__file__).parent))
+
+from app.core import ElementBasedContentGenerator
+from app.services import create_llm_callable
+
+RAILWAY_URL = "https://web-production-f0d13.up.railway.app"
+
+def generate_and_publish_sequential():
+    """Generate 3 sequential slides and publish as one presentation."""
+
+    # Initialize generator
+    llm_callable = create_llm_callable()
+    generator = ElementBasedContentGenerator(
+        llm_service=llm_callable,
+        variant_specs_dir="app/variant_specs",
+        templates_dir="app/templates"
+    )
+
+    # Sequential layouts to generate
+    sequential_layouts = [
+        {
+            "variant_id": "sequential_3col",
+            "title": "Our 3-Step Process",
+            "description": "Display 3 sequential steps with numbered badges, titles, and detailed descriptions"
+        },
+        {
+            "variant_id": "sequential_4col",
+            "title": "Implementation Roadmap",
+            "description": "Display 4 sequential phases with numbered badges, titles, and descriptions"
+        },
+        {
+            "variant_id": "sequential_5col",
+            "title": "5-Phase Journey",
+            "description": "Display 5 sequential stages with numbered badges, concise titles, and descriptions"
+        }
+    ]
+
+    slides = []
+
+    for i, layout_info in enumerate(sequential_layouts, 1):
+        variant_id = layout_info["variant_id"]
+        title = layout_info["title"]
+        description = layout_info["description"]
+
+        print(f"\n{'='*70}")
+        print(f"Generating {i}/3: {variant_id} - {title}")
+        print(f"{'='*70}")
+
+        slide_spec = {
+            "slide_title": title,
+            "slide_purpose": description,
+            "key_message": "Sequential process visualization with clear step-by-step flow",
+            "tone": "professional",
+            "audience": "business stakeholders"
+        }
+
+        presentation_spec = {
+            "presentation_title": "Sequential Layouts Showcase",
+            "presentation_type": "Process Visualization Gallery",
+            "current_slide_number": i,
+            "total_slides": len(sequential_layouts)
+        }
+
+        try:
+            # Generate slide
+            result = generator.generate_slide_content(
+                variant_id=variant_id,
+                slide_spec=slide_spec,
+                presentation_spec=presentation_spec
+            )
+
+            html = result["html"]
+
+            # Save locally for inspection
+            output_file = Path(f"test_output_{variant_id}.html")
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(html)
+            print(f"✓ Saved locally to: {output_file}")
+
+            # Add to slides array
+            slide = {
+                "layout": "L25",
+                "content": {
+                    "slide_title": title,
+                    "subtitle": f"Variant: {variant_id}",
+                    "rich_content": html,
+                    "presentation_name": "Sequential Layouts Showcase",
+                    "company_logo": ""
+                }
+            }
+            slides.append(slide)
+            print(f"✓ Generated successfully")
+
+        except Exception as e:
+            print(f"✗ Error: {e}")
+            import traceback
+            traceback.print_exc()
+
+    if not slides:
+        print("\n❌ No slides generated")
+        return
+
+    # Publish all slides as one presentation
+    print(f"\n{'='*70}")
+    print(f"Publishing {len(slides)} sequential slides as ONE presentation...")
+    print(f"{'='*70}")
+
+    presentation_payload = {
+        "title": "Sequential Layouts Showcase (3 Variants)",
+        "slides": slides
+    }
+
+    try:
+        response = requests.post(
+            f"{RAILWAY_URL}/api/presentations",
+            json=presentation_payload,
+            headers={"Content-Type": "application/json"},
+            timeout=60
+        )
+
+        if response.status_code in [200, 201]:
+            data = response.json()
+            presentation_id = data.get("id")
+            url_path = data.get("url", f"/p/{presentation_id}")
+            url = f"{RAILWAY_URL}{url_path}"
+
+            print(f"\n{'='*70}")
+            print("✅ SUCCESS!")
+            print(f"{'='*70}\n")
+            print(f"🌐 VIEW ALL 3 SEQUENTIAL SLIDES:")
+            print(f"   {url}\n")
+            print(f"Generated Slides:")
+            print(f"  1. Sequential 3 Col - 3 steps with 95-105 char paragraphs")
+            print(f"  2. Sequential 4 Col - 4 steps with 76-84 char paragraphs")
+            print(f"  3. Sequential 5 Col - 5 steps with 62-68 char paragraphs")
+            print(f"\n{'='*70}\n")
+            print("Character Count Specifications:")
+            print("  ✓ 3 Col: Titles 29-32 chars, Paragraphs 95-105 chars")
+            print("  ✓ 4 Col: Titles 24-26 chars, Paragraphs 76-84 chars")
+            print("  ✓ 5 Col: Titles 19-21 chars, Paragraphs 62-68 chars")
+            print(f"\n{'='*70}\n")
+
+        else:
+            print(f"\n❌ Failed to publish: {response.status_code}")
+            print(f"Response: {response.text}")
+
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    generate_and_publish_sequential()

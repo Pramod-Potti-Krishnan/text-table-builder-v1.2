@@ -1,0 +1,139 @@
+{
+  "variant_id": "matrix_2x3",
+  "slide_type": "matrix",
+  "template_path": "app/templates/matrix/matrix_2x3.html",
+  "description": "2x3 matrix layout with 6 boxes in a grid",
+  "elements": [
+    {
+      "element_id": "box_1",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"],
+      "placeholders": {
+        "title": "box_1_title",
+        "description": "box_1_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 22,
+          "min": 21,
+          "max": 23
+        },
+        "description": {
+          "baseline": 180,
+          "min": 171,
+          "max": 189
+        }
+      }
+    },
+    {
+      "element_id": "box_2",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"],
+      "placeholders": {
+        "title": "box_2_title",
+        "description": "box_2_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 22,
+          "min": 21,
+          "max": 23
+        },
+        "description": {
+          "baseline": 180,
+          "min": 171,
+          "max": 189
+        }
+      }
+    },
+    {
+      "element_id": "box_3",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"],
+      "placeholders": {
+        "title": "box_3_title",
+        "description": "box_3_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 22,
+          "min": 21,
+          "max": 23
+        },
+        "description": {
+          "baseline": 180,
+          "min": 171,
+          "max": 189
+        }
+      }
+    },
+    {
+      "element_id": "box_4",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"],
+      "placeholders": {
+        "title": "box_4_title",
+        "description": "box_4_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 22,
+          "min": 21,
+          "max": 23
+        },
+        "description": {
+          "baseline": 180,
+          "min": 171,
+          "max": 189
+        }
+      }
+    },
+    {
+      "element_id": "box_5",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"],
+      "placeholders": {
+        "title": "box_5_title",
+        "description": "box_5_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 22,
+          "min": 21,
+          "max": 23
+        },
+        "description": {
+          "baseline": 180,
+          "min": 171,
+          "max": 189
+        }
+      }
+    },
+    {
+      "element_id": "box_6",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"],
+      "placeholders": {
+        "title": "box_6_title",
+        "description": "box_6_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 22,
+          "min": 21,
+          "max": 23
+        },
+        "description": {
+          "baseline": 180,
+          "min": 171,
+          "max": 189
+        }
+      }
+    }
+  ],
+  "layout": {
+    "columns": 3,
+    "rows": 2,
+    "total_boxes": 6
+  }
+}

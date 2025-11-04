@@ -1,0 +1,47 @@
+/Library/Frameworks/Python.framework/Versions/3.13/lib/python3.13/site-packages/vertexai/generative_models/_generative_models.py:433: UserWarning: This feature is deprecated as of June 24, 2025 and will be removed on June 24, 2026. For details, see https://cloud.google.com/vertex-ai/generative-ai/docs/deprecations/genai-vertexai-sdk.
+  warning_logs.show_deprecation_warning()
+================================================================================
+ALL 9 GRID VARIANTS - Flash Model Only
+================================================================================
+
+[1/9] Generating: grid_2x3
+    ✓ Generated successfully
+
+[2/9] Generating: grid_3x2
+    ✓ Generated successfully
+
+[3/9] Generating: grid_2x2_centered
+    ✓ Generated successfully
+
+[4/9] Generating: grid_2x3_left
+    ✓ Generated successfully
+
+[5/9] Generating: grid_3x2_left
+    ✓ Generated successfully
+
+[6/9] Generating: grid_2x2_left
+    ✓ Generated successfully
+
+[7/9] Generating: grid_2x3_numbered
+    ✓ Generated successfully
+
+[8/9] Generating: grid_3x2_numbered
+    ✓ Generated successfully
+
+[9/9] Generating: grid_2x2_numbered
+    ✓ Generated successfully
+
+================================================================================
+Posting 9 grid templates to Railway...
+================================================================================
+
+================================================================================
+✅ SUCCESS! All 9 Grid Variants Published
+================================================================================
+
+🌐 VIEW URL:
+   https://web-production-f0d13.up.railway.app/p/980a9390-baad-4d88-ae54-c3cb3a245bac
+
+Generated: 9/9 templates
+
+================================================================================

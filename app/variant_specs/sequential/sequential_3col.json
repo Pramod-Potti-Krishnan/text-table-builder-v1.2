@@ -1,0 +1,147 @@
+{
+  "variant_id": "sequential_3col",
+  "slide_type": "sequential",
+  "template_path": "app/templates/sequential/sequential_3col.html",
+  "description": "3-column sequential layout with numbered steps, each with title and 4 sentences",
+  "elements": [
+    {
+      "element_id": "step_1",
+      "element_type": "sequential_step",
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4"],
+      "placeholders": {
+        "number": "step_1_number",
+        "title": "step_1_title",
+        "sentence_1": "step_1_sentence_1",
+        "sentence_2": "step_1_sentence_2",
+        "sentence_3": "step_1_sentence_3",
+        "sentence_4": "step_1_sentence_4"
+      },
+      "character_requirements": {
+        "number": {
+          "baseline": 1,
+          "min": 1,
+          "max": 2
+        },
+        "title": {
+          "baseline": 27,
+          "min": 26,
+          "max": 29
+        },
+        "sentence_1": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        },
+        "sentence_2": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        },
+        "sentence_3": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        },
+        "sentence_4": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        }
+      }
+    },
+    {
+      "element_id": "step_2",
+      "element_type": "sequential_step",
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4"],
+      "placeholders": {
+        "number": "step_2_number",
+        "title": "step_2_title",
+        "sentence_1": "step_2_sentence_1",
+        "sentence_2": "step_2_sentence_2",
+        "sentence_3": "step_2_sentence_3",
+        "sentence_4": "step_2_sentence_4"
+      },
+      "character_requirements": {
+        "number": {
+          "baseline": 1,
+          "min": 1,
+          "max": 2
+        },
+        "title": {
+          "baseline": 27,
+          "min": 26,
+          "max": 29
+        },
+        "sentence_1": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        },
+        "sentence_2": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        },
+        "sentence_3": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        },
+        "sentence_4": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        }
+      }
+    },
+    {
+      "element_id": "step_3",
+      "element_type": "sequential_step",
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4"],
+      "placeholders": {
+        "number": "step_3_number",
+        "title": "step_3_title",
+        "sentence_1": "step_3_sentence_1",
+        "sentence_2": "step_3_sentence_2",
+        "sentence_3": "step_3_sentence_3",
+        "sentence_4": "step_3_sentence_4"
+      },
+      "character_requirements": {
+        "number": {
+          "baseline": 1,
+          "min": 1,
+          "max": 2
+        },
+        "title": {
+          "baseline": 27,
+          "min": 26,
+          "max": 29
+        },
+        "sentence_1": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        },
+        "sentence_2": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        },
+        "sentence_3": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        },
+        "sentence_4": {
+          "baseline": 106,
+          "min": 101,
+          "max": 111
+        }
+      }
+    }
+  ],
+  "layout": {
+    "columns": 3,
+    "layout_type": "sequential_steps"
+  }
+}

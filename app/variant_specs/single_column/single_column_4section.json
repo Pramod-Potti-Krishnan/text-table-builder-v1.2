@@ -1,0 +1,145 @@
+{
+  "variant_id": "single_column_4section",
+  "slide_type": "single_column",
+  "template_path": "app/templates/single_column/single_column_4section.html",
+  "description": "4-section single column layout with colored headings, gradient rules, and 3 bullets per section",
+  "elements": [
+    {
+      "element_id": "section_1",
+      "element_type": "section_with_bullets",
+      "required_fields": ["heading", "bullet_1", "bullet_2", "bullet_3"],
+      "placeholders": {
+        "heading": "section_1_heading",
+        "bullet_1": "section_1_bullet_1",
+        "bullet_2": "section_1_bullet_2",
+        "bullet_3": "section_1_bullet_3"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 20,
+          "min": 19,
+          "max": 21
+        },
+        "bullet_1": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        },
+        "bullet_2": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        },
+        "bullet_3": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        }
+      }
+    },
+    {
+      "element_id": "section_2",
+      "element_type": "section_with_bullets",
+      "required_fields": ["heading", "bullet_1", "bullet_2", "bullet_3"],
+      "placeholders": {
+        "heading": "section_2_heading",
+        "bullet_1": "section_2_bullet_1",
+        "bullet_2": "section_2_bullet_2",
+        "bullet_3": "section_2_bullet_3"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 20,
+          "min": 19,
+          "max": 21
+        },
+        "bullet_1": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        },
+        "bullet_2": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        },
+        "bullet_3": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        }
+      }
+    },
+    {
+      "element_id": "section_3",
+      "element_type": "section_with_bullets",
+      "required_fields": ["heading", "bullet_1", "bullet_2", "bullet_3"],
+      "placeholders": {
+        "heading": "section_3_heading",
+        "bullet_1": "section_3_bullet_1",
+        "bullet_2": "section_3_bullet_2",
+        "bullet_3": "section_3_bullet_3"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 20,
+          "min": 19,
+          "max": 21
+        },
+        "bullet_1": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        },
+        "bullet_2": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        },
+        "bullet_3": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        }
+      }
+    },
+    {
+      "element_id": "section_4",
+      "element_type": "section_with_bullets",
+      "required_fields": ["heading", "bullet_1", "bullet_2", "bullet_3"],
+      "placeholders": {
+        "heading": "section_4_heading",
+        "bullet_1": "section_4_bullet_1",
+        "bullet_2": "section_4_bullet_2",
+        "bullet_3": "section_4_bullet_3"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 20,
+          "min": 19,
+          "max": 21
+        },
+        "bullet_1": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        },
+        "bullet_2": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        },
+        "bullet_3": {
+          "baseline": 120,
+          "min": 113,
+          "max": 128
+        }
+      }
+    }
+  ],
+  "layout": {
+    "layout_type": "single_column_multi_section",
+    "sections": 4,
+    "bullets_per_section": 3
+  }
+}

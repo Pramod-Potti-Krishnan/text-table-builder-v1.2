@@ -1,0 +1,205 @@
+{
+  "variant_id": "asymmetric_8_4_5section",
+  "slide_type": "asymmetric",
+  "template_path": "app/templates/asymmetric/asymmetric_8_4_5section.html",
+  "description": "Asymmetric layout with 5 colored sections (2 bullets each) and sidebar",
+  "elements": [
+    {
+      "element_id": "section_1",
+      "element_type": "colored_section",
+      "required_fields": ["heading", "bullet_1", "bullet_2"],
+      "placeholders": {
+        "heading": "section_1_heading",
+        "bullet_1": "section_1_bullet_1",
+        "bullet_2": "section_1_bullet_2"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 30,
+          "min": 29,
+          "max": 32
+        },
+        "bullet_1": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        },
+        "bullet_2": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        }
+      }
+    },
+    {
+      "element_id": "section_2",
+      "element_type": "colored_section",
+      "required_fields": ["heading", "bullet_1", "bullet_2"],
+      "placeholders": {
+        "heading": "section_2_heading",
+        "bullet_1": "section_2_bullet_1",
+        "bullet_2": "section_2_bullet_2"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 30,
+          "min": 29,
+          "max": 32
+        },
+        "bullet_1": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        },
+        "bullet_2": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        }
+      }
+    },
+    {
+      "element_id": "section_3",
+      "element_type": "colored_section",
+      "required_fields": ["heading", "bullet_1", "bullet_2"],
+      "placeholders": {
+        "heading": "section_3_heading",
+        "bullet_1": "section_3_bullet_1",
+        "bullet_2": "section_3_bullet_2"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 30,
+          "min": 29,
+          "max": 32
+        },
+        "bullet_1": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        },
+        "bullet_2": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        }
+      }
+    },
+    {
+      "element_id": "section_4",
+      "element_type": "colored_section",
+      "required_fields": ["heading", "bullet_1", "bullet_2"],
+      "placeholders": {
+        "heading": "section_4_heading",
+        "bullet_1": "section_4_bullet_1",
+        "bullet_2": "section_4_bullet_2"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 30,
+          "min": 29,
+          "max": 32
+        },
+        "bullet_1": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        },
+        "bullet_2": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        }
+      }
+    },
+    {
+      "element_id": "section_5",
+      "element_type": "colored_section",
+      "required_fields": ["heading", "bullet_1", "bullet_2"],
+      "placeholders": {
+        "heading": "section_5_heading",
+        "bullet_1": "section_5_bullet_1",
+        "bullet_2": "section_5_bullet_2"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 30,
+          "min": 29,
+          "max": 32
+        },
+        "bullet_1": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        },
+        "bullet_2": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        }
+      }
+    },
+    {
+      "element_id": "sidebar",
+      "element_type": "sidebar_list",
+      "required_fields": ["heading", "item_1", "item_2", "item_3", "item_4", "item_5", "item_6", "item_7"],
+      "placeholders": {
+        "heading": "sidebar_heading",
+        "item_1": "sidebar_item_1",
+        "item_2": "sidebar_item_2",
+        "item_3": "sidebar_item_3",
+        "item_4": "sidebar_item_4",
+        "item_5": "sidebar_item_5",
+        "item_6": "sidebar_item_6",
+        "item_7": "sidebar_item_7"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "item_1": {
+          "baseline": 75,
+          "min": 71,
+          "max": 79
+        },
+        "item_2": {
+          "baseline": 75,
+          "min": 71,
+          "max": 79
+        },
+        "item_3": {
+          "baseline": 75,
+          "min": 71,
+          "max": 79
+        },
+        "item_4": {
+          "baseline": 75,
+          "min": 71,
+          "max": 79
+        },
+        "item_5": {
+          "baseline": 75,
+          "min": 71,
+          "max": 79
+        },
+        "item_6": {
+          "baseline": 75,
+          "min": 71,
+          "max": 79
+        },
+        "item_7": {
+          "baseline": 75,
+          "min": 71,
+          "max": 79
+        }
+      }
+    }
+  ],
+  "layout": {
+    "layout_type": "asymmetric_multi_section",
+    "sections": 5,
+    "bullets_per_section": 2
+  }
+}

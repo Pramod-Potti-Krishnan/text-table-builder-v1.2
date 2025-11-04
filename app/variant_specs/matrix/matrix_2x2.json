@@ -1,0 +1,97 @@
+{
+  "variant_id": "matrix_2x2",
+  "slide_type": "matrix",
+  "template_path": "app/templates/matrix/matrix_2x2.html",
+  "description": "2x2 matrix layout with 4 boxes in a grid",
+  "elements": [
+    {
+      "element_id": "box_1",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"],
+      "placeholders": {
+        "title": "box_1_title",
+        "description": "box_1_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 30,
+          "min": 27,
+          "max": 32
+        },
+        "description": {
+          "baseline": 240,
+          "min": 228,
+          "max": 252
+        }
+      }
+    },
+    {
+      "element_id": "box_2",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"],
+      "placeholders": {
+        "title": "box_2_title",
+        "description": "box_2_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 30,
+          "min": 27,
+          "max": 32
+        },
+        "description": {
+          "baseline": 240,
+          "min": 228,
+          "max": 252
+        }
+      }
+    },
+    {
+      "element_id": "box_3",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"],
+      "placeholders": {
+        "title": "box_3_title",
+        "description": "box_3_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 30,
+          "min": 27,
+          "max": 32
+        },
+        "description": {
+          "baseline": 240,
+          "min": 228,
+          "max": 252
+        }
+      }
+    },
+    {
+      "element_id": "box_4",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"],
+      "placeholders": {
+        "title": "box_4_title",
+        "description": "box_4_description"
+      },
+      "character_requirements": {
+        "title": {
+          "baseline": 30,
+          "min": 27,
+          "max": 32
+        },
+        "description": {
+          "baseline": 240,
+          "min": 228,
+          "max": 252
+        }
+      }
+    }
+  ],
+  "layout": {
+    "columns": 2,
+    "rows": 2,
+    "total_boxes": 4
+  }
+}

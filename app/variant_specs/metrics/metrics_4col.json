@@ -1,0 +1,160 @@
+{
+  "variant_id": "metrics_4col",
+  "slide_type": "metrics",
+  "template_path": "app/templates/metrics/metrics_4col.html",
+  "description": "4-column metrics layout with metric cards and Key Insights box at bottom",
+  "elements": [
+    {
+      "element_id": "metric_1",
+      "element_type": "metric_card",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_1_number",
+        "label": "metric_1_label",
+        "description": "metric_1_description"
+      },
+      "character_requirements": {
+        "number": {
+          "baseline": 5,
+          "min": 1,
+          "max": 10
+        },
+        "label": {
+          "baseline": 18,
+          "min": 17,
+          "max": 19
+        },
+        "description": {
+          "baseline": 70,
+          "min": 67,
+          "max": 74
+        }
+      }
+    },
+    {
+      "element_id": "metric_2",
+      "element_type": "metric_card",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_2_number",
+        "label": "metric_2_label",
+        "description": "metric_2_description"
+      },
+      "character_requirements": {
+        "number": {
+          "baseline": 5,
+          "min": 1,
+          "max": 10
+        },
+        "label": {
+          "baseline": 18,
+          "min": 17,
+          "max": 19
+        },
+        "description": {
+          "baseline": 70,
+          "min": 67,
+          "max": 74
+        }
+      }
+    },
+    {
+      "element_id": "metric_3",
+      "element_type": "metric_card",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_3_number",
+        "label": "metric_3_label",
+        "description": "metric_3_description"
+      },
+      "character_requirements": {
+        "number": {
+          "baseline": 5,
+          "min": 1,
+          "max": 10
+        },
+        "label": {
+          "baseline": 18,
+          "min": 17,
+          "max": 19
+        },
+        "description": {
+          "baseline": 70,
+          "min": 67,
+          "max": 74
+        }
+      }
+    },
+    {
+      "element_id": "metric_4",
+      "element_type": "metric_card",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_4_number",
+        "label": "metric_4_label",
+        "description": "metric_4_description"
+      },
+      "character_requirements": {
+        "number": {
+          "baseline": 5,
+          "min": 1,
+          "max": 10
+        },
+        "label": {
+          "baseline": 18,
+          "min": 17,
+          "max": 19
+        },
+        "description": {
+          "baseline": 70,
+          "min": 67,
+          "max": 74
+        }
+      }
+    },
+    {
+      "element_id": "insights_box",
+      "element_type": "insights_box",
+      "required_fields": ["heading", "insight_1", "insight_2", "insight_3", "insight_4"],
+      "placeholders": {
+        "heading": "insights_heading",
+        "insight_1": "insight_1",
+        "insight_2": "insight_2",
+        "insight_3": "insight_3",
+        "insight_4": "insight_4"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 38,
+          "min": 35,
+          "max": 40
+        },
+        "insight_1": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        },
+        "insight_2": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        },
+        "insight_3": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        },
+        "insight_4": {
+          "baseline": 95,
+          "min": 90,
+          "max": 100
+        }
+      }
+    }
+  ],
+  "layout": {
+    "columns": 4,
+    "layout_type": "metrics_compact",
+    "includes_insights_box": true
+  }
+}

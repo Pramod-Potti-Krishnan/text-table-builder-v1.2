@@ -1,0 +1,113 @@
+{
+  "variant_id": "hybrid_top_2x2",
+  "slide_type": "hybrid",
+  "template_path": "app/templates/hybrid/hybrid_top_2x2.html",
+  "description": "Hybrid layout with 2x2 grid on top and text box at bottom",
+  "elements": [
+    {
+      "element_id": "box_1",
+      "element_type": "text_box",
+      "required_fields": ["heading", "description"],
+      "placeholders": {
+        "heading": "box_1_heading",
+        "description": "box_1_description"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 135,
+          "min": 128,
+          "max": 142
+        }
+      }
+    },
+    {
+      "element_id": "box_2",
+      "element_type": "text_box",
+      "required_fields": ["heading", "description"],
+      "placeholders": {
+        "heading": "box_2_heading",
+        "description": "box_2_description"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 135,
+          "min": 128,
+          "max": 142
+        }
+      }
+    },
+    {
+      "element_id": "box_3",
+      "element_type": "text_box",
+      "required_fields": ["heading", "description"],
+      "placeholders": {
+        "heading": "box_3_heading",
+        "description": "box_3_description"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 135,
+          "min": 128,
+          "max": 142
+        }
+      }
+    },
+    {
+      "element_id": "box_4",
+      "element_type": "text_box",
+      "required_fields": ["heading", "description"],
+      "placeholders": {
+        "heading": "box_4_heading",
+        "description": "box_4_description"
+      },
+      "character_requirements": {
+        "heading": {
+          "baseline": 25,
+          "min": 24,
+          "max": 26
+        },
+        "description": {
+          "baseline": 135,
+          "min": 128,
+          "max": 142
+        }
+      }
+    },
+    {
+      "element_id": "text_box",
+      "element_type": "text_content",
+      "required_fields": ["content"],
+      "placeholders": {
+        "content": "text_box_content"
+      },
+      "character_requirements": {
+        "content": {
+          "baseline": 300,
+          "min": 285,
+          "max": 315
+        }
+      }
+    }
+  ],
+  "layout": {
+    "layout_type": "hybrid_vertical",
+    "grid_position": "top",
+    "grid_columns": 2,
+    "grid_rows": 2
+  }
+}
