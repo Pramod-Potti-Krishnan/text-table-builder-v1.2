@@ -26,7 +26,7 @@ from ..models.v1_2_models import (
     CharacterCountViolation
 )
 from ..core import ElementBasedContentGenerator
-from ..services import create_llm_callable
+from ..services import create_llm_callable_async
 
 
 logger = logging.getLogger(__name__)
@@ -36,18 +36,19 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/v1.2", tags=["v1.2"])
 
 
-# Dependency to get or create generator instance
+# Dependency to get or create generator instance with ASYNC LLM callable
 def get_generator() -> ElementBasedContentGenerator:
     """
-    Get ElementBasedContentGenerator instance with actual LLM service.
+    Get ElementBasedContentGenerator instance with async LLM service.
 
-    Uses the LLM service wrapper configured for Vertex AI with ADC.
+    Uses the async LLM service wrapper configured for Vertex AI with ADC.
+    This properly works within FastAPI's event loop without conflicts.
 
     Returns:
-        ElementBasedContentGenerator instance with LLM integration
+        ElementBasedContentGenerator instance with async LLM integration
     """
-    # Create LLM callable from service
-    llm_callable = create_llm_callable()
+    # Create ASYNC LLM callable from service (production-quality)
+    llm_callable = create_llm_callable_async()
 
     return ElementBasedContentGenerator(
         llm_service=llm_callable,
@@ -83,8 +84,8 @@ async def generate_slide_content(
         V1_2_GenerationResponse with generated HTML and metadata
     """
     try:
-        # Generate slide content
-        result = generator.generate_slide_content(
+        # Generate slide content using ASYNC method (production-quality)
+        result = await generator.generate_slide_content_async(
             variant_id=request.variant_id,
             slide_spec=request.slide_spec.model_dump(),
             presentation_spec=request.presentation_spec.model_dump() if request.presentation_spec else None,

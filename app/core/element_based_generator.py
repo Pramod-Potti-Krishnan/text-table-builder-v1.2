@@ -149,6 +149,98 @@ class ElementBasedContentGenerator:
             "template_path": template_path
         }
 
+    async def generate_slide_content_async(
+        self,
+        variant_id: str,
+        slide_spec: Dict[str, Any],
+        presentation_spec: Optional[Dict[str, Any]] = None,
+        element_relationships: Optional[Dict[str, str]] = None
+    ) -> Dict[str, Any]:
+        """
+        Generate complete slide content using SINGLE-CALL architecture (ASYNC).
+
+        This is the production-quality async version for FastAPI endpoints.
+        It properly works within FastAPI's event loop without conflicts.
+
+        REFACTORED: Now generates ALL elements in ONE LLM call to ensure
+        content coherence and eliminate redundancy across elements.
+
+        Args:
+            variant_id: The variant identifier (e.g., "matrix_2x2")
+            slide_spec: Dictionary with slide-level specifications:
+                - slide_title (str)
+                - slide_purpose (str)
+                - key_message (str)
+                - target_points (List[str], optional)
+                - tone (str, optional)
+                - audience (str, optional)
+            presentation_spec: Optional presentation-level context
+            element_relationships: Optional element relationship descriptions
+
+        Returns:
+            Dictionary containing:
+                - html: Assembled HTML string
+                - elements: List of generated element contents
+                - metadata: Generation metadata (model used, etc.)
+                - variant_id: The variant used
+                - template_path: Path to the template used
+
+        Raises:
+            ValueError: If variant_id is invalid or LLM service not configured
+        """
+        if not self.llm_service:
+            raise ValueError("LLM service not configured. Cannot generate content.")
+
+        # Step 1: Build contexts (sync operations)
+        contexts = self.context_builder.build_complete_context(
+            slide_spec=slide_spec,
+            presentation_spec=presentation_spec,
+            element_relationships=element_relationships
+        )
+
+        # Step 2: Get variant metadata and template path (sync operations)
+        variant_metadata = self.prompt_builder.get_variant_metadata(variant_id)
+        template_path = variant_metadata["template_path"]
+
+        # Step 3: Build COMPLETE slide prompt (all elements at once) (sync operation)
+        complete_prompt = self.prompt_builder.build_complete_slide_prompt(
+            variant_id=variant_id,
+            slide_context=contexts["slide_context"],
+            presentation_context=contexts.get("presentation_context")
+        )
+
+        # Step 4: Generate content with ONE LLM call (ASYNC)
+        llm_response = await self.llm_service(complete_prompt)
+
+        # Step 5: Parse response into element contents (sync operation)
+        element_contents = self._parse_complete_response(
+            llm_response=llm_response,
+            variant_id=variant_id
+        )
+
+        # Step 6: Build content map for template assembly (sync operation)
+        content_map = self._build_content_map(element_contents)
+
+        # Step 7: Assemble template (sync operation)
+        assembled_html = self.template_assembler.assemble_template(
+            template_path=template_path,
+            content_map=content_map
+        )
+
+        # Step 8: Return result
+        return {
+            "html": assembled_html,
+            "elements": element_contents,
+            "metadata": {
+                "variant_id": variant_id,
+                "template_path": template_path,
+                "element_count": len(element_contents),
+                "generation_mode": "single_call_async"
+            },
+            "variant_id": variant_id,
+            "template_path": template_path
+        }
+
     def _parse_complete_response(
         self,
         llm_response: str,

@@ -15,6 +15,7 @@ from .llm_client import (
 from .llm_service import (
     get_llm_service,
     create_llm_callable,
+    create_llm_callable_async,
     LLMService,
     ModelComplexity
 )
@@ -28,6 +29,7 @@ __all__ = [
     "LLMProvider",
     "get_llm_service",
     "create_llm_callable",
+    "create_llm_callable_async",
     "LLMService",
     "ModelComplexity",
 ]
