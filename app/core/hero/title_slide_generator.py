@@ -72,52 +72,112 @@ class TitleSlideGenerator(BaseHeroGenerator):
         narrative = request.narrative
         topics = request.topics
 
-        # Build prompt
-        prompt = f"""Generate HTML content for a title slide (L29 hero layout).
+        # Build rich prompt based on v1.1 world-class template
+        prompt = f"""Generate HTML content for a TITLE SLIDE (L29 Hero Layout).
 
-**Slide Purpose**: Opening slide for a presentation - create strong first impression
+## 🎯 Slide Purpose
+**Cognitive Function**: Set presentation tone with elegant simplicity
+**When to Use**: Opening slide ONLY - first impression
+**Word Count Target**: 40-60 words total
 
-**Content Guidelines**:
-- Main Title: Clear, memorable presentation title (the big idea)
-- Subtitle: Compelling value proposition or tagline (why this matters)
-- Attribution: Presenter name, company, and date
+## 📋 Content Requirements
 
-**Constraints** (STRICT):
-- Main title: 40-80 characters (punchy and memorable)
-- Subtitle: 80-120 characters (compelling value proposition)
-- Attribution: 60-100 characters (presenter + company + date format)
+1. **Main Title** (5-10 words)
+   - Core presentation topic - clear and memorable
+   {f"- Use this title if appropriate: '{presentation_title}'" if presentation_title else ""}
+   - Otherwise derive from narrative: {narrative}
 
-**HTML Structure** (EXACTLY this format):
+2. **Subtitle** (10-15 words)
+   - Compelling tagline or value proposition
+   - What the presentation delivers
+   - Key theme or benefit
+
+3. **Attribution** (3-5 elements)
+   - Format: "Presenter | Company | Date"
+   - Professional and complete
+
+## 🎨 MANDATORY Styling (CRITICAL - DO NOT SKIP)
+
+### Typography (EXACT sizes required):
+- Title: font-size: 96px; font-weight: 900; letter-spacing: -2px
+- Subtitle: font-size: 42px; font-weight: 400
+- Attribution: font-size: 32px; font-weight: 400
+
+### Visual Requirements (ALL REQUIRED):
+- ✅ Gradient background (choose from options below)
+- ✅ White text color on all elements
+- ✅ Text shadows on ALL text (0 4px 12px rgba(0,0,0,0.3) for title)
+- ✅ Center alignment (text-align: center)
+- ✅ Generous vertical spacing (40-64px between elements)
+- ✅ 80px padding around edges
+
+### Layout (EXACT structure):
+- Full-screen: width: 100%; height: 100%
+- Flexbox centered: display: flex; justify-content: center; align-items: center
+- Vertical stack: flex-direction: column
+
+## 🎨 Gradient Options (Choose based on theme: {theme})
+Professional: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)
+Bold/Modern: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+Warm: linear-gradient(135deg, #ffa751 0%, #ffe259 100%)
+Deep Navy: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)
+
+## ✨ GOLDEN EXAMPLE (Follow this EXACTLY):
 ```html
-<div class="title-slide">
-  <h1 class="main-title">Main Presentation Title</h1>
-  <p class="subtitle">Compelling subtitle or value proposition</p>
-  <p class="attribution">Presenter Name | Company | Date</p>
+<div style="width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px;">
+
+  <h1 style="font-size: 96px;
+             color: white;
+             font-weight: 900;
+             text-align: center;
+             margin: 0 0 40px 0;
+             text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+             line-height: 1.1;
+             letter-spacing: -2px;">
+    Your Catchy Title Here
+  </h1>
+
+  <p style="font-size: 42px;
+            color: rgba(255,255,255,0.95);
+            text-align: center;
+            margin: 0 0 64px 0;
+            line-height: 1.4;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+    Your Compelling Subtitle About Value
+  </p>
+
+  <div style="font-size: 32px;
+              color: rgba(255,255,255,0.9);
+              text-align: center;
+              text-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+    Presenter Name | Company Name | Date
+  </div>
+
 </div>
 ```
 
+## 📤 OUTPUT INSTRUCTIONS
+- Return ONLY complete inline-styled HTML (like example above)
+- NO markdown code blocks (```html)
+- NO explanations or comments
+- MUST include ALL inline styles shown
+- MUST use gradient background
+- MUST use large font sizes (96px/42px/32px)
+
 **Content Inputs**:
 Narrative: {narrative}
-Key Topics: {', '.join(topics) if topics else 'N/A'}
-{f"Presentation Title Hint: {presentation_title}" if presentation_title else ""}
+Topics: {', '.join(topics) if topics else 'N/A'}
 Theme: {theme}
 Audience: {audience}
 
-**Tone Requirements**:
-- Professional and confident
-- Clear and impactful
-- Aligned with {theme} theme
-- Appropriate for {audience}
-- Create anticipation and interest
-
-**Important**:
-- Return ONLY the HTML structure above
-- NO explanations, markdown code blocks, or extra text
-- Use the exact CSS class names shown
-- Keep within character limits
-- Make the title memorable and the subtitle compelling
-
-Generate the title slide HTML now:"""
+Generate the title slide HTML NOW with ALL styling inline:"""
 
         return prompt
 

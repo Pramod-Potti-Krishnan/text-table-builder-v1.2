@@ -72,53 +72,148 @@ class ClosingSlideGenerator(BaseHeroGenerator):
         narrative = request.narrative
         topics = request.topics
 
-        # Build prompt
-        prompt = f"""Generate HTML content for a closing slide (L29 hero layout).
+        # Build rich prompt based on v1.1 world-class template
+        prompt = f"""Generate HTML content for a CLOSING SLIDE (L29 Hero Layout).
 
-**Slide Purpose**: Conclusion slide - thank audience and provide takeaways/next steps
+## 🎯 Slide Purpose
+**Cognitive Function**: Drive action with clear next steps and contact info
+**When to Use**: Final slide ONLY - lasting impression
+**Word Count Target**: 65-85 words total
 
-**Content Guidelines**:
-- Closing Message: Thank you + key takeaway
-- Call-to-Action: What should the audience do next? (optional but recommended)
-- Contact Info: How to reach the presenter
+## 📋 Content Requirements
 
-**Constraints** (STRICT):
-- Closing message: 50-80 characters (gracious and memorable)
-- Call-to-action: 80-120 characters (clear next steps)
-- Contact info: 60-100 characters (email, website, or social)
+1. **Closing Message** (5-8 words)
+   - Thank you OR key takeaway
+   - Memorable summary
+   - Positive and actionable
+   - Question format recommended: "Ready to Transform Your Business?"
+   - Or statement: "Your Success Starts Here"
+   - Derive from: {narrative}
 
-**HTML Structure** (EXACTLY this format):
+2. **Supporting Text** (15-25 words)
+   - Value proposition recap
+   - Results or benefits summary from topics: {', '.join(topics) if topics else 'N/A'}
+   - Next steps or opportunity
+   - Why they should act
+
+3. **Call-to-Action Button** (3-5 words, REQUIRED)
+   - Clear action: "Schedule Demo", "Contact Us", "Get Started"
+   - Prominent button styling with white background
+   - Easy to read and click
+
+4. **Contact Information** (3-5 items)
+   - Email address
+   - Website URL
+   - Phone number (optional)
+   - Format: "email | website | phone"
+   {f"- Use provided contact: {contact_info}" if contact_info else ""}
+
+## 🎨 MANDATORY Styling (CRITICAL - DO NOT SKIP)
+
+### Typography (EXACT sizes required):
+- Closing Message: font-size: 72px; font-weight: 700
+- Supporting Text: font-size: 36px; font-weight: 400
+- CTA Button: font-size: 32px; font-weight: 700
+- Contact Info: font-size: 28px; font-weight: 400
+
+### Visual Requirements (ALL REQUIRED):
+- ✅ Gradient background (choose from options below)
+- ✅ White text color on all elements
+- ✅ Text shadows on ALL text (0 4px 12px rgba for h2)
+- ✅ Center alignment (text-align: center)
+- ✅ CTA button: white background, colored text matching gradient
+- ✅ Button shadow: 0 8px 24px rgba(0,0,0,0.3)
+- ✅ Generous spacing (48-64px between elements)
+- ✅ 80px padding around edges
+
+### Layout (EXACT structure):
+- Full-screen: width: 100%; height: 100%
+- Flexbox centered: display: flex; justify-content: center; align-items: center
+- Vertical stack: flex-direction: column
+
+### CTA Button Requirements (CRITICAL):
+padding: 32px 72px;
+background: white;
+color: #667eea;  /* Matches gradient */
+border-radius: 12px;
+box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+font-weight: 700;
+
+## 🎨 Gradient Options (Choose based on theme: {theme}):
+Professional: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)
+Bold/Modern: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+Warm: linear-gradient(135deg, #ffa751 0%, #ffe259 100%)
+Deep Navy: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)
+
+## ✨ GOLDEN EXAMPLE (Follow this EXACTLY):
 ```html
-<div class="closing-slide">
-  <h2 class="closing-message">Thank You + Key Takeaway</h2>
-  <p class="call-to-action">What's next for the audience</p>
-  <p class="contact-info">presenter@email.com | website.com</p>
+<div style="width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px;">
+
+  <h2 style="font-size: 72px;
+             color: white;
+             font-weight: 700;
+             text-align: center;
+             margin: 0 0 48px 0;
+             line-height: 1.2;
+             text-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+    Ready to Transform Your Operations?
+  </h2>
+
+  <p style="font-size: 36px;
+            color: rgba(255,255,255,0.95);
+            text-align: center;
+            max-width: 1400px;
+            line-height: 1.6;
+            margin: 0 0 56px 0;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2);">
+    Join 500+ organizations using AI to reduce costs, increase efficiency, and deliver superior customer experiences. Let's discuss your specific use cases and ROI opportunities.
+  </p>
+
+  <div style="padding: 32px 72px;
+              font-size: 32px;
+              background: white;
+              color: #667eea;
+              border-radius: 12px;
+              font-weight: 700;
+              box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+              margin-bottom: 48px;">
+    Schedule Your Demo Today
+  </div>
+
+  <div style="font-size: 28px;
+              color: rgba(255,255,255,0.9);
+              text-align: center;
+              text-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+    contact@aiplatform.com | www.aiplatform.com | 1-800-AI-TRANSFORM
+  </div>
+
 </div>
 ```
 
+## 📤 OUTPUT INSTRUCTIONS
+- Return ONLY complete inline-styled HTML (like example above)
+- NO markdown code blocks (```html)
+- NO explanations or comments
+- MUST include ALL inline styles shown
+- MUST use gradient background
+- MUST use large font sizes (72px/36px/32px/28px)
+- MUST include white CTA button with colored text
+- Word count target: 65-85 words
+
 **Content Inputs**:
 Narrative: {narrative}
-Key Topics: {', '.join(topics) if topics else 'N/A'}
+Topics: {', '.join(topics) if topics else 'N/A'}
 Theme: {theme}
 Audience: {audience}
-{f"Contact Info Hint: {contact_info}" if contact_info else ""}
 
-**Tone Requirements**:
-- Grateful and positive
-- Reinforces key takeaways
-- Encourages action or engagement
-- Leaves lasting impression
-- Aligned with {theme} theme
-- Appropriate for {audience}
-
-**Important**:
-- Return ONLY the HTML structure above
-- NO explanations, markdown code blocks, or extra text
-- Use the exact CSS class names shown
-- Keep within character limits
-- Make it memorable and actionable
-
-Generate the closing slide HTML now:"""
+Generate the closing slide HTML NOW with ALL styling inline:"""
 
         return prompt
 

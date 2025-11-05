@@ -68,48 +68,103 @@ class SectionDividerGenerator(BaseHeroGenerator):
         narrative = request.narrative
         topics = request.topics
 
-        # Build prompt
-        prompt = f"""Generate HTML content for a section divider slide (L29 hero layout).
+        # Build rich prompt based on v1.1 world-class template
+        prompt = f"""Generate HTML content for a SECTION DIVIDER SLIDE (L29 Hero Layout).
 
-**Slide Purpose**: Transition slide marking the start of a new major section
+## 🎯 Slide Purpose
+**Cognitive Function**: Signal topic transition with minimal distraction
+**When to Use**: Between major presentation sections
+**Word Count Target**: 25-45 words total
 
-**Content Guidelines**:
-- Section Title: Clear, concise name for the upcoming section
-- Section Description: Brief preview of what's covered in this section
+## 📋 Content Requirements
 
-**Constraints** (STRICT):
-- Section title: 40-60 characters (punchy and clear)
-- Section description: 80-120 characters (preview without details)
+1. **Section Title** (3-6 words)
+   - New topic or phase name
+   - Clear and bold
+   - Derive from: {narrative}
+   - Or use first topic if relevant: {topics[0] if topics else 'N/A'}
 
-**HTML Structure** (EXACTLY this format):
+2. **Context Text** (5-10 words, optional)
+   - Brief explanation of what's coming
+   - Transition phrase
+   - Can be omitted for ultra-minimal look
+
+## 🎨 MANDATORY Styling (CRITICAL - DO NOT SKIP)
+
+### Typography (EXACT sizes required):
+- Section Title: font-size: 84px; font-weight: 700
+- Context Text: font-size: 42px; font-weight: 400; color: #9ca3af (muted gray)
+
+### Visual Requirements (ALL REQUIRED):
+- ✅ Dark solid background (#1f2937) - creates contrast
+- ✅ Colored left border accent (12px wide)
+- ✅ White text color for title
+- ✅ Muted gray (#9ca3af) for context text
+- ✅ Left-aligned text block (NOT centered)
+- ✅ Padding-left: 48px (text offset from border)
+
+### Layout (EXACT structure):
+- Full-screen: width: 100%; height: 100%
+- Flexbox centered vertically: display: flex; align-items: center; justify-content: center
+- Content block has left border accent
+
+## 🎨 Border Color Options (Choose based on section theme):
+Strategy/Planning: border-left: 12px solid #667eea (Purple)
+Execution/Action: border-left: 12px solid #1a73e8 (Blue)
+Results/Success: border-left: 12px solid #34a853 (Green)
+Innovation: border-left: 12px solid #9333ea (Deep Purple)
+
+## ✨ GOLDEN EXAMPLE (Follow this EXACTLY):
 ```html
-<div class="section-divider">
-  <h2 class="section-title">Section Name</h2>
-  <p class="section-description">Brief description of upcoming content</p>
+<div style="width: 100%;
+            height: 100%;
+            background: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px;">
+
+  <div style="border-left: 12px solid #667eea;
+              padding-left: 48px;">
+
+    <h2 style="font-size: 84px;
+               color: white;
+               font-weight: 700;
+               margin: 0 0 24px 0;
+               line-height: 1.1;">
+      Implementation Roadmap
+    </h2>
+
+    <p style="font-size: 42px;
+              color: #9ca3af;
+              font-weight: 400;
+              margin: 0;
+              line-height: 1.3;">
+      From Planning to Full Deployment
+    </p>
+
+  </div>
+
 </div>
 ```
 
+## 📤 OUTPUT INSTRUCTIONS
+- Return ONLY complete inline-styled HTML (like example above)
+- NO markdown code blocks (```html)
+- NO explanations or comments
+- MUST include ALL inline styles shown
+- MUST use dark background (#1f2937)
+- MUST use left border accent (12px solid color)
+- MUST use large font size (84px for title)
+- Context text MUST be muted gray (#9ca3af)
+
 **Content Inputs**:
 Narrative: {narrative}
-Key Topics: {', '.join(topics) if topics else 'N/A'}
+Topics: {', '.join(topics) if topics else 'N/A'}
 Theme: {theme}
 Audience: {audience}
 
-**Tone Requirements**:
-- Clear and confident
-- Builds anticipation for upcoming content
-- Maintains momentum from previous section
-- Aligned with {theme} theme
-- Appropriate for {audience}
-
-**Important**:
-- Return ONLY the HTML structure above
-- NO explanations, markdown code blocks, or extra text
-- Use the exact CSS class names shown
-- Keep within character limits
-- Make the transition smooth and engaging
-
-Generate the section divider HTML now:"""
+Generate the section divider HTML NOW with ALL styling inline:"""
 
         return prompt
 
