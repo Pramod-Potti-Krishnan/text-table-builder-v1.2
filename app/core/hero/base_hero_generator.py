@@ -106,6 +106,33 @@ class BaseHeroGenerator(ABC):
         """
         pass
 
+    def _clean_markdown_wrapper(self, content: str) -> str:
+        """
+        Remove markdown code fence wrappers if present.
+
+        LLMs often wrap HTML in ```html...``` blocks. This removes them.
+
+        Args:
+            content: Raw content from LLM (may have markdown wrappers)
+
+        Returns:
+            Clean HTML content without markdown wrappers
+        """
+        # Strip leading/trailing whitespace
+        content = content.strip()
+
+        # Remove ```html prefix and ``` suffix
+        if content.startswith("```html"):
+            content = content[7:]  # Remove "```html"
+        elif content.startswith("```"):
+            content = content[3:]  # Remove "```"
+
+        if content.endswith("```"):
+            content = content[:-3]  # Remove "```"
+
+        # Strip again after removing markers
+        return content.strip()
+
     def _validate_output(
         self,
         content: str,
@@ -221,8 +248,13 @@ class BaseHeroGenerator(ABC):
 
             # Step 2: Call async LLM service
             logger.info(f"Calling LLM for {self.slide_type} generation...")
-            content = await self.llm_service(prompt)
-            logger.info(f"LLM returned {len(content)} chars for {self.slide_type}")
+            raw_content = await self.llm_service(prompt)
+            logger.info(f"LLM returned {len(raw_content)} chars for {self.slide_type}")
+
+            # Clean markdown code fences if present
+            content = self._clean_markdown_wrapper(raw_content)
+            if len(content) != len(raw_content):
+                logger.info(f"Cleaned markdown wrapper ({len(raw_content)} → {len(content)} chars)")
 
             # Step 3: Validate output
             validation = self._validate_output(content, request)
