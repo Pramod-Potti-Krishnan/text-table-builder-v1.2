@@ -205,34 +205,34 @@ Generate the title slide HTML NOW with ALL styling inline:"""
         warnings = []
         metrics = {}
 
-        # Check for required structure
-        has_container = bool(re.search(r'<div[^>]*class=["\']title-slide["\']', content))
-        has_title = bool(re.search(r'<h1[^>]*class=["\']main-title["\']', content))
-        has_subtitle = bool(re.search(r'<p[^>]*class=["\']subtitle["\']', content))
-        has_attribution = bool(re.search(r'<p[^>]*class=["\']attribution["\']', content))
+        # Check for required inline-styled structure (v1.1-style)
+        has_container = bool(re.search(r'<div[^>]*style=.*linear-gradient', content, re.DOTALL))
+        has_title = bool(re.search(r'<h1[^>]*style=.*font-size:\s*96px', content, re.DOTALL))
+        has_subtitle = bool(re.search(r'<p[^>]*style=.*font-size:\s*42px', content, re.DOTALL))
+        has_attribution = bool(re.search(r'<div[^>]*style=.*font-size:\s*32px', content, re.DOTALL))
 
         if not has_container:
-            violations.append("Missing title-slide div container")
+            violations.append("Missing gradient background div container")
         if not has_title:
-            violations.append("Missing main-title h1 element")
+            violations.append("Missing 96px h1 title element")
         if not has_subtitle:
-            violations.append("Missing subtitle p element")
+            violations.append("Missing 42px p subtitle element")
         if not has_attribution:
-            warnings.append("Missing attribution p element (recommended)")
+            warnings.append("Missing 32px attribution element (recommended)")
 
-        # Extract and validate text lengths
+        # Extract and validate text lengths (match by tag and inline styles)
         title_match = re.search(
-            r'<h1[^>]*class=["\']main-title["\'][^>]*>(.*?)</h1>',
+            r'<h1[^>]*>(.*?)</h1>',
             content,
             re.DOTALL
         )
         subtitle_match = re.search(
-            r'<p[^>]*class=["\']subtitle["\'][^>]*>(.*?)</p>',
+            r'<p[^>]*style=.*font-size:\s*42px[^>]*>(.*?)</p>',
             content,
             re.DOTALL
         )
         attribution_match = re.search(
-            r'<p[^>]*class=["\']attribution["\'][^>]*>(.*?)</p>',
+            r'<div[^>]*style=.*font-size:\s*32px[^>]*>(.*?)</div>',
             content,
             re.DOTALL
         )
@@ -241,7 +241,7 @@ Generate the title slide HTML NOW with ALL styling inline:"""
         if title_match:
             title_text = self._extract_text_from_html(
                 content,
-                r'<h1[^>]*class=["\']main-title["\'][^>]*>(.*?)</h1>'
+                r'<h1[^>]*>(.*?)</h1>'
             )
             title_len = self._count_characters(title_text)
             metrics["title_length"] = title_len
@@ -263,7 +263,7 @@ Generate the title slide HTML NOW with ALL styling inline:"""
         if subtitle_match:
             subtitle_text = self._extract_text_from_html(
                 content,
-                r'<p[^>]*class=["\']subtitle["\'][^>]*>(.*?)</p>'
+                r'<p[^>]*style=.*font-size:\s*42px[^>]*>(.*?)</p>'
             )
             subtitle_len = self._count_characters(subtitle_text)
             metrics["subtitle_length"] = subtitle_len
@@ -285,7 +285,7 @@ Generate the title slide HTML NOW with ALL styling inline:"""
         if attribution_match:
             attribution_text = self._extract_text_from_html(
                 content,
-                r'<p[^>]*class=["\']attribution["\'][^>]*>(.*?)</p>'
+                r'<div[^>]*style=.*font-size:\s*32px[^>]*>(.*?)</div>'
             )
             attribution_len = self._count_characters(attribution_text)
             metrics["attribution_length"] = attribution_len

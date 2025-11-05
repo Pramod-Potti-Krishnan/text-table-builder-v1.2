@@ -241,33 +241,33 @@ Generate the closing slide HTML NOW with ALL styling inline:"""
         warnings = []
         metrics = {}
 
-        # Check for required structure
-        has_container = bool(re.search(r'<div[^>]*class=["\']closing-slide["\']', content))
-        has_message = bool(re.search(r'<h2[^>]*class=["\']closing-message["\']', content))
-        has_cta = bool(re.search(r'<p[^>]*class=["\']call-to-action["\']', content))
-        has_contact = bool(re.search(r'<p[^>]*class=["\']contact-info["\']', content))
+        # Check for required inline-styled structure (v1.1-style)
+        has_container = bool(re.search(r'<div[^>]*style=.*linear-gradient', content, re.DOTALL))
+        has_message = bool(re.search(r'<h2[^>]*style=.*font-size:\s*72px', content, re.DOTALL))
+        has_cta = bool(re.search(r'<div[^>]*style=.*font-size:\s*32px.*background:\s*white', content, re.DOTALL))
+        has_contact = bool(re.search(r'<div[^>]*style=.*font-size:\s*28px', content, re.DOTALL))
 
         if not has_container:
-            violations.append("Missing closing-slide div container")
+            violations.append("Missing gradient background div container")
         if not has_message:
-            violations.append("Missing closing-message h2 element")
+            violations.append("Missing 72px h2 closing message element")
         if not has_cta:
-            warnings.append("Missing call-to-action p element (recommended)")
+            warnings.append("Missing 32px white CTA button element (recommended)")
         if not has_contact:
-            warnings.append("Missing contact-info p element (recommended)")
+            warnings.append("Missing 28px contact info element (recommended)")
 
-        # Extract and validate text lengths
+        # Extract and validate text lengths (match by tag and inline styles)
         message_text = self._extract_text_from_html(
             content,
-            r'<h2[^>]*class=["\']closing-message["\'][^>]*>(.*?)</h2>'
+            r'<h2[^>]*>(.*?)</h2>'
         )
         cta_text = self._extract_text_from_html(
             content,
-            r'<p[^>]*class=["\']call-to-action["\'][^>]*>(.*?)</p>'
+            r'<div[^>]*style=.*font-size:\s*32px.*background:\s*white[^>]*>(.*?)</div>'
         )
         contact_text = self._extract_text_from_html(
             content,
-            r'<p[^>]*class=["\']contact-info["\'][^>]*>(.*?)</p>'
+            r'<div[^>]*style=.*font-size:\s*28px[^>]*>(.*?)</div>'
         )
 
         # Validate closing message

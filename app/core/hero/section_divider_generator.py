@@ -192,26 +192,26 @@ Generate the section divider HTML NOW with ALL styling inline:"""
         warnings = []
         metrics = {}
 
-        # Check for required structure
-        has_container = bool(re.search(r'<div[^>]*class=["\']section-divider["\']', content))
-        has_title = bool(re.search(r'<h2[^>]*class=["\']section-title["\']', content))
-        has_description = bool(re.search(r'<p[^>]*class=["\']section-description["\']', content))
+        # Check for required inline-styled structure (v1.1-style)
+        has_container = bool(re.search(r'<div[^>]*style=.*background:\s*#1f2937', content, re.DOTALL))
+        has_title = bool(re.search(r'<h2[^>]*style=.*font-size:\s*84px', content, re.DOTALL))
+        has_description = bool(re.search(r'<p[^>]*style=.*font-size:\s*42px', content, re.DOTALL))
 
         if not has_container:
-            violations.append("Missing section-divider div container")
+            violations.append("Missing dark background (#1f2937) div container")
         if not has_title:
-            violations.append("Missing section-title h2 element")
+            violations.append("Missing 84px h2 section title element")
         if not has_description:
-            violations.append("Missing section-description p element")
+            violations.append("Missing 42px p context description element")
 
-        # Extract and validate text lengths
+        # Extract and validate text lengths (match by tag and inline styles)
         title_text = self._extract_text_from_html(
             content,
-            r'<h2[^>]*class=["\']section-title["\'][^>]*>(.*?)</h2>'
+            r'<h2[^>]*>(.*?)</h2>'
         )
         description_text = self._extract_text_from_html(
             content,
-            r'<p[^>]*class=["\']section-description["\'][^>]*>(.*?)</p>'
+            r'<p[^>]*style=.*font-size:\s*42px[^>]*>(.*?)</p>'
         )
 
         # Validate section title
