@@ -25,7 +25,9 @@ from fastapi.responses import JSONResponse
 # Add app to path
 sys.path.insert(0, str(Path(__file__).parent))
 
+from app.api.v1_1_routes import router as v1_1_router
 from app.api.v1_2_routes import router as v1_2_router
+from app.api.hero_routes import router as hero_router
 
 # Configure logging
 logging.basicConfig(
@@ -49,7 +51,12 @@ async def lifespan(app: FastAPI):
     # Validate configuration
     validate_configuration()
 
-    logger.info("✓ v1.2 API ready at /v1.2/generate")
+    logger.info("✓ v1.1 API ready at /v1.1/generate (hero slides - legacy)")
+    logger.info("✓ v1.2 API ready at /v1.2/generate (content slides)")
+    logger.info("✓ v1.2 Hero API ready:")
+    logger.info("  - /v1.2/hero/title (title slides)")
+    logger.info("  - /v1.2/hero/section (section dividers)")
+    logger.info("  - /v1.2/hero/closing (closing slides)")
     logger.info("✓ Variant catalog at /v1.2/variants")
     logger.info("✓ Gemini integration enabled")
     logger.info("=" * 80)
@@ -123,8 +130,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include v1.2 routes
+# Include v1.1 routes (hero slides - legacy)
+app.include_router(v1_1_router)
+
+# Include v1.2 routes (content slides - element-based)
 app.include_router(v1_2_router)
+
+# Include v1.2 hero routes (NEW - hero slides with v1.2 architecture)
+app.include_router(hero_router)
 
 
 @app.get("/")
@@ -133,9 +146,14 @@ async def root():
     return {
         "service": "Text & Table Builder",
         "version": "1.2.0",
-        "architecture": "Deterministic Assembly",
+        "architecture": "Hybrid (v1.1 + v1.2)",
         "endpoints": {
-            "generate": "POST /v1.2/generate",
+            "v1.1_hero_slides": "POST /v1.1/generate (LEGACY)",
+            "v1.2_content_slides": "POST /v1.2/generate",
+            "v1.2_title_slide": "POST /v1.2/hero/title",
+            "v1.2_section_divider": "POST /v1.2/hero/section",
+            "v1.2_closing_slide": "POST /v1.2/hero/closing",
+            "hero_health_check": "GET /v1.2/hero/health",
             "list_variants": "GET /v1.2/variants",
             "variant_details": "GET /v1.2/variant/{variant_id}"
         },
