@@ -91,8 +91,8 @@ TEST 1: LLM Service Initialization
 ============================================================
 ✓ LLM service initialized
   - Model routing enabled: True
-  - Flash model: gemini-2.0-flash-exp
-  - Pro model: gemini-1.5-pro
+  - Flash model: gemini-2.5-flash
+  - Pro model: gemini-2.5-pro
 ✓ Generation successful
 ✓ Valid JSON response
 ✓ Usage stats:
@@ -340,6 +340,212 @@ v1.2 supports **26 variants** across **10 slide types**:
 
 ---
 
+## Hero Slides (L29 Layout)
+
+v1.2 includes **3 specialized hero slide endpoints** for generating full-bleed impact slides using the L29 layout. These complement the content slide variants for a complete presentation solution.
+
+### Architecture Philosophy
+
+Hero slides use a **different architecture** than content slides:
+
+| Aspect | Content Slides (L25) | Hero Slides (L29) |
+|--------|---------------------|-------------------|
+| Generation | Element-based assembly | Single LLM call |
+| Prompt Style | Targeted element prompts | Rich v1.1-style prompts |
+| HTML Structure | Template placeholders | Complete inline-styled HTML |
+| Complexity | High (4-8 elements) | Low (1-3 elements) |
+| Model | Flash + Pro routing | Flash only |
+
+**Why Single-Call?** Hero slides have simple structure (title + subtitle + CTA), making element-based assembly unnecessary overhead.
+
+### Hero Slide Types
+
+#### 1. Title Slide (`/v1.2/hero/title`)
+
+Opening slide with maximum visual impact.
+
+**HTML Structure:**
+```html
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); ...">
+  <h1 style="font-size: 96px; color: white; font-weight: 900; ...">
+    AI in Healthcare: Transforming Diagnostics
+  </h1>
+  <p style="font-size: 42px; color: rgba(255,255,255,0.95); ...">
+    Revolutionizing diagnostic accuracy through advanced machine learning
+  </p>
+  <div style="font-size: 32px; color: rgba(255,255,255,0.9); ...">
+    Dr. Sarah Chen | HealthTech Innovations | December 2025
+  </div>
+</div>
+```
+
+**Visual Features:**
+- ✅ Gradient background (4 theme options)
+- ✅ 96px title font (ultra-large, bold)
+- ✅ 42px subtitle font
+- ✅ 32px attribution font
+- ✅ Text shadows for depth
+- ✅ Center-aligned, flexbox centered
+
+**Character Limits:**
+- Title: 40-80 chars (max 100)
+- Subtitle: 80-120 chars (max 150)
+- Attribution: 60-100 chars (max 120)
+
+---
+
+#### 2. Section Divider (`/v1.2/hero/section`)
+
+Transition slide marking major section changes.
+
+**HTML Structure:**
+```html
+<div style="background: #1f2937; ...">
+  <div style="border-left: 12px solid #667eea; padding-left: 48px;">
+    <h2 style="font-size: 84px; color: white; font-weight: 700; ...">
+      Implementation Roadmap
+    </h2>
+    <p style="font-size: 42px; color: #9ca3af; ...">
+      From Planning to Full Deployment
+    </p>
+  </div>
+</div>
+```
+
+**Visual Features:**
+- ✅ Dark background (#1f2937) for contrast
+- ✅ 12px colored left border accent
+- ✅ 84px section title (large, bold)
+- ✅ 42px context text (muted gray)
+- ✅ Left-aligned (not centered)
+- ✅ Minimal, dramatic aesthetic
+
+**Character Limits:**
+- Section title: 40-60 chars (max 80)
+- Context text: 80-120 chars (max 150)
+
+---
+
+#### 3. Closing Slide (`/v1.2/hero/closing`)
+
+Final slide with call-to-action and contact information.
+
+**HTML Structure:**
+```html
+<div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); ...">
+  <h2 style="font-size: 72px; color: white; ...">
+    Ready to Transform Your Operations?
+  </h2>
+  <p style="font-size: 36px; color: rgba(255,255,255,0.95); ...">
+    Join 500+ organizations using AI to reduce costs and deliver superior experiences
+  </p>
+  <div style="padding: 32px 72px; background: white; color: #667eea; font-size: 32px; border-radius: 12px; ...">
+    Schedule Your Demo Today
+  </div>
+  <div style="font-size: 28px; color: rgba(255,255,255,0.9); ...">
+    contact@company.com | www.company.com | 1-800-COMPANY
+  </div>
+</div>
+```
+
+**Visual Features:**
+- ✅ Gradient background
+- ✅ 72px closing message
+- ✅ 36px supporting text
+- ✅ 32px white CTA button (prominent)
+- ✅ 28px contact info
+- ✅ Button shadow for depth
+
+**Character Limits:**
+- Closing message: 50-80 chars (max 120)
+- Supporting text: Variable (based on value prop)
+- CTA button: 3-5 words
+- Contact: 3-5 items
+
+---
+
+### Inline-Styled HTML
+
+Hero slides generate **complete inline-styled HTML** inspired by v1.1's world-class prompts:
+
+**Key Features:**
+- 🎨 Gradient backgrounds (`linear-gradient(135deg, ...)`)
+- 📏 Large typography (96px/84px/72px fonts)
+- 🌈 RGBA colors for transparency
+- ✨ Text shadows for readability (`0 4px 12px rgba(0,0,0,0.3)`)
+- 📐 Flexbox centering
+- 💫 Full inline styles (no external CSS)
+
+**Validation Approach:**
+
+Unlike content slides, hero slide validation checks for **inline style patterns** rather than CSS classes:
+
+```python
+# Check for gradient background
+has_gradient = bool(re.search(r'<div[^>]*style=.*linear-gradient', content, re.DOTALL))
+
+# Check for large typography
+has_96px_font = bool(re.search(r'<h1[^>]*style=.*font-size:\s*96px', content, re.DOTALL))
+
+# Check for white text
+has_white_text = bool(re.search(r'color:\s*white', content))
+```
+
+This ensures generated HTML matches the v1.1-style rich styling requirements.
+
+---
+
+### Hero Slide Request Format
+
+**Common Fields:**
+```json
+{
+  "slide_number": 1,
+  "slide_type": "title_slide",
+  "narrative": "Core message or purpose of this slide",
+  "topics": ["Key", "Topics", "To", "Cover"],
+  "context": {
+    "theme": "professional",
+    "audience": "executive stakeholders",
+    "presentation_title": "Q4 Business Review",
+    "contact_info": "email@company.com"
+  }
+}
+```
+
+**Response Format:**
+```json
+{
+  "content": "<div style='width: 100%; height: 100%; background: linear-gradient(...); ...'>...</div>",
+  "metadata": {
+    "slide_type": "title_slide",
+    "slide_number": 1,
+    "validation": {
+      "valid": true,
+      "violations": [],
+      "warnings": [],
+      "metrics": {
+        "title_length": 47,
+        "subtitle_length": 69
+      }
+    },
+    "generation_mode": "hero_slide_async"
+  }
+}
+```
+
+---
+
+### Total v1.2 Capabilities
+
+**Content Slides:** 10 slide types with 26 variants
+**Hero Slides:** 3 specialized endpoints
+**Total Endpoints:** 13 (10 content `/v1.2/generate` + 3 hero `/v1.2/hero/*`)
+
+This makes v1.2 a **complete presentation generation service** handling both rich content and impactful hero slides.
+
+---
+
 ## API Endpoints
 
 ### POST `/v1.2/generate`
@@ -410,6 +616,87 @@ Get detailed specification for a specific variant.
 
 ---
 
+### POST `/v1.2/hero/title`
+
+Generate title/opening slide (L29 hero layout).
+
+**Request:**
+```json
+{
+  "slide_number": 1,
+  "slide_type": "title_slide",
+  "narrative": "AI transforming healthcare diagnostics",
+  "topics": ["Machine Learning", "Patient Outcomes", "Diagnostic Accuracy"],
+  "context": {
+    "theme": "professional",
+    "audience": "healthcare professionals",
+    "presentation_title": "AI in Healthcare: Transforming Diagnostics"
+  }
+}
+```
+
+**Response:**
+```json
+{
+  "content": "<div style=\"width: 100%; height: 100%; background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 80px;\"><h1 style=\"font-size: 96px; color: white; font-weight: 900; text-align: center; margin: 0 0 40px 0; text-shadow: 0 4px 12px rgba(0,0,0,0.3); line-height: 1.1; letter-spacing: -2px;\">AI in Healthcare: Transforming Diagnostics</h1>...</div>",
+  "metadata": {
+    "slide_type": "title_slide",
+    "slide_number": 1,
+    "validation": {
+      "valid": true,
+      "violations": [],
+      "warnings": [],
+      "metrics": {
+        "title_length": 47,
+        "subtitle_length": 69
+      }
+    },
+    "generation_mode": "hero_slide_async"
+  }
+}
+```
+
+---
+
+### POST `/v1.2/hero/section`
+
+Generate section divider slide (L29 hero layout).
+
+**Request:**
+```json
+{
+  "slide_number": 5,
+  "slide_type": "section_divider",
+  "narrative": "Transitioning to implementation phase",
+  "topics": ["Planning", "Deployment", "Timeline"],
+  "context": {
+    "theme": "professional"
+  }
+}
+```
+
+---
+
+### POST `/v1.2/hero/closing`
+
+Generate closing/conclusion slide (L29 hero layout).
+
+**Request:**
+```json
+{
+  "slide_number": 15,
+  "slide_type": "closing_slide",
+  "narrative": "Call to action for adopting AI diagnostics",
+  "topics": ["Implementation", "ROI", "Next Steps"],
+  "context": {
+    "theme": "professional",
+    "contact_info": "contact@healthtech.com | www.healthtech.com"
+  }
+}
+```
+
+---
+
 ## Directory Structure
 
 ```
@@ -419,12 +706,19 @@ v1.2/
 │   │   ├── element_prompt_builder.py
 │   │   ├── context_builder.py
 │   │   ├── template_assembler.py
-│   │   └── element_based_generator.py
+│   │   ├── element_based_generator.py
+│   │   └── hero/                  # Hero slide generators (L29 layout)
+│   │       ├── __init__.py
+│   │       ├── base_hero_generator.py      # Base class for hero slides
+│   │       ├── title_slide_generator.py    # Opening/title slides
+│   │       ├── section_divider_generator.py # Section transitions
+│   │       └── closing_slide_generator.py   # Closing/CTA slides
 │   ├── api/                       # API routes
-│   │   └── v1_2_routes.py
+│   │   ├── v1_2_routes.py         # Content slide endpoints
+│   │   └── hero_routes.py         # Hero slide endpoints
 │   ├── models/                    # Pydantic models
 │   │   └── v1_2_models.py
-│   ├── templates/                 # HTML templates (24 files)
+│   ├── templates/                 # HTML templates (26 files)
 │   │   ├── matrix/
 │   │   ├── grid/
 │   │   ├── comparison/

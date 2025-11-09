@@ -41,8 +41,8 @@ class LLMService:
     def __init__(
         self,
         enable_model_routing: bool = True,
-        flash_model: str = "gemini-2.0-flash-exp",
-        pro_model: str = "gemini-1.5-pro",
+        flash_model: str = "gemini-2.5-flash",
+        pro_model: str = "gemini-2.5-pro",
         temperature: float = 0.7,
         max_tokens: int = 8192
     ):
@@ -385,8 +385,8 @@ def get_llm_service(
         enable_routing = enable_model_routing if enable_model_routing is not None else \
             os.getenv("ENABLE_MODEL_ROUTING", "true").lower() == "true"
 
-        flash = flash_model or os.getenv("GEMINI_FLASH_MODEL", "gemini-2.0-flash-exp")
-        pro = pro_model or os.getenv("GEMINI_PRO_MODEL", "gemini-1.5-pro")
+        flash = flash_model or os.getenv("GEMINI_FLASH_MODEL", "gemini-2.5-flash")
+        pro = pro_model or os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro")
         temperature = float(os.getenv("LLM_TEMPERATURE", "0.7"))
         max_tokens = int(os.getenv("LLM_MAX_TOKENS", "8192"))
 

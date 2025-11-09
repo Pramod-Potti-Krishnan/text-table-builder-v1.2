@@ -95,8 +95,8 @@ def validate_configuration():
 
     # Log configuration
     logger.info(f"✓ Model routing: {os.getenv('ENABLE_MODEL_ROUTING', 'true')}")
-    logger.info(f"✓ Flash model: {os.getenv('GEMINI_FLASH_MODEL', 'gemini-2.0-flash-exp')}")
-    logger.info(f"✓ Pro model: {os.getenv('GEMINI_PRO_MODEL', 'gemini-1.5-pro')}")
+    logger.info(f"✓ Flash model: {os.getenv('GEMINI_FLASH_MODEL', 'gemini-2.5-flash')}")
+    logger.info(f"✓ Pro model: {os.getenv('GEMINI_PRO_MODEL', 'gemini-2.5-pro')}")
     logger.info(f"✓ Parallel generation: {os.getenv('ENABLE_PARALLEL_GENERATION', 'true')}")
     logger.info(f"✓ Max workers: {os.getenv('MAX_PARALLEL_WORKERS', '5')}")
 

@@ -188,8 +188,8 @@ All configurable via environment variables (see `.env.example`):
 export GCP_PROJECT_ID=deckster-xyz
 
 # Optional - Model Selection
-export GEMINI_FLASH_MODEL=gemini-2.0-flash-exp
-export GEMINI_PRO_MODEL=gemini-1.5-pro
+export GEMINI_FLASH_MODEL=gemini-2.5-flash
+export GEMINI_PRO_MODEL=gemini-2.5-pro
 export ENABLE_MODEL_ROUTING=true
 
 # Optional - Generation Settings
