@@ -34,6 +34,10 @@ class HeroGenerationRequest(BaseModel):
         default_factory=dict,
         description="Additional context: theme, audience, presentation_title, contact_info, etc."
     )
+    visual_style: str = Field(
+        default="professional",
+        description="Visual style for background images: professional, illustrated, kids"
+    )
 
 
 class HeroGenerationResponse(BaseModel):
