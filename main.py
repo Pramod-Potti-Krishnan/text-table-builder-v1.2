@@ -50,13 +50,18 @@ async def lifespan(app: FastAPI):
     # Validate configuration
     validate_configuration()
 
-    logger.info("✓ v1.2 Content API: /v1.2/generate (34 variants)")
-    logger.info("✓ v1.2 Hero API:")
+    logger.info("✓ v1.2 Content API: /v1.2/generate (26 variants)")
+    logger.info("✓ v1.2 Hero API (standard):")
     logger.info("  - /v1.2/hero/title (title slides)")
     logger.info("  - /v1.2/hero/section (section dividers)")
     logger.info("  - /v1.2/hero/closing (closing slides)")
+    logger.info("✓ v1.2 Hero API (image-enhanced):")
+    logger.info("  - /v1.2/hero/title-with-image (title with AI background)")
+    logger.info("  - /v1.2/hero/section-with-image (section with AI background)")
+    logger.info("  - /v1.2/hero/closing-with-image (closing with AI background)")
     logger.info("✓ Variant catalog: /v1.2/variants")
     logger.info("✓ Gemini integration enabled")
+    logger.info("✓ Image Builder API integration enabled")
     logger.info("=" * 80)
 
     yield
@@ -144,9 +149,16 @@ async def root():
         "architecture": "Unified v1.2",
         "endpoints": {
             "content_slides": "POST /v1.2/generate",
-            "title_slide": "POST /v1.2/hero/title",
-            "section_divider": "POST /v1.2/hero/section",
-            "closing_slide": "POST /v1.2/hero/closing",
+            "hero_standard": {
+                "title_slide": "POST /v1.2/hero/title",
+                "section_divider": "POST /v1.2/hero/section",
+                "closing_slide": "POST /v1.2/hero/closing"
+            },
+            "hero_image_enhanced": {
+                "title_slide_with_image": "POST /v1.2/hero/title-with-image",
+                "section_divider_with_image": "POST /v1.2/hero/section-with-image",
+                "closing_slide_with_image": "POST /v1.2/hero/closing-with-image"
+            },
             "hero_health_check": "GET /v1.2/hero/health",
             "list_variants": "GET /v1.2/variants",
             "variant_details": "GET /v1.2/variant/{variant_id}"
@@ -157,9 +169,12 @@ async def root():
             "gemini_integration": True,
             "model_routing": True,
             "character_validation": True,
-            "template_caching": True
+            "template_caching": True,
+            "ai_generated_backgrounds": True
         },
         "total_variants": 26,
+        "total_endpoints": 9,
+        "hero_endpoints": 6,
         "slide_types": [
             "matrix", "grid", "comparison", "sequential",
             "asymmetric", "hybrid", "metrics", "single_column",

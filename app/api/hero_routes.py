@@ -1,16 +1,24 @@
 """
 Hero Slide API Routes for v1.2 Text Service
 
-Provides 3 specialized endpoints for generating L29 hero slides:
+Provides specialized endpoints for generating L29 hero slides:
+
+Standard (gradient backgrounds):
 - POST /v1.2/hero/title - Title/opening slides
 - POST /v1.2/hero/section - Section divider slides
 - POST /v1.2/hero/closing - Closing/conclusion slides
 
+Image-Enhanced (AI-generated backgrounds):
+- POST /v1.2/hero/title-with-image - Title slides with 16:9 background images
+- POST /v1.2/hero/section-with-image - Section dividers with background images
+- POST /v1.2/hero/closing-with-image - Closing slides with background images
+
 These endpoints complement the existing /v1.2/generate endpoint for content slides,
-creating a unified Text Service with 13 total endpoints (3 hero + 10 content variants).
+creating a unified Text Service with 16 total endpoints (6 hero + 10 content variants).
 
 Architecture:
 - Each endpoint uses a specialized generator (TitleSlideGenerator, etc.)
+- Image-enhanced variants use Image Builder v2.0 API for background generation
 - All generators use async LLM service for FastAPI compatibility
 - Complete HTML generation (not field-by-field)
 - Full validation of output structure and character counts
@@ -26,7 +34,11 @@ from ..core.hero import (
     HeroGenerationResponse,
     TitleSlideGenerator,
     SectionDividerGenerator,
-    ClosingSlideGenerator
+    ClosingSlideGenerator,
+    # Image-enhanced variants
+    TitleSlideWithImageGenerator,
+    SectionDividerWithImageGenerator,
+    ClosingSlideWithImageGenerator
 )
 from ..services import create_llm_callable_async
 
@@ -96,6 +108,52 @@ def get_closing_generator(
         ClosingSlideGenerator instance
     """
     return ClosingSlideGenerator(llm_service)
+
+
+# Image-Enhanced Generator Dependencies
+def get_title_with_image_generator(
+    llm_service: Callable = Depends(get_async_llm_service)
+) -> TitleSlideWithImageGenerator:
+    """
+    Create TitleSlideWithImageGenerator instance.
+
+    Args:
+        llm_service: Async LLM callable (injected)
+
+    Returns:
+        TitleSlideWithImageGenerator instance
+    """
+    return TitleSlideWithImageGenerator(llm_service)
+
+
+def get_section_with_image_generator(
+    llm_service: Callable = Depends(get_async_llm_service)
+) -> SectionDividerWithImageGenerator:
+    """
+    Create SectionDividerWithImageGenerator instance.
+
+    Args:
+        llm_service: Async LLM callable (injected)
+
+    Returns:
+        SectionDividerWithImageGenerator instance
+    """
+    return SectionDividerWithImageGenerator(llm_service)
+
+
+def get_closing_with_image_generator(
+    llm_service: Callable = Depends(get_async_llm_service)
+) -> ClosingSlideWithImageGenerator:
+    """
+    Create ClosingSlideWithImageGenerator instance.
+
+    Args:
+        llm_service: Async LLM callable (injected)
+
+    Returns:
+        ClosingSlideWithImageGenerator instance
+    """
+    return ClosingSlideWithImageGenerator(llm_service)
 
 
 # ============================================================================
@@ -277,6 +335,217 @@ async def generate_closing_slide(
 
 
 # ============================================================================
+# Image-Enhanced Hero Slide Endpoints
+# ============================================================================
+
+@router.post("/title-with-image", response_model=HeroGenerationResponse)
+async def generate_title_slide_with_image(
+    request: HeroGenerationRequest,
+    generator: TitleSlideWithImageGenerator = Depends(get_title_with_image_generator)
+) -> HeroGenerationResponse:
+    """
+    Generate title/opening slide with AI-generated background image (L29 hero layout).
+
+    Creates a title slide with:
+    - AI-generated 16:9 background image (contextual to presentation topic)
+    - Main presentation title (h1) - LEFT-aligned
+    - Compelling subtitle/value proposition (p) - LEFT-aligned
+    - Presenter attribution (p) - LEFT-aligned
+    - Dark gradient overlay (dark left → light right) for text readability
+
+    **Image Generation**:
+    - Automatically generates contextual background based on narrative and topics
+    - Uses Image Builder v2.0 API
+    - Photorealistic 16:9 aspect ratio
+    - Crop anchor: LEFT (text placement area)
+    - Generation time: ~10-15 seconds (parallel with content)
+    - Graceful fallback to gradient if image generation fails
+
+    **Request Body** (same as standard title endpoint):
+    - slide_number: Slide number in presentation
+    - slide_type: "title_slide"
+    - narrative: Narrative or purpose for the slide
+    - topics: List of key topics (used for image context)
+    - context: Additional context (theme, audience, presentation_title, etc.)
+
+    **Response** (extended with image metadata):
+    - content: Complete HTML structure with gradient overlay
+    - metadata:
+      - background_image: URL to generated 16:9 image (or null if fallback)
+      - image_generation_time_ms: Time taken to generate image
+      - fallback_to_gradient: Whether image generation failed
+      - validation: Standard validation results
+      - slide_type, slide_number, etc.
+
+    **Character Constraints** (same as standard):
+    - Main title: 40-80 chars (max 100)
+    - Subtitle: 80-120 chars (max 150)
+    - Attribution: 60-100 chars (max 120)
+    """
+    try:
+        logger.info(f"Generating title slide with image (slide #{request.slide_number})")
+        result = await generator.generate(request)
+        logger.info(
+            f"Title slide with image generated successfully "
+            f"(fallback: {result['metadata'].get('fallback_to_gradient', False)})"
+        )
+        return result
+
+    except ValueError as e:
+        logger.error(f"Validation error in title slide with image generation: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Title slide with image validation failed: {str(e)}"
+        )
+
+    except Exception as e:
+        logger.error(f"Title slide with image generation failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Title slide with image generation failed: {str(e)}"
+        )
+
+
+@router.post("/section-with-image", response_model=HeroGenerationResponse)
+async def generate_section_divider_with_image(
+    request: HeroGenerationRequest,
+    generator: SectionDividerWithImageGenerator = Depends(get_section_with_image_generator)
+) -> HeroGenerationResponse:
+    """
+    Generate section divider/transition slide with AI-generated background image (L29 hero layout).
+
+    Creates a section divider with:
+    - AI-generated 16:9 background image (contextual to new section)
+    - Section title (h2) - RIGHT-aligned
+    - Section description/preview (p) - RIGHT-aligned
+    - Dark gradient overlay (dark right → light left) for text readability
+    - Colored left border accent on text block
+
+    **Image Generation**:
+    - Automatically generates contextual background based on narrative and topics
+    - Uses Image Builder v2.0 API
+    - Subtle/abstract photorealistic style (less dramatic than title slides)
+    - 16:9 aspect ratio
+    - Crop anchor: RIGHT (text placement area)
+    - Generation time: ~10-15 seconds (parallel with content)
+    - Graceful fallback to dark solid background if image generation fails
+
+    **Request Body** (same as standard section endpoint):
+    - slide_number: Slide number in presentation
+    - slide_type: "section_divider"
+    - narrative: Purpose or focus of this section
+    - topics: List of key topics for this section (used for image context)
+    - context: Additional context (theme, audience, etc.)
+
+    **Response** (extended with image metadata):
+    - content: Complete HTML structure with gradient overlay
+    - metadata:
+      - background_image: URL to generated 16:9 image (or null if fallback)
+      - image_generation_time_ms: Time taken to generate image
+      - fallback_to_gradient: Whether image generation failed
+      - validation: Standard validation results
+      - slide_type, slide_number, etc.
+
+    **Character Constraints** (same as standard):
+    - Section title: 40-60 chars (max 80)
+    - Section description: 80-120 chars (max 150)
+    """
+    try:
+        logger.info(f"Generating section divider with image (slide #{request.slide_number})")
+        result = await generator.generate(request)
+        logger.info(
+            f"Section divider with image generated successfully "
+            f"(fallback: {result['metadata'].get('fallback_to_gradient', False)})"
+        )
+        return result
+
+    except ValueError as e:
+        logger.error(f"Validation error in section divider with image generation: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Section divider with image validation failed: {str(e)}"
+        )
+
+    except Exception as e:
+        logger.error(f"Section divider with image generation failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Section divider with image generation failed: {str(e)}"
+        )
+
+
+@router.post("/closing-with-image", response_model=HeroGenerationResponse)
+async def generate_closing_slide_with_image(
+    request: HeroGenerationRequest,
+    generator: ClosingSlideWithImageGenerator = Depends(get_closing_with_image_generator)
+) -> HeroGenerationResponse:
+    """
+    Generate closing/conclusion slide with AI-generated background image (L29 hero layout).
+
+    Creates a closing slide with:
+    - AI-generated 16:9 background image (inspiring, forward-looking)
+    - Closing message/thank you + takeaway (h2) - CENTER-aligned
+    - Supporting text / value proposition recap (p) - CENTER-aligned
+    - Call-to-action button (div) - CENTER-aligned
+    - Contact information (p) - CENTER-aligned
+    - Radial gradient overlay (light center → dark edges) for text readability
+
+    **Image Generation**:
+    - Automatically generates inspiring background based on narrative and topics
+    - Uses Image Builder v2.0 API
+    - Inspirational/aspirational photorealistic style
+    - 16:9 aspect ratio
+    - Crop anchor: CENTER (balanced composition)
+    - Generation time: ~10-15 seconds (parallel with content)
+    - Graceful fallback to gradient background if image generation fails
+
+    **Request Body** (same as standard closing endpoint):
+    - slide_number: Slide number in presentation
+    - slide_type: "closing_slide"
+    - narrative: Closing message or key takeaway
+    - topics: List of key topics covered (used for image context)
+    - context: Additional context (theme, audience, contact_info, etc.)
+
+    **Response** (extended with image metadata):
+    - content: Complete HTML structure with radial gradient overlay
+    - metadata:
+      - background_image: URL to generated 16:9 image (or null if fallback)
+      - image_generation_time_ms: Time taken to generate image
+      - fallback_to_gradient: Whether image generation failed
+      - validation: Standard validation results
+      - slide_type, slide_number, etc.
+
+    **Character Constraints** (same as standard):
+    - Closing message: 50-80 chars (max 120)
+    - Supporting text: Variable (value proposition)
+    - CTA button: 3-5 words
+    - Contact info: 60-100 chars (max 120)
+    """
+    try:
+        logger.info(f"Generating closing slide with image (slide #{request.slide_number})")
+        result = await generator.generate(request)
+        logger.info(
+            f"Closing slide with image generated successfully "
+            f"(fallback: {result['metadata'].get('fallback_to_gradient', False)})"
+        )
+        return result
+
+    except ValueError as e:
+        logger.error(f"Validation error in closing slide with image generation: {e}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Closing slide with image validation failed: {str(e)}"
+        )
+
+    except Exception as e:
+        logger.error(f"Closing slide with image generation failed: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Closing slide with image generation failed: {str(e)}"
+        )
+
+
+# ============================================================================
 # Health Check Endpoint (for testing)
 # ============================================================================
 
@@ -292,14 +561,31 @@ async def hero_health_check():
         "status": "healthy",
         "service": "Text Service v1.2 - Hero Slides",
         "endpoints": {
-            "title": "/v1.2/hero/title",
-            "section": "/v1.2/hero/section",
-            "closing": "/v1.2/hero/closing"
+            "standard": {
+                "title": "/v1.2/hero/title",
+                "section": "/v1.2/hero/section",
+                "closing": "/v1.2/hero/closing"
+            },
+            "image_enhanced": {
+                "title": "/v1.2/hero/title-with-image",
+                "section": "/v1.2/hero/section-with-image",
+                "closing": "/v1.2/hero/closing-with-image"
+            }
         },
         "generators": {
-            "title": "TitleSlideGenerator (L29)",
-            "section": "SectionDividerGenerator (L29)",
-            "closing": "ClosingSlideGenerator (L29)"
+            "standard": {
+                "title": "TitleSlideGenerator (L29)",
+                "section": "SectionDividerGenerator (L29)",
+                "closing": "ClosingSlideGenerator (L29)"
+            },
+            "image_enhanced": {
+                "title": "TitleSlideWithImageGenerator (L29 + Image Builder)",
+                "section": "SectionDividerWithImageGenerator (L29 + Image Builder)",
+                "closing": "ClosingSlideWithImageGenerator (L29 + Image Builder)"
+            }
         },
-        "integration": "Async LLM service (Vertex AI with ADC)"
+        "integration": {
+            "llm": "Async LLM service (Vertex AI with ADC)",
+            "images": "Image Builder v2.0 API"
+        }
     }

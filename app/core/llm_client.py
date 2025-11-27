@@ -8,10 +8,12 @@ Multi-provider LLM client supporting Gemini, OpenAI, and Anthropic.
 import os
 import time
 import logging
+import asyncio
 from typing import Optional, Dict, Any, List
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
+from functools import wraps
 
 # Provider SDKs
 # v3.3 Security Update: Using Vertex AI SDK (google-cloud-aiplatform) instead of
@@ -29,6 +31,56 @@ except ImportError:
 
 
 logger = logging.getLogger(__name__)
+
+
+def retry_with_exponential_backoff(max_retries=5, base_delay=2):
+    """
+    Retry decorator with exponential backoff for 429 RESOURCE_EXHAUSTED errors.
+
+    Implements exponential backoff: 2s, 4s, 8s, 16s, 32s delays between retries.
+
+    Args:
+        max_retries: Maximum number of retry attempts (default: 5)
+        base_delay: Base delay in seconds, doubled each retry (default: 2)
+
+    Returns:
+        Decorator function that wraps async methods
+    """
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            for attempt in range(max_retries):
+                try:
+                    return await func(*args, **kwargs)
+                except Exception as e:
+                    error_str = str(e)
+
+                    # Check for 429 RESOURCE_EXHAUSTED errors
+                    if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
+                        if attempt < max_retries - 1:
+                            # Calculate exponential backoff delay
+                            delay = base_delay * (2 ** attempt)
+                            logger.warning(
+                                f"429 RESOURCE_EXHAUSTED error detected. "
+                                f"Retrying in {delay}s (attempt {attempt + 1}/{max_retries}). "
+                                f"Error: {error_str[:100]}"
+                            )
+                            await asyncio.sleep(delay)
+                            continue
+                        else:
+                            logger.error(
+                                f"Max retries ({max_retries}) exceeded for 429 error. "
+                                f"Final error: {error_str[:100]}"
+                            )
+
+                    # Re-raise non-429 errors or final 429 error
+                    raise
+
+            # Should never reach here, but just in case
+            raise Exception(f"Max retries ({max_retries}) exceeded")
+
+        return wrapper
+    return decorator
 
 
 class LLMProvider(str, Enum):
@@ -159,8 +211,12 @@ class GeminiClient(BaseLLMClient):
             logger.error(f"Failed to initialize Vertex AI: {e}")
             raise ValueError(f"Vertex AI initialization failed: {e}")
 
+    @retry_with_exponential_backoff(
+        max_retries=int(os.getenv("MAX_VERTEX_RETRIES", 5)),
+        base_delay=int(os.getenv("VERTEX_RETRY_BASE_DELAY", 2))
+    )
     async def generate(self, prompt: str) -> LLMResponse:
-        """Generate content using Gemini via Vertex AI."""
+        """Generate content using Gemini via Vertex AI with exponential backoff retry."""
         start_time = time.time()
 
         try:
