@@ -202,8 +202,8 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
 ### Typography (Inter font, responsive, STANDARDIZED):
 - Title: font-size: clamp(3.75rem, 6.9vw, 7.5rem); font-weight: 800; letter-spacing: -0.04em
-- Subtitle: font-size: clamp(1.25rem, 2vw, 2.1rem); font-weight: 300; line-height: 1.5
-- Footer: font-size: clamp(1.1rem, 1.4vw, 1.5rem); font-weight: 400; letter-spacing: 0.05em
+- Subtitle: font-size: clamp(1.625rem, 2.6vw, 2.73rem); font-weight: 300; line-height: 1.5
+- Footer: font-size: clamp(1.43rem, 1.82vw, 1.95rem); font-weight: 400; letter-spacing: 0.05em
 
 ### Layout (Professional, Balanced):
 - Gradient: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0) 100%)
@@ -232,7 +232,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
                                     background-clip: text;">Key Word</span> Here
     </h1>
 
-    <p style="font-size: clamp(1.25rem, 2vw, 2.1rem); font-weight: 300; line-height: 1.5;
+    <p style="font-size: clamp(1.625rem, 2.6vw, 2.73rem); font-weight: 300; line-height: 1.5;
               color: rgba(255,255,255,0.92); margin: 0; max-width: 90%;
               text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
       Your focused subtitle benefit statement here.
@@ -241,12 +241,12 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
   <!-- Footer -->
   <div style="position: absolute; bottom: 8%; left: 6%; z-index: 2; display: flex; align-items: center;
-              font-size: clamp(1.1rem, 1.4vw, 1.5rem); letter-spacing: 0.05em; text-transform: uppercase;
+              font-size: clamp(1.43rem, 1.82vw, 1.95rem); letter-spacing: 0.05em; text-transform: uppercase;
               color: rgba(255,255,255,0.75); text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
     <span>Presenter Name</span>
-    <div style="margin: 0 15px; height: 20px; width: 1px; background-color: rgba(255,255,255,0.4);"></div>
+    <div style="margin: 0 15px; height: 24px; width: 1px; background-color: rgba(255,255,255,0.4);"></div>
     <span>Company Name</span>
-    <div style="margin: 0 15px; height: 20px; width: 1px; background-color: rgba(255,255,255,0.4);"></div>
+    <div style="margin: 0 15px; height: 24px; width: 1px; background-color: rgba(255,255,255,0.4);"></div>
     <span>Nov 15, 2023</span>
   </div>
 

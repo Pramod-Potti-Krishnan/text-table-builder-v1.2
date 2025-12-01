@@ -194,7 +194,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
 ### Typography (Inter font, responsive, STANDARDIZED):
 - Section Title: font-size: clamp(3.75rem, 6.9vw, 7.5rem); font-weight: 800; letter-spacing: -0.03em
-- Context Text: font-size: clamp(1.25rem, 2vw, 2.1rem); font-weight: 300; line-height: 1.4
+- Context Text: font-size: clamp(1.625rem, 2.6vw, 2.73rem); font-weight: 300; line-height: 1.4
 
 ### Layout (Professional, RIGHT-aligned):
 - Gradient: linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.05) 100%)
@@ -226,7 +226,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
                                       background-clip: text;">Roadmap</span>
       </h2>
 
-      <p style="font-size: clamp(1.25rem, 2vw, 2.1rem); font-weight: 300; line-height: 1.4;
+      <p style="font-size: clamp(1.625rem, 2.6vw, 2.73rem); font-weight: 300; line-height: 1.4;
                 color: rgba(255,255,255,0.92); margin: 0; text-align: left;
                 text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
         From Strategy to Full Deployment
