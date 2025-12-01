@@ -35,8 +35,8 @@ class HeroGenerationRequest(BaseModel):
         description="Additional context: theme, audience, presentation_title, contact_info, etc."
     )
     visual_style: str = Field(
-        default="professional",
-        description="Visual style for background images: professional, illustrated, kids"
+        default="illustrated",
+        description="Visual style for background images: illustrated (Ghibli-style, default), professional, kids"
     )
 
 

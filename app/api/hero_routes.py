@@ -354,8 +354,8 @@ async def generate_title_slide_with_image(
     - Dark gradient overlay (dark left → light right) for text readability
 
     **Visual Style Options** (request.visual_style):
-    - `professional` (default): Photorealistic, modern, clean corporate imagery
-    - `illustrated`: Studio Ghibli-style, anime illustration, hand-painted aesthetic
+    - `illustrated` (default): Studio Ghibli-style, anime illustration, hand-painted aesthetic
+    - `professional`: Photorealistic, modern, clean corporate imagery
     - `kids`: Bright vibrant colors, playful, cartoon illustration, kid-friendly
 
     **Image Generation**:
@@ -371,7 +371,7 @@ async def generate_title_slide_with_image(
     - slide_type: "title_slide"
     - narrative: Narrative or purpose for the slide
     - topics: List of key topics (used for image context)
-    - visual_style: "professional" | "illustrated" | "kids" (default: "professional")
+    - visual_style: "illustrated" | "professional" | "kids" (default: "illustrated")
     - context: Additional context (theme, audience, presentation_title, etc.)
 
     **Example Request**:
@@ -381,7 +381,6 @@ async def generate_title_slide_with_image(
         "slide_type": "title_slide",
         "narrative": "AI transforming healthcare diagnostics",
         "topics": ["Machine Learning", "Diagnostics"],
-        "visual_style": "illustrated",
         "context": {"theme": "professional", "audience": "healthcare professionals"}
     }
     ```
@@ -440,8 +439,8 @@ async def generate_section_divider_with_image(
     - Colored left border accent on text block
 
     **Visual Style Options** (request.visual_style):
-    - `professional` (default): Photorealistic, modern, clean corporate imagery
-    - `illustrated`: Studio Ghibli-style, anime illustration, hand-painted aesthetic
+    - `illustrated` (default): Studio Ghibli-style, anime illustration, hand-painted aesthetic
+    - `professional`: Photorealistic, modern, clean corporate imagery
     - `kids`: Bright vibrant colors, playful, cartoon illustration, kid-friendly
 
     **Image Generation**:
@@ -457,7 +456,7 @@ async def generate_section_divider_with_image(
     - slide_type: "section_divider"
     - narrative: Purpose or focus of this section
     - topics: List of key topics for this section (used for image context)
-    - visual_style: "professional" | "illustrated" | "kids" (default: "professional")
+    - visual_style: "illustrated" | "professional" | "kids" (default: "illustrated")
     - context: Additional context (theme, audience, etc.)
 
     **Example Request**:
@@ -467,7 +466,6 @@ async def generate_section_divider_with_image(
         "slide_type": "section_divider",
         "narrative": "Implementation roadmap and next steps",
         "topics": ["Deployment", "Timeline"],
-        "visual_style": "professional",
         "context": {"theme": "tech"}
     }
     ```
@@ -525,8 +523,8 @@ async def generate_closing_slide_with_image(
     - Contact information with icons
 
     **Visual Style Options** (request.visual_style):
-    - `professional` (default): Photorealistic, modern, clean corporate imagery
-    - `illustrated`: Studio Ghibli-style, anime illustration, hand-painted aesthetic
+    - `illustrated` (default): Studio Ghibli-style, anime illustration, hand-painted aesthetic
+    - `professional`: Photorealistic, modern, clean corporate imagery
     - `kids`: Bright vibrant colors, playful, cartoon illustration, kid-friendly
 
     **Image Generation**:
@@ -542,7 +540,7 @@ async def generate_closing_slide_with_image(
     - slide_type: "closing_slide"
     - narrative: Closing message or key takeaway
     - topics: List of key topics covered (used for image context)
-    - visual_style: "professional" | "illustrated" | "kids" (default: "professional")
+    - visual_style: "illustrated" | "professional" | "kids" (default: "illustrated")
     - context: Additional context (theme, audience, contact_info, etc.)
 
     **Example Request**:
@@ -552,7 +550,6 @@ async def generate_closing_slide_with_image(
         "slide_type": "closing_slide",
         "narrative": "Ready to transform your healthcare operations",
         "topics": ["AI Diagnostics", "Patient Outcomes"],
-        "visual_style": "professional",
         "context": {
             "theme": "professional",
             "contact_info": "jane@company.com | linkedin.com/in/janedoe"
