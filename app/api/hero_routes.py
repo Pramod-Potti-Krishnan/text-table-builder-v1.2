@@ -353,23 +353,41 @@ async def generate_title_slide_with_image(
     - Presenter attribution (p) - LEFT-aligned
     - Dark gradient overlay (dark left → light right) for text readability
 
+    **Visual Style Options** (request.visual_style):
+    - `professional` (default): Photorealistic, modern, clean corporate imagery
+    - `illustrated`: Studio Ghibli-style, anime illustration, hand-painted aesthetic
+    - `kids`: Bright vibrant colors, playful, cartoon illustration, kid-friendly
+
     **Image Generation**:
     - Automatically generates contextual background based on narrative and topics
     - Uses Image Builder v2.0 API
-    - Photorealistic 16:9 aspect ratio
+    - 16:9 aspect ratio with style-aware archetype
     - Crop anchor: LEFT (text placement area)
     - Generation time: ~10-15 seconds (parallel with content)
     - Graceful fallback to gradient if image generation fails
 
-    **Request Body** (same as standard title endpoint):
+    **Request Body**:
     - slide_number: Slide number in presentation
     - slide_type: "title_slide"
     - narrative: Narrative or purpose for the slide
     - topics: List of key topics (used for image context)
+    - visual_style: "professional" | "illustrated" | "kids" (default: "professional")
     - context: Additional context (theme, audience, presentation_title, etc.)
 
+    **Example Request**:
+    ```json
+    {
+        "slide_number": 1,
+        "slide_type": "title_slide",
+        "narrative": "AI transforming healthcare diagnostics",
+        "topics": ["Machine Learning", "Diagnostics"],
+        "visual_style": "illustrated",
+        "context": {"theme": "professional", "audience": "healthcare professionals"}
+    }
+    ```
+
     **Response** (extended with image metadata):
-    - content: Complete HTML structure with gradient overlay
+    - content: Complete HTML with embedded background image
     - metadata:
       - background_image: URL to generated 16:9 image (or null if fallback)
       - image_generation_time_ms: Time taken to generate image
@@ -421,24 +439,41 @@ async def generate_section_divider_with_image(
     - Dark gradient overlay (dark right → light left) for text readability
     - Colored left border accent on text block
 
+    **Visual Style Options** (request.visual_style):
+    - `professional` (default): Photorealistic, modern, clean corporate imagery
+    - `illustrated`: Studio Ghibli-style, anime illustration, hand-painted aesthetic
+    - `kids`: Bright vibrant colors, playful, cartoon illustration, kid-friendly
+
     **Image Generation**:
     - Automatically generates contextual background based on narrative and topics
     - Uses Image Builder v2.0 API
-    - Subtle/abstract photorealistic style (less dramatic than title slides)
-    - 16:9 aspect ratio
+    - 16:9 aspect ratio with style-aware archetype
     - Crop anchor: RIGHT (text placement area)
     - Generation time: ~10-15 seconds (parallel with content)
     - Graceful fallback to dark solid background if image generation fails
 
-    **Request Body** (same as standard section endpoint):
+    **Request Body**:
     - slide_number: Slide number in presentation
     - slide_type: "section_divider"
     - narrative: Purpose or focus of this section
     - topics: List of key topics for this section (used for image context)
+    - visual_style: "professional" | "illustrated" | "kids" (default: "professional")
     - context: Additional context (theme, audience, etc.)
 
+    **Example Request**:
+    ```json
+    {
+        "slide_number": 5,
+        "slide_type": "section_divider",
+        "narrative": "Implementation roadmap and next steps",
+        "topics": ["Deployment", "Timeline"],
+        "visual_style": "professional",
+        "context": {"theme": "tech"}
+    }
+    ```
+
     **Response** (extended with image metadata):
-    - content: Complete HTML structure with gradient overlay
+    - content: Complete HTML with embedded background image
     - metadata:
       - background_image: URL to generated 16:9 image (or null if fallback)
       - image_generation_time_ms: Time taken to generate image
@@ -484,30 +519,49 @@ async def generate_closing_slide_with_image(
 
     Creates a closing slide with:
     - AI-generated 16:9 background image (inspiring, forward-looking)
-    - Closing message/thank you + takeaway (h2) - CENTER-aligned
-    - Supporting text / value proposition recap (p) - CENTER-aligned
-    - Call-to-action button (div) - CENTER-aligned
-    - Contact information (p) - CENTER-aligned
-    - Radial gradient overlay (light center → dark edges) for text readability
+    - Split layout: LEFT text column + RIGHT image column
+    - Closing message/thank you + takeaway (h1)
+    - Supporting text / value proposition recap (p)
+    - Contact information with icons
+
+    **Visual Style Options** (request.visual_style):
+    - `professional` (default): Photorealistic, modern, clean corporate imagery
+    - `illustrated`: Studio Ghibli-style, anime illustration, hand-painted aesthetic
+    - `kids`: Bright vibrant colors, playful, cartoon illustration, kid-friendly
 
     **Image Generation**:
     - Automatically generates inspiring background based on narrative and topics
     - Uses Image Builder v2.0 API
-    - Inspirational/aspirational photorealistic style
-    - 16:9 aspect ratio
+    - 16:9 aspect ratio with style-aware archetype
     - Crop anchor: CENTER (balanced composition)
     - Generation time: ~10-15 seconds (parallel with content)
     - Graceful fallback to gradient background if image generation fails
 
-    **Request Body** (same as standard closing endpoint):
+    **Request Body**:
     - slide_number: Slide number in presentation
     - slide_type: "closing_slide"
     - narrative: Closing message or key takeaway
     - topics: List of key topics covered (used for image context)
+    - visual_style: "professional" | "illustrated" | "kids" (default: "professional")
     - context: Additional context (theme, audience, contact_info, etc.)
 
+    **Example Request**:
+    ```json
+    {
+        "slide_number": 15,
+        "slide_type": "closing_slide",
+        "narrative": "Ready to transform your healthcare operations",
+        "topics": ["AI Diagnostics", "Patient Outcomes"],
+        "visual_style": "professional",
+        "context": {
+            "theme": "professional",
+            "contact_info": "jane@company.com | linkedin.com/in/janedoe"
+        }
+    }
+    ```
+
     **Response** (extended with image metadata):
-    - content: Complete HTML structure with radial gradient overlay
+    - content: Complete HTML with embedded background image
     - metadata:
       - background_image: URL to generated 16:9 image (or null if fallback)
       - image_generation_time_ms: Time taken to generate image
@@ -518,7 +572,6 @@ async def generate_closing_slide_with_image(
     **Character Constraints** (same as standard):
     - Closing message: 50-80 chars (max 120)
     - Supporting text: Variable (value proposition)
-    - CTA button: 3-5 words
     - Contact info: 60-100 chars (max 120)
     """
     try:

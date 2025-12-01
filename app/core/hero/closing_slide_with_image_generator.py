@@ -64,6 +64,43 @@ class ClosingSlideWithImageGenerator(ClosingSlideGenerator):
         super().__init__(llm_service)
         self.image_client: ImageServiceClient = get_image_service_client()
 
+    def _inject_background_image(self, html_content: str, background_image: str) -> str:
+        """
+        Inject background image into the RIGHT column placeholder div.
+
+        The closing slide has a split layout:
+        - LEFT column: text content
+        - RIGHT column: image with gradient overlay
+
+        The LLM generates a placeholder div that needs the background-image injected:
+        <div style="position: absolute; inset: 0; background-size: cover; background-position: center;"></div>
+
+        Args:
+            html_content: Generated HTML content from LLM
+            background_image: URL of the generated background image
+
+        Returns:
+            HTML with background image injected into the placeholder
+        """
+        if not background_image:
+            return html_content
+
+        # Find the placeholder div and add background-image style
+        # Pattern matches: <div style="position: absolute; inset: 0; background-size: cover; background-position: center;">
+        placeholder_pattern = r'(<div style="position: absolute; inset: 0; background-size: cover; background-position: center;)(">)'
+        replacement = rf"\1 background-image: url('{background_image}');\2"
+
+        result = re.sub(placeholder_pattern, replacement, html_content)
+
+        # If the pattern wasn't found (LLM generated different HTML), wrap the whole thing
+        if result == html_content:
+            logger.warning("Placeholder div not found, wrapping entire content with background image")
+            return f'''<div style="position: relative; width: 100%; height: 100%; background-image: url('{background_image}'); background-size: cover; background-position: center;">
+{html_content}
+</div>'''
+
+        return result
+
     @property
     def slide_type(self) -> str:
         """Return slide type identifier."""
@@ -371,9 +408,14 @@ Generate the professional split-layout closing slide HTML NOW:"""
                 logger.warning("Image generation returned unsuccessful, using gradient fallback")
                 fallback_to_gradient = True
 
+            # Inject background image into HTML content
+            final_content = content_result["content"]
+            if background_image:
+                final_content = self._inject_background_image(final_content, background_image)
+
             # Build response
             response = {
-                "content": content_result["content"],
+                "content": final_content,
                 "metadata": {
                     "slide_type": self.slide_type,
                     "slide_number": request.slide_number,

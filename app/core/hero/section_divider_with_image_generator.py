@@ -64,6 +64,27 @@ class SectionDividerWithImageGenerator(SectionDividerGenerator):
         super().__init__(llm_service)
         self.image_client: ImageServiceClient = get_image_service_client()
 
+    def _inject_background_image(self, html_content: str, background_image: str) -> str:
+        """
+        Wrap HTML content with a container that has the background image.
+
+        The section divider has text on the RIGHT, so the image is positioned
+        to focus on the LEFT side (background-position: left center).
+
+        Args:
+            html_content: Generated HTML content from LLM
+            background_image: URL of the generated background image
+
+        Returns:
+            HTML wrapped in a container with background image CSS
+        """
+        if not background_image:
+            return html_content
+
+        return f'''<div style="position: relative; width: 100%; height: 100%; background-image: url('{background_image}'); background-size: cover; background-position: left center;">
+{html_content}
+</div>'''
+
     @property
     def slide_type(self) -> str:
         """Return slide type identifier."""
@@ -314,9 +335,14 @@ Generate the professional section divider HTML NOW:"""
                 logger.warning("Image generation returned unsuccessful, using dark background fallback")
                 fallback_to_gradient = True
 
+            # Inject background image into HTML content
+            final_content = content_result["content"]
+            if background_image:
+                final_content = self._inject_background_image(final_content, background_image)
+
             # Build response
             response = {
-                "content": content_result["content"],
+                "content": final_content,
                 "metadata": {
                     "slide_type": self.slide_type,
                     "slide_number": request.slide_number,
