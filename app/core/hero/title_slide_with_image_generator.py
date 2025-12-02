@@ -200,10 +200,10 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
 ## 🎨 MANDATORY STYLING (Modern Professional Design)
 
-### Typography (Inter font, responsive, STANDARDIZED):
-- Title: font-size: clamp(3.75rem, 6.9vw, 7.5rem); font-weight: 800; letter-spacing: -0.04em
-- Subtitle: font-size: clamp(1.625rem, 2.6vw, 2.73rem); font-weight: 300; line-height: 1.5
-- Footer: font-size: clamp(1.43rem, 1.82vw, 1.95rem); font-weight: 400; letter-spacing: 0.05em
+### Typography (Inter font, fixed sizes for reveal.js scaling):
+- Title: font-size: 5.5rem; font-weight: 800; letter-spacing: -0.04em
+- Subtitle: font-size: 2.1rem; font-weight: 300; line-height: 1.5
+- Footer: font-size: 1.6rem; font-weight: 400; letter-spacing: 0.05em
 
 ### Layout (Professional, Balanced):
 - Gradient: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0) 100%)
@@ -223,7 +223,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
   <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column;
               justify-content: center; padding-left: 6%; padding-right: 50%; color: #ffffff;">
 
-    <h1 style="font-size: clamp(3.75rem, 6.9vw, 7.5rem); font-weight: 800; line-height: 1.05;
+    <h1 style="font-size: 5.5rem; font-weight: 800; line-height: 1.05;
                letter-spacing: -0.04em; margin: 0 0 28px 0; color: #ffffff;
                text-shadow: 0 4px 12px rgba(0,0,0,0.4); max-width: 100%;">
       Your Title with <span style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
@@ -232,7 +232,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
                                     background-clip: text;">Key Word</span> Here
     </h1>
 
-    <p style="font-size: clamp(1.625rem, 2.6vw, 2.73rem); font-weight: 300; line-height: 1.5;
+    <p style="font-size: 2.1rem; font-weight: 300; line-height: 1.5;
               color: rgba(255,255,255,0.92); margin: 0; max-width: 90%;
               text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
       Your focused subtitle benefit statement here.
@@ -241,7 +241,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
   <!-- Footer -->
   <div style="position: absolute; bottom: 8%; left: 6%; z-index: 2; display: flex; align-items: center;
-              font-size: clamp(1.43rem, 1.82vw, 1.95rem); letter-spacing: 0.05em; text-transform: uppercase;
+              font-size: 1.6rem; letter-spacing: 0.05em; text-transform: uppercase;
               color: rgba(255,255,255,0.75); text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
     <span>Presenter Name</span>
     <div style="margin: 0 15px; height: 24px; width: 1px; background-color: rgba(255,255,255,0.4);"></div>
@@ -255,7 +255,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
 ## 📤 OUTPUT INSTRUCTIONS
 - Return ONLY the HTML (NO code blocks, NO explanations)
-- Use EXACT structure above with responsive clamp() font sizes
+- Use EXACT structure above with fixed rem font sizes
 - Keep subtitle BRIEF (8-12 words max, NOT a paragraph)
 - Use Inter font (included in template)
 - Footer must have separators and proper date format

@@ -239,11 +239,11 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 - LEFT column (flex: 1): Text content, padding: 8% 6%
 - RIGHT column (flex: 1.1): Image with gradient overlay
 
-### Typography (Inter font, responsive, STANDARDIZED):
-- Eyebrow: font-size: clamp(1.43rem, 1.82vw, 1.95rem); letter-spacing: 0.15em; color: #00d9ff
-- Title: font-size: clamp(3.75rem, 6.9vw, 7.5rem); font-weight: 700; color: #ffffff
-- Description: font-size: clamp(1.625rem, 2.6vw, 2.73rem); font-weight: 300; color: rgba(255,255,255,0.8)
-- Contact: font-size: clamp(1.43rem, 1.82vw, 1.95rem); font-weight: 400; color: rgba(255,255,255,0.9)
+### Typography (Inter font, fixed sizes for reveal.js scaling):
+- Eyebrow: font-size: 1.6rem; letter-spacing: 0.15em; color: #00d9ff
+- Title: font-size: 5.5rem; font-weight: 700; color: #ffffff
+- Description: font-size: 2.1rem; font-weight: 300; color: rgba(255,255,255,0.8)
+- Contact: font-size: 1.6rem; font-weight: 400; color: rgba(255,255,255,0.9)
 
 ### Visual Elements:
 - Eyebrow has cyan ::before line (width: 50px, height: 3px, background: #00d9ff)
@@ -261,18 +261,18 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
     <!-- Eyebrow with decorative line -->
     <div style="position: relative; display: inline-block; margin-bottom: 24px;">
       <div style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 50px; height: 3px; background: #00d9ff; margin-right: 15px;"></div>
-      <span style="padding-left: 65px; font-size: clamp(1.43rem, 1.82vw, 1.95rem); font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #00d9ff;">
+      <span style="padding-left: 65px; font-size: 1.6rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #00d9ff;">
         NEXT STEPS
       </span>
     </div>
 
     <!-- Main Title -->
-    <h1 style="font-size: clamp(3.75rem, 6.9vw, 7.5rem); font-weight: 700; line-height: 1.1; margin: 0 0 28px 0; color: #ffffff; max-width: 90%;">
+    <h1 style="font-size: 5.5rem; font-weight: 700; line-height: 1.1; margin: 0 0 28px 0; color: #ffffff; max-width: 90%;">
       Ready to Transform Your Healthcare?
     </h1>
 
     <!-- Description -->
-    <p style="font-size: clamp(1.625rem, 2.6vw, 2.73rem); font-weight: 300; line-height: 1.6; color: rgba(255,255,255,0.8); margin: 0 0 48px 0; max-width: 85%;">
+    <p style="font-size: 2.1rem; font-weight: 300; line-height: 1.6; color: rgba(255,255,255,0.8); margin: 0 0 48px 0; max-width: 85%;">
       Join leading organizations using AI-powered diagnostics to improve patient outcomes and reduce costs.
     </p>
 
@@ -283,7 +283,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
         <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(0,217,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <i class="fa-solid fa-envelope" style="color: #00d9ff; font-size: 26px;"></i>
         </div>
-        <span style="font-size: clamp(1.43rem, 1.82vw, 1.95rem); font-weight: 400; color: rgba(255,255,255,0.9);">
+        <span style="font-size: 1.6rem; font-weight: 400; color: rgba(255,255,255,0.9);">
           contact@company.com
         </span>
       </div>
@@ -293,7 +293,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
         <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(0,217,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
           <i class="fa-brands fa-linkedin" style="color: #00d9ff; font-size: 26px;"></i>
         </div>
-        <span style="font-size: clamp(1.43rem, 1.82vw, 1.95rem); font-weight: 400; color: rgba(255,255,255,0.9);">
+        <span style="font-size: 1.6rem; font-weight: 400; color: rgba(255,255,255,0.9);">
           linkedin.com/company/yourcompany
         </span>
       </div>

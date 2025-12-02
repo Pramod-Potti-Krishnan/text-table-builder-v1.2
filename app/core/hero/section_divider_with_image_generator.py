@@ -192,9 +192,9 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
 ## 🎨 MANDATORY STYLING (Modern Professional Design)
 
-### Typography (Inter font, responsive, STANDARDIZED):
-- Section Title: font-size: clamp(3.75rem, 6.9vw, 7.5rem); font-weight: 800; letter-spacing: -0.03em
-- Context Text: font-size: clamp(1.625rem, 2.6vw, 2.73rem); font-weight: 300; line-height: 1.4
+### Typography (Inter font, fixed sizes for reveal.js scaling):
+- Section Title: font-size: 5.5rem; font-weight: 800; letter-spacing: -0.03em
+- Context Text: font-size: 2.1rem; font-weight: 300; line-height: 1.4
 
 ### Layout (Professional, RIGHT-aligned):
 - Gradient: linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.05) 100%)
@@ -217,7 +217,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
     <div style="border-left: 8px solid #00d9ff; padding-left: 48px; max-width: 50%;">
 
-      <h2 style="font-size: clamp(3.75rem, 6.9vw, 7.5rem); font-weight: 800; line-height: 1.05;
+      <h2 style="font-size: 5.5rem; font-weight: 800; line-height: 1.05;
                  letter-spacing: -0.03em; margin: 0 0 24px 0; color: #ffffff;
                  text-shadow: 0 4px 12px rgba(0,0,0,0.4); text-align: left;">
         Implementation <span style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
@@ -226,7 +226,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
                                       background-clip: text;">Roadmap</span>
       </h2>
 
-      <p style="font-size: clamp(1.625rem, 2.6vw, 2.73rem); font-weight: 300; line-height: 1.4;
+      <p style="font-size: 2.1rem; font-weight: 300; line-height: 1.4;
                 color: rgba(255,255,255,0.92); margin: 0; text-align: left;
                 text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
         From Strategy to Full Deployment
@@ -241,7 +241,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
 ## 📤 OUTPUT INSTRUCTIONS
 - Return ONLY the HTML (NO code blocks, NO explanations)
-- Use EXACT structure above with responsive clamp() font sizes
+- Use EXACT structure above with fixed rem font sizes
 - Keep context text BRIEF (5-12 words max, NOT a paragraph)
 - Use Inter font (included in template)
 - Text must be RIGHT-aligned (justify-content: flex-end)
