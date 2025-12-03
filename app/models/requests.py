@@ -3,10 +3,86 @@ Request Models for Text and Table Content Builder
 ==================================================
 
 Pydantic models for incoming API requests from Content Orchestrator.
+
+v1.2.1: Added ThemeConfig for Theme Service integration.
 """
 
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
+
+
+class ThemeConfig(BaseModel):
+    """
+    Theme configuration from Theme Service (v1.2.1).
+
+    Optional field that allows Director Agent to pass theme-specific
+    styling to Text Service for consistent slide appearance.
+    """
+    theme_id: str = Field(
+        default="professional",
+        description="Theme identifier (professional, executive, educational, children_young, children_older)"
+    )
+
+    # Text colors
+    text_primary: str = Field(
+        default="#1f2937",
+        description="Primary text color for headings"
+    )
+    text_secondary: str = Field(
+        default="#374151",
+        description="Secondary text color for body"
+    )
+    text_muted: str = Field(
+        default="#6b7280",
+        description="Muted text color for subtitles/captions"
+    )
+
+    # Border colors
+    border_light: str = Field(
+        default="#e5e7eb",
+        description="Light border color"
+    )
+
+    # Box gradients (for grid layouts)
+    box_gradients: List[Dict[str, str]] = Field(
+        default_factory=list,
+        description="Gradient pairs for box backgrounds [{start, end}, ...]"
+    )
+
+    # Matrix colors (for matrix layouts)
+    matrix_colors: List[str] = Field(
+        default_factory=list,
+        description="Solid colors for matrix cells"
+    )
+
+    # Content density
+    char_multiplier: float = Field(
+        default=1.0,
+        description="Character limit multiplier (1.0 = full, 0.5 = half)"
+    )
+    max_bullets: int = Field(
+        default=5,
+        description="Maximum bullets per section"
+    )
+
+    # Font scaling
+    font_scale: float = Field(
+        default=1.0,
+        description="Font size multiplier"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "theme_id": "executive",
+                "text_primary": "#111827",
+                "text_secondary": "#1f2937",
+                "text_muted": "#4b5563",
+                "border_light": "#e2e8f0",
+                "char_multiplier": 0.7,
+                "max_bullets": 3
+            }
+        }
 
 
 class TextGenerationRequest(BaseModel):
@@ -327,6 +403,12 @@ class StructuredTextGenerationRequest(BaseModel):
     previous_slides_context: Optional[List[Dict[str, Any]]] = Field(
         default=None,
         description="Context from previous slides for content flow"
+    )
+
+    # Theme configuration (v1.2.1 - Theme Service integration)
+    theme_config: Optional[ThemeConfig] = Field(
+        default=None,
+        description="Theme configuration from Theme Service for consistent styling"
     )
 
     class Config:

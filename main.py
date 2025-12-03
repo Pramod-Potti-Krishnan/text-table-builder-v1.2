@@ -27,6 +27,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 
 from app.api.v1_2_routes import router as v1_2_router
 from app.api.hero_routes import router as hero_router
+from app.api.layout_routes import router as layout_router
 
 # Configure logging
 logging.basicConfig(
@@ -59,6 +60,13 @@ async def lifespan(app: FastAPI):
     logger.info("  - /v1.2/hero/title-with-image (title with AI background)")
     logger.info("  - /v1.2/hero/section-with-image (section with AI background)")
     logger.info("  - /v1.2/hero/closing-with-image (closing with AI background)")
+    logger.info("✓ Layout Service AI API:")
+    logger.info("  - /api/ai/text/generate (generate text from prompt)")
+    logger.info("  - /api/ai/text/transform (transform existing text)")
+    logger.info("  - /api/ai/text/autofit (fit text to element)")
+    logger.info("  - /api/ai/table/generate (generate table from prompt)")
+    logger.info("  - /api/ai/table/transform (transform table structure)")
+    logger.info("  - /api/ai/table/analyze (analyze table data)")
     logger.info("✓ Variant catalog: /v1.2/variants")
     logger.info("✓ Gemini integration enabled")
     logger.info("✓ Image Builder API integration enabled")
@@ -139,6 +147,9 @@ app.include_router(v1_2_router)
 # Include v1.2 hero routes (hero slides with v1.2 architecture)
 app.include_router(hero_router)
 
+# Include Layout Service AI routes (text and table generation for Layout Service)
+app.include_router(layout_router)
+
 
 @app.get("/")
 async def root():
@@ -159,6 +170,16 @@ async def root():
                 "section_divider_with_image": "POST /v1.2/hero/section-with-image",
                 "closing_slide_with_image": "POST /v1.2/hero/closing-with-image"
             },
+            "layout_service_ai": {
+                "text_generate": "POST /api/ai/text/generate",
+                "text_transform": "POST /api/ai/text/transform",
+                "text_autofit": "POST /api/ai/text/autofit",
+                "table_generate": "POST /api/ai/table/generate",
+                "table_transform": "POST /api/ai/table/transform",
+                "table_analyze": "POST /api/ai/table/analyze",
+                "health_check": "GET /api/ai/health",
+                "constraints_info": "GET /api/ai/constraints/{grid_width}/{grid_height}"
+            },
             "hero_health_check": "GET /v1.2/hero/health",
             "list_variants": "GET /v1.2/variants",
             "variant_details": "GET /v1.2/variant/{variant_id}"
@@ -170,11 +191,15 @@ async def root():
             "model_routing": True,
             "character_validation": True,
             "template_caching": True,
-            "ai_generated_backgrounds": True
+            "ai_generated_backgrounds": True,
+            "layout_service_integration": True,
+            "grid_based_constraints": True,
+            "content_suggestions": True
         },
         "total_variants": 26,
-        "total_endpoints": 9,
+        "total_endpoints": 17,
         "hero_endpoints": 6,
+        "layout_ai_endpoints": 8,
         "slide_types": [
             "matrix", "grid", "comparison", "sequential",
             "asymmetric", "hybrid", "metrics", "single_column",

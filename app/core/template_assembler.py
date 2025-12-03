@@ -6,11 +6,13 @@ by replacing placeholders. Templates are cached for performance.
 
 Architecture:
     Load template by variant_id → Replace placeholders with content
-    → Return assembled HTML → Cache for future use
+    → Apply theme overrides → Return assembled HTML → Cache for future use
+
+v1.2.1: Added theme override support for Theme Service integration.
 """
 
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Dict, Optional, Any
 import re
 
 
@@ -166,3 +168,86 @@ class TemplateAssembler:
             "cached_templates": len(self._template_cache),
             "template_paths": sorted(self._template_cache.keys())
         }
+
+    def apply_theme_overrides(
+        self,
+        html: str,
+        theme_config: Optional[Any] = None
+    ) -> str:
+        """
+        Apply theme-specific color overrides to assembled HTML (v1.2.1).
+
+        This method replaces default colors with theme-specific colors
+        in the inline CSS of the assembled HTML.
+
+        Args:
+            html: Assembled HTML string
+            theme_config: ThemeConfig object from request (optional)
+
+        Returns:
+            HTML string with theme colors applied
+        """
+        if theme_config is None:
+            return html
+
+        # Define color mappings (default -> theme)
+        color_mappings = []
+
+        # Text colors
+        if hasattr(theme_config, 'text_primary') and theme_config.text_primary:
+            color_mappings.extend([
+                ("color: #1f2937", f"color: {theme_config.text_primary}"),
+                ("color:#1f2937", f"color:{theme_config.text_primary}"),
+            ])
+
+        if hasattr(theme_config, 'text_secondary') and theme_config.text_secondary:
+            color_mappings.extend([
+                ("color: #374151", f"color: {theme_config.text_secondary}"),
+                ("color:#374151", f"color:{theme_config.text_secondary}"),
+            ])
+
+        if hasattr(theme_config, 'text_muted') and theme_config.text_muted:
+            color_mappings.extend([
+                ("color: #6b7280", f"color: {theme_config.text_muted}"),
+                ("color:#6b7280", f"color:{theme_config.text_muted}"),
+            ])
+
+        # Border colors
+        if hasattr(theme_config, 'border_light') and theme_config.border_light:
+            color_mappings.extend([
+                ("border-color: #e5e7eb", f"border-color: {theme_config.border_light}"),
+                ("border: 1px solid #e5e7eb", f"border: 1px solid {theme_config.border_light}"),
+                ("border: 2px solid #e5e7eb", f"border: 2px solid {theme_config.border_light}"),
+            ])
+
+        # Apply all color mappings
+        themed_html = html
+        for old_value, new_value in color_mappings:
+            themed_html = themed_html.replace(old_value, new_value)
+
+        return themed_html
+
+    def assemble_with_theme(
+        self,
+        template_path: str,
+        content_map: Dict[str, str],
+        theme_config: Optional[Any] = None
+    ) -> str:
+        """
+        Assemble template and apply theme overrides in one step (v1.2.1).
+
+        Convenience method that combines assemble_template and apply_theme_overrides.
+
+        Args:
+            template_path: Relative path to template
+            content_map: Dictionary mapping placeholder names to content values
+            theme_config: ThemeConfig object from request (optional)
+
+        Returns:
+            Assembled HTML with theme colors applied
+        """
+        # First assemble the template
+        assembled_html = self.assemble_template(template_path, content_map)
+
+        # Then apply theme overrides if provided
+        return self.apply_theme_overrides(assembled_html, theme_config)
