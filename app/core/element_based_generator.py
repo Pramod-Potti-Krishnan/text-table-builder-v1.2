@@ -188,6 +188,9 @@ class ElementBasedContentGenerator:
         Raises:
             ValueError: If variant_id is invalid or LLM service not configured
         """
+        import time
+        stage_start = time.time()
+
         if not self.llm_service:
             raise ValueError("LLM service not configured. Cannot generate content.")
 
@@ -209,8 +212,17 @@ class ElementBasedContentGenerator:
             presentation_context=contexts.get("presentation_context")
         )
 
+        # STAGE LOGGING: Prompt built
+        prompt_time = int((time.time() - stage_start) * 1000)
+        print(f"[GEN-PROMPT] variant={variant_id}, prompt_len={len(complete_prompt)}, build_time={prompt_time}ms")
+
         # Step 4: Generate content with ONE LLM call (ASYNC)
+        llm_start = time.time()
         llm_response = await self.llm_service(complete_prompt)
+        llm_time = int((time.time() - llm_start) * 1000)
+
+        # STAGE LOGGING: LLM complete
+        print(f"[GEN-LLM] variant={variant_id}, response_len={len(llm_response)}, llm_time={llm_time}ms")
 
         # Step 5: Parse response into element contents (sync operation)
         element_contents = self._parse_complete_response(
@@ -226,6 +238,10 @@ class ElementBasedContentGenerator:
             template_path=template_path,
             content_map=content_map
         )
+
+        # STAGE LOGGING: HTML assembled
+        total_time = int((time.time() - stage_start) * 1000)
+        print(f"[GEN-HTML] variant={variant_id}, html_len={len(assembled_html)}, elements={len(element_contents)}, total_time={total_time}ms")
 
         # Step 8: Return result
         return {

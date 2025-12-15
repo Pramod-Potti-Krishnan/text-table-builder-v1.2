@@ -83,6 +83,18 @@ async def generate_slide_content(
     Returns:
         V1_2_GenerationResponse with generated HTML and metadata
     """
+    import time
+    start_time = time.time()
+
+    # Extract request info for logging
+    variant_id = request.variant_id
+    slide_title = ''
+    if request.slide_spec and hasattr(request.slide_spec, 'slide_title'):
+        slide_title = (request.slide_spec.slide_title or '')[:40]
+
+    # REQUEST ARRIVAL LOGGING
+    print(f"[GEN-REQ] variant={variant_id}, title='{slide_title}'")
+
     try:
         # Generate slide content using ASYNC method (production-quality)
         result = await generator.generate_slide_content_async(
@@ -114,6 +126,11 @@ async def generate_slide_content(
             for elem in result["elements"]
         ]
 
+        # SUCCESS LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        html_len = len(result.get("html", ""))
+        print(f"[GEN-OK] variant={variant_id}, time={elapsed_ms}ms, html={html_len} chars")
+
         # Build response
         return V1_2_GenerationResponse(
             success=True,
@@ -126,12 +143,21 @@ async def generate_slide_content(
         )
 
     except ValueError as e:
+        # VALIDATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[GEN-400] variant={variant_id}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(status_code=400, detail=str(e))
 
     except FileNotFoundError as e:
+        # NOT FOUND ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[GEN-404] variant={variant_id}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(status_code=404, detail=f"Variant or template not found: {str(e)}")
 
     except Exception as e:
+        # GENERATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[GEN-ERROR] variant={variant_id}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
 
 

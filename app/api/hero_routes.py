@@ -198,21 +198,35 @@ async def generate_title_slide(
     - Subtitle: 80-120 chars (max 150)
     - Attribution: 60-100 chars (max 120)
     """
+    import time
+    start_time = time.time()
+
+    # REQUEST ARRIVAL LOGGING
+    print(f"[HERO-REQ] type=title, slide_num={request.slide_number}")
+
     try:
-        logger.info(f"Generating title slide (slide #{request.slide_number})")
         result = await generator.generate(request)
-        logger.info(f"Title slide generated successfully")
+
+        # SUCCESS LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        html_len = len(result.get('content', '')) if isinstance(result, dict) else len(getattr(result, 'content', ''))
+        print(f"[HERO-OK] type=title, slide_num={request.slide_number}, time={elapsed_ms}ms, html={html_len} chars")
+
         return result
 
     except ValueError as e:
-        logger.error(f"Validation error in title slide generation: {e}")
+        # VALIDATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-400] type=title, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=400,
             detail=f"Title slide validation failed: {str(e)}"
         )
 
     except Exception as e:
-        logger.error(f"Title slide generation failed: {e}")
+        # GENERATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-ERROR] type=title, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=500,
             detail=f"Title slide generation failed: {str(e)}"
@@ -254,21 +268,35 @@ async def generate_section_divider(
     - Section title: 40-60 chars (max 80)
     - Section description: 80-120 chars (max 150)
     """
+    import time
+    start_time = time.time()
+
+    # REQUEST ARRIVAL LOGGING
+    print(f"[HERO-REQ] type=section, slide_num={request.slide_number}")
+
     try:
-        logger.info(f"Generating section divider (slide #{request.slide_number})")
         result = await generator.generate(request)
-        logger.info(f"Section divider generated successfully")
+
+        # SUCCESS LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        html_len = len(result.get('content', '')) if isinstance(result, dict) else len(getattr(result, 'content', ''))
+        print(f"[HERO-OK] type=section, slide_num={request.slide_number}, time={elapsed_ms}ms, html={html_len} chars")
+
         return result
 
     except ValueError as e:
-        logger.error(f"Validation error in section divider generation: {e}")
+        # VALIDATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-400] type=section, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=400,
             detail=f"Section divider validation failed: {str(e)}"
         )
 
     except Exception as e:
-        logger.error(f"Section divider generation failed: {e}")
+        # GENERATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-ERROR] type=section, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=500,
             detail=f"Section divider generation failed: {str(e)}"
@@ -313,21 +341,35 @@ async def generate_closing_slide(
     - Call-to-action: 80-120 chars (max 150)
     - Contact info: 60-100 chars (max 120)
     """
+    import time
+    start_time = time.time()
+
+    # REQUEST ARRIVAL LOGGING
+    print(f"[HERO-REQ] type=closing, slide_num={request.slide_number}")
+
     try:
-        logger.info(f"Generating closing slide (slide #{request.slide_number})")
         result = await generator.generate(request)
-        logger.info(f"Closing slide generated successfully")
+
+        # SUCCESS LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        html_len = len(result.get('content', '')) if isinstance(result, dict) else len(getattr(result, 'content', ''))
+        print(f"[HERO-OK] type=closing, slide_num={request.slide_number}, time={elapsed_ms}ms, html={html_len} chars")
+
         return result
 
     except ValueError as e:
-        logger.error(f"Validation error in closing slide generation: {e}")
+        # VALIDATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-400] type=closing, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=400,
             detail=f"Closing slide validation failed: {str(e)}"
         )
 
     except Exception as e:
-        logger.error(f"Closing slide generation failed: {e}")
+        # GENERATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-ERROR] type=closing, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=500,
             detail=f"Closing slide generation failed: {str(e)}"
@@ -399,24 +441,36 @@ async def generate_title_slide_with_image(
     - Subtitle: 80-120 chars (max 150)
     - Attribution: 60-100 chars (max 120)
     """
+    import time
+    start_time = time.time()
+
+    # REQUEST ARRIVAL LOGGING
+    print(f"[HERO-REQ] type=title-with-image, slide_num={request.slide_number}")
+
     try:
-        logger.info(f"Generating title slide with image (slide #{request.slide_number})")
         result = await generator.generate(request)
-        logger.info(
-            f"Title slide with image generated successfully "
-            f"(fallback: {result['metadata'].get('fallback_to_gradient', False)})"
-        )
+
+        # SUCCESS LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        html_len = len(result.get('content', '')) if isinstance(result, dict) else len(getattr(result, 'content', ''))
+        fallback = result['metadata'].get('fallback_to_gradient', False) if isinstance(result, dict) else getattr(result, 'metadata', {}).get('fallback_to_gradient', False)
+        print(f"[HERO-OK] type=title-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, html={html_len} chars, fallback={fallback}")
+
         return result
 
     except ValueError as e:
-        logger.error(f"Validation error in title slide with image generation: {e}")
+        # VALIDATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-400] type=title-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=400,
             detail=f"Title slide with image validation failed: {str(e)}"
         )
 
     except Exception as e:
-        logger.error(f"Title slide with image generation failed: {e}")
+        # GENERATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-ERROR] type=title-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=500,
             detail=f"Title slide with image generation failed: {str(e)}"
@@ -483,24 +537,36 @@ async def generate_section_divider_with_image(
     - Section title: 40-60 chars (max 80)
     - Section description: 80-120 chars (max 150)
     """
+    import time
+    start_time = time.time()
+
+    # REQUEST ARRIVAL LOGGING
+    print(f"[HERO-REQ] type=section-with-image, slide_num={request.slide_number}")
+
     try:
-        logger.info(f"Generating section divider with image (slide #{request.slide_number})")
         result = await generator.generate(request)
-        logger.info(
-            f"Section divider with image generated successfully "
-            f"(fallback: {result['metadata'].get('fallback_to_gradient', False)})"
-        )
+
+        # SUCCESS LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        html_len = len(result.get('content', '')) if isinstance(result, dict) else len(getattr(result, 'content', ''))
+        fallback = result['metadata'].get('fallback_to_gradient', False) if isinstance(result, dict) else getattr(result, 'metadata', {}).get('fallback_to_gradient', False)
+        print(f"[HERO-OK] type=section-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, html={html_len} chars, fallback={fallback}")
+
         return result
 
     except ValueError as e:
-        logger.error(f"Validation error in section divider with image generation: {e}")
+        # VALIDATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-400] type=section-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=400,
             detail=f"Section divider with image validation failed: {str(e)}"
         )
 
     except Exception as e:
-        logger.error(f"Section divider with image generation failed: {e}")
+        # GENERATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-ERROR] type=section-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=500,
             detail=f"Section divider with image generation failed: {str(e)}"
@@ -571,24 +637,36 @@ async def generate_closing_slide_with_image(
     - Supporting text: Variable (value proposition)
     - Contact info: 60-100 chars (max 120)
     """
+    import time
+    start_time = time.time()
+
+    # REQUEST ARRIVAL LOGGING
+    print(f"[HERO-REQ] type=closing-with-image, slide_num={request.slide_number}")
+
     try:
-        logger.info(f"Generating closing slide with image (slide #{request.slide_number})")
         result = await generator.generate(request)
-        logger.info(
-            f"Closing slide with image generated successfully "
-            f"(fallback: {result['metadata'].get('fallback_to_gradient', False)})"
-        )
+
+        # SUCCESS LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        html_len = len(result.get('content', '')) if isinstance(result, dict) else len(getattr(result, 'content', ''))
+        fallback = result['metadata'].get('fallback_to_gradient', False) if isinstance(result, dict) else getattr(result, 'metadata', {}).get('fallback_to_gradient', False)
+        print(f"[HERO-OK] type=closing-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, html={html_len} chars, fallback={fallback}")
+
         return result
 
     except ValueError as e:
-        logger.error(f"Validation error in closing slide with image generation: {e}")
+        # VALIDATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-400] type=closing-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=400,
             detail=f"Closing slide with image validation failed: {str(e)}"
         )
 
     except Exception as e:
-        logger.error(f"Closing slide with image generation failed: {e}")
+        # GENERATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-ERROR] type=closing-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(
             status_code=500,
             detail=f"Closing slide with image generation failed: {str(e)}"
