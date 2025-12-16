@@ -13,6 +13,8 @@ from fastapi import APIRouter, HTTPException, Depends
 from typing import Optional
 import json
 import logging
+import os
+import asyncio
 from pathlib import Path
 
 from ..models.v1_2_models import (
@@ -26,7 +28,8 @@ from ..models.v1_2_models import (
     CharacterCountViolation
 )
 from ..core import ElementBasedContentGenerator
-from ..services import create_llm_callable_async
+from ..services import create_llm_callable_async, create_llm_callable_pooled, get_pool_metrics
+from ..services.llm_pool import QueueFullError
 
 
 logger = logging.getLogger(__name__)
@@ -41,14 +44,26 @@ def get_generator() -> ElementBasedContentGenerator:
     """
     Get ElementBasedContentGenerator instance with async LLM service.
 
-    Uses the async LLM service wrapper configured for Vertex AI with ADC.
-    This properly works within FastAPI's event loop without conflicts.
+    Uses pooled or direct async LLM service based on USE_LLM_POOL env variable.
+    Pooled version provides concurrency control and rate limiting.
+
+    Environment variables:
+        USE_LLM_POOL: Set to "true" to use pooled version (default: true)
 
     Returns:
         ElementBasedContentGenerator instance with async LLM integration
     """
-    # Create ASYNC LLM callable from service (production-quality)
-    llm_callable = create_llm_callable_async()
+    # Check if pooling is enabled (default: true for production)
+    use_pool = os.getenv("USE_LLM_POOL", "true").lower() == "true"
+
+    if use_pool:
+        # Use pooled callable with concurrency control and rate limiting
+        llm_callable = create_llm_callable_pooled()
+        print("[GEN-INIT] Using pooled LLM callable with concurrency control")
+    else:
+        # Use direct async callable (no pooling)
+        llm_callable = create_llm_callable_async()
+        print("[GEN-INIT] Using direct async LLM callable")
 
     return ElementBasedContentGenerator(
         llm_service=llm_callable,
@@ -154,6 +169,25 @@ async def generate_slide_content(
         print(f"[GEN-404] variant={variant_id}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(status_code=404, detail=f"Variant or template not found: {str(e)}")
 
+    except QueueFullError as e:
+        # QUEUE FULL ERROR - Service at capacity
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[GEN-429] variant={variant_id}, time={elapsed_ms}ms, error=Queue full")
+        raise HTTPException(
+            status_code=429,
+            detail="Service at capacity. Please retry in 30 seconds.",
+            headers={"Retry-After": "30"}
+        )
+
+    except asyncio.TimeoutError:
+        # LLM TIMEOUT ERROR
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[GEN-504] variant={variant_id}, time={elapsed_ms}ms, error=LLM timeout")
+        raise HTTPException(
+            status_code=504,
+            detail="LLM request timed out. Please retry."
+        )
+
     except Exception as e:
         # GENERATION ERROR LOGGING
         elapsed_ms = int((time.time() - start_time) * 1000)
@@ -232,3 +266,29 @@ async def get_variant_details(variant_id: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to load variant details: {str(e)}")
+
+
+@router.get("/health/pool")
+async def get_pool_health():
+    """
+    Get LLM connection pool health and metrics.
+
+    Returns pool status (healthy/degraded/overloaded) and metrics including:
+    - Active and queued requests
+    - Request counts and success/failure rates
+    - Average latency
+    - Pool configuration
+
+    Use this endpoint to monitor service capacity and health.
+    """
+    metrics = get_pool_metrics()
+
+    # Determine overall health
+    status = metrics.get("status", "unknown")
+    is_healthy = status == "healthy"
+
+    return {
+        "healthy": is_healthy,
+        "status": status,
+        "metrics": metrics
+    }

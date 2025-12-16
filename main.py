@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 from app.api.v1_2_routes import router as v1_2_router
 from app.api.hero_routes import router as hero_router
 from app.api.layout_routes import router as layout_router
+from app.api.async_routes import router as async_router
 
 # Configure logging
 logging.basicConfig(
@@ -68,8 +69,16 @@ async def lifespan(app: FastAPI):
     logger.info("  - /api/ai/table/transform (transform table structure)")
     logger.info("  - /api/ai/table/analyze (analyze table data)")
     logger.info("✓ Variant catalog: /v1.2/variants")
+    logger.info("✓ Pool health: /v1.2/health/pool")
+    logger.info("✓ Async Queue API (Redis-based):")
+    logger.info("  - /v1.2/async/generate (submit job)")
+    logger.info("  - /v1.2/async/status/{job_id} (poll progress)")
+    logger.info("  - /v1.2/async/result/{job_id} (fetch result)")
+    logger.info("  - /v1.2/async/queue/stats (queue health)")
     logger.info("✓ Gemini integration enabled")
     logger.info("✓ Image Builder API integration enabled")
+    logger.info(f"✓ LLM Pool enabled: {os.getenv('USE_LLM_POOL', 'true')}")
+    logger.info(f"✓ Redis Queue enabled: {os.getenv('ENABLE_REDIS_QUEUE', 'false')}")
     logger.info("=" * 80)
 
     yield
@@ -149,6 +158,9 @@ app.include_router(hero_router)
 
 # Include Layout Service AI routes (text and table generation for Layout Service)
 app.include_router(layout_router)
+
+# Include async queue routes (Redis-based job queue for high-load scenarios)
+app.include_router(async_router)
 
 
 @app.get("/")

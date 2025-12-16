@@ -20,6 +20,7 @@ from typing import Optional, Dict, Any, Callable
 from enum import Enum
 
 from .llm_client import get_llm_client, BaseLLMClient, LLMClientFactory
+from .llm_pool import get_llm_pool, LLMPoolConfig, QueueFullError
 
 logger = logging.getLogger(__name__)
 
@@ -442,3 +443,52 @@ def create_llm_callable_async():
         return await service.generate_with_retry_async(prompt)
 
     return async_llm_callable
+
+
+def create_llm_callable_pooled():
+    """
+    Create a pooled async callable with concurrency control and rate limiting.
+
+    This is the recommended production version that provides:
+    - Semaphore-based concurrency control (prevents overload)
+    - Rate limiting (respects Vertex AI quotas)
+    - Request queue with overflow protection
+    - Timeout handling per request
+
+    Configuration via environment variables:
+    - LLM_MAX_CONCURRENT: Max parallel LLM calls (default: 10)
+    - LLM_MAX_QUEUE_SIZE: Max pending requests (default: 50)
+    - LLM_TIMEOUT_SECONDS: Per-request timeout (default: 120)
+    - LLM_RATE_LIMIT_RPM: Requests per minute (default: 300)
+
+    Returns:
+        Async callable that takes prompt string and returns content string
+
+    Raises:
+        QueueFullError: If too many requests pending
+        asyncio.TimeoutError: If request times out
+    """
+    service = get_llm_service()
+    pool = get_llm_pool()
+
+    async def pooled_llm_callable(prompt: str) -> str:
+        """Generate content through the connection pool."""
+        # Create async callable for this request
+        async def _generate(p: str) -> str:
+            return await service.generate_with_retry_async(p)
+
+        # Execute through pool
+        return await pool.execute(_generate, prompt)
+
+    return pooled_llm_callable
+
+
+def get_pool_metrics() -> dict:
+    """
+    Get current LLM pool metrics for monitoring.
+
+    Returns:
+        Dictionary with pool status and metrics
+    """
+    pool = get_llm_pool()
+    return pool.metrics
