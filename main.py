@@ -249,19 +249,48 @@ async def health_check():
 
 
 if __name__ == "__main__":
-    import uvicorn
+    import asyncio
 
-    # Get configuration from environment
-    host = os.getenv("API_HOST", "0.0.0.0")
-    port = int(os.getenv("API_PORT", "8000"))
-    reload = os.getenv("API_RELOAD", "true").lower() == "true"
+    # Check SERVICE_MODE to determine what to run
+    service_mode = os.getenv("SERVICE_MODE", "web").lower()
 
-    logger.info(f"Starting server at {host}:{port}")
+    if service_mode == "worker":
+        # Run as background worker (processes Redis queue)
+        logger.info("=" * 80)
+        logger.info("Text & Table Builder v1.2 - Starting WORKER Mode")
+        logger.info("=" * 80)
 
-    uvicorn.run(
-        "main:app",
-        host=host,
-        port=port,
-        reload=reload,
-        log_level=os.getenv("LOG_LEVEL", "info").lower()
-    )
+        from app.workers import run_worker
+
+        worker_id = os.getenv("WORKER_ID", None)
+        redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
+        max_concurrent = int(os.getenv("WORKER_MAX_CONCURRENT", "3"))
+
+        logger.info(f"Worker ID: {worker_id or 'auto-generated'}")
+        logger.info(f"Redis URL: {redis_url[:30]}...")
+        logger.info(f"Max concurrent jobs: {max_concurrent}")
+        logger.info("=" * 80)
+
+        asyncio.run(run_worker(
+            worker_id=worker_id,
+            redis_url=redis_url,
+            max_concurrent=max_concurrent
+        ))
+    else:
+        # Run as web server (default)
+        import uvicorn
+
+        # Get configuration from environment
+        host = os.getenv("API_HOST", "0.0.0.0")
+        port = int(os.getenv("API_PORT", "8000"))
+        reload = os.getenv("API_RELOAD", "true").lower() == "true"
+
+        logger.info(f"Starting server at {host}:{port}")
+
+        uvicorn.run(
+            "main:app",
+            host=host,
+            port=port,
+            reload=reload,
+            log_level=os.getenv("LOG_LEVEL", "info").lower()
+        )
