@@ -261,21 +261,49 @@ if __name__ == "__main__":
         logger.info("=" * 80)
 
         from app.workers import run_worker
+        from aiohttp import web
 
         worker_id = os.getenv("WORKER_ID", None)
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         max_concurrent = int(os.getenv("WORKER_MAX_CONCURRENT", "3"))
+        health_port = int(os.getenv("PORT", os.getenv("HEALTH_PORT", "8080")))
 
         logger.info(f"Worker ID: {worker_id or 'auto-generated'}")
         logger.info(f"Redis URL: {redis_url[:30]}...")
         logger.info(f"Max concurrent jobs: {max_concurrent}")
+        logger.info(f"Health check port: {health_port}")
         logger.info("=" * 80)
 
-        asyncio.run(run_worker(
-            worker_id=worker_id,
-            redis_url=redis_url,
-            max_concurrent=max_concurrent
-        ))
+        async def health_handler(request):
+            """Minimal health endpoint for Railway health checks."""
+            return web.json_response({
+                "status": "healthy",
+                "mode": "worker",
+                "worker_id": worker_id or "auto"
+            })
+
+        async def run_worker_with_health():
+            """Run worker and health server concurrently."""
+            # Start minimal health server
+            health_app = web.Application()
+            health_app.router.add_get("/health", health_handler)
+            runner = web.AppRunner(health_app)
+            await runner.setup()
+            site = web.TCPSite(runner, "0.0.0.0", health_port)
+            await site.start()
+            logger.info(f"Health endpoint available at http://0.0.0.0:{health_port}/health")
+
+            # Run the worker (this blocks until shutdown)
+            await run_worker(
+                worker_id=worker_id,
+                redis_url=redis_url,
+                max_concurrent=max_concurrent
+            )
+
+            # Cleanup
+            await runner.cleanup()
+
+        asyncio.run(run_worker_with_health())
     else:
         # Run as web server (default)
         import uvicorn
