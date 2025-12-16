@@ -8,6 +8,7 @@ Multi-provider LLM client supporting Gemini, OpenAI, and Anthropic.
 import os
 import time
 import logging
+import asyncio
 from typing import Optional, Dict, Any, List
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -172,8 +173,10 @@ class GeminiClient(BaseLLMClient):
                 max_output_tokens=self.max_tokens,
             )
 
-            # Generate content
-            response = self.client.generate_content(
+            # Generate content using asyncio.to_thread() to avoid blocking event loop
+            # This enables true concurrent LLM calls instead of sequential processing
+            response = await asyncio.to_thread(
+                self.client.generate_content,
                 prompt,
                 generation_config=generation_config
             )
