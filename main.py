@@ -281,9 +281,10 @@ if __name__ == "__main__":
         import uvicorn
 
         # Get configuration from environment
+        # Railway sets PORT, fallback to API_PORT or 8000
         host = os.getenv("API_HOST", "0.0.0.0")
-        port = int(os.getenv("API_PORT", "8000"))
-        reload = os.getenv("API_RELOAD", "true").lower() == "true"
+        port = int(os.getenv("PORT", os.getenv("API_PORT", "8000")))
+        reload = os.getenv("API_RELOAD", "false").lower() == "true"
 
         logger.info(f"Starting server at {host}:{port}")
 
