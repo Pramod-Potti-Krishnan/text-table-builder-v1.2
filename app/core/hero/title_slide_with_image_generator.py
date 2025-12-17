@@ -118,15 +118,18 @@ class TitleSlideWithImageGenerator(TitleSlideGenerator):
         combined_text = f"{narrative} {' '.join(topics) if topics else ''}".lower()
         domain_imagery = get_domain_theme(style_config, combined_text)
 
-        # Build style-aware image prompt with STRONG negative prompts
+        # Build style-aware image prompt with STRONG topic focus
+        topic_focus = ', '.join(topics[:2]) if topics else 'professional environment'
+
         prompt = f"""High-quality {visual_style} presentation background: {domain_imagery}.
 
 Style: {style_config.prompt_style}
-Composition: Abstract and sophisticated, darker left side, lighter right side for text overlay
+Composition: Clean and impactful, topic-focused imagery, darker left side for text overlay
 Mood: Professional, trustworthy, innovative
 Lighting: Natural, soft, appropriate for title slide
 
-Focus on: {', '.join(topics[:2]) if topics else 'professional environment'}
+MAIN SUBJECT: {topic_focus}
+The image MUST prominently feature visual elements related to: {topic_focus}
 
 CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind in the image."""
 

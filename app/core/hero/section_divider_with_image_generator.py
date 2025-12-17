@@ -118,14 +118,18 @@ class SectionDividerWithImageGenerator(SectionDividerGenerator):
         combined_text = f"{narrative} {' '.join(topics) if topics else ''}".lower()
         domain_imagery = get_domain_theme(style_config, combined_text)
 
-        # Build style-aware image prompt with STRONG negative prompts
+        # Build style-aware image prompt with STRONG topic focus
+        topic_focus = ', '.join(topics[:2]) if topics else 'professional transition'
+
         prompt = f"""High-quality {visual_style} section transition background: {domain_imagery}.
 
 Style: {style_config.prompt_style}
 Composition: Clean and minimal, darker RIGHT side, lighter LEFT side for text overlay
 Mood: Professional, transitional, forward-moving
 Lighting: Natural, soft, appropriate for section break
-Focus on: {', '.join(topics[:2]) if topics else 'professional transition'}
+
+MAIN SUBJECT: {topic_focus}
+The image MUST prominently feature visual elements related to: {topic_focus}
 
 CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind in the image."""
 

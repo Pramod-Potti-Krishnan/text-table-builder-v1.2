@@ -130,26 +130,25 @@ class ClosingSlideWithImageGenerator(ClosingSlideGenerator):
         # Get style configuration
         style_config = get_style_config(visual_style)
 
-        # Smart domain detection for hopeful/inspiring imagery
+        # Use centralized domain detection from style_config
         combined_text = f"{narrative} {' '.join(topics) if topics else ''}".lower()
+        domain_imagery = get_domain_theme(style_config, combined_text)
 
-        if any(word in combined_text for word in ['health', 'medical', 'hospital', 'patient', 'diagnostic', 'clinical']):
-            domain_imagery = "hopeful healthcare future, modern medical innovation, patient success, healing environment"
-        elif any(word in combined_text for word in ['tech', 'software', 'digital', 'ai', 'data', 'cloud']):
-            domain_imagery = "bright tech future, digital transformation success, innovative workspace, data-driven insights"
-        elif any(word in combined_text for word in ['finance', 'business', 'market', 'trading', 'investment']):
-            domain_imagery = "successful business growth, prosperous future, modern corporate achievement, financial success"
-        else:
-            domain_imagery = "inspiring professional future, achievement and opportunity, successful outcome"
+        # Add closing-specific hopeful/inspiring modifiers
+        closing_imagery = f"inspiring {domain_imagery}, hopeful future, achievement and success"
 
-        # Build style-aware image prompt with STRONG negative prompts
-        prompt = f"""High-quality {visual_style} inspirational closing slide background: {domain_imagery}.
+        # Build style-aware image prompt with STRONG topic focus
+        topic_focus = ', '.join(topics[:2]) if topics else 'future success and opportunity'
+
+        prompt = f"""High-quality {visual_style} inspirational closing slide background: {closing_imagery}.
 
 Style: {style_config.prompt_style}, uplifting
 Composition: Professional and balanced, suitable for RIGHT side of split layout
 Mood: Forward-looking, positive, successful, hopeful
 Lighting: Natural, bright but not harsh, optimistic
-Focus on: {', '.join(topics[:2]) if topics else 'future success and opportunity'}
+
+MAIN SUBJECT: {topic_focus}
+The image MUST prominently feature visual elements related to: {topic_focus}
 
 CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind in the image."""
 

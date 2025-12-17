@@ -48,6 +48,11 @@ class StyleConfig:
         healthcare_theme: Healthcare-specific imagery descriptors
         tech_theme: Technology-specific imagery descriptors
         finance_theme: Finance/business-specific imagery descriptors
+        religious_theme: Religious/spiritual imagery descriptors
+        education_theme: Education/academic imagery descriptors
+        nature_theme: Nature/environment imagery descriptors
+        science_theme: Science/research imagery descriptors
+        creative_theme: Art/creative imagery descriptors
         default_theme: Fallback theme for other domains
     """
     archetype: str
@@ -55,6 +60,11 @@ class StyleConfig:
     healthcare_theme: str
     tech_theme: str
     finance_theme: str
+    religious_theme: str
+    education_theme: str
+    nature_theme: str
+    science_theme: str
+    creative_theme: str
     default_theme: str
 
 
@@ -66,6 +76,11 @@ STYLE_CONFIGS: Dict[VisualStyle, StyleConfig] = {
         healthcare_theme="modern hospital technology, medical imaging equipment, healthcare innovation, clinical environment",
         tech_theme="modern technology workspace, sleek displays, digital innovation, abstract tech patterns",
         finance_theme="modern business office, city skyline, professional workspace, financial district",
+        religious_theme="sacred temple architecture, spiritual sanctuary, ornate religious symbols, devotional atmosphere, traditional ceremonial setting",
+        education_theme="modern university campus, academic library, learning environment, educational institution, scholarly atmosphere",
+        nature_theme="pristine natural landscape, environmental conservation, sustainable ecosystem, wildlife habitat, natural beauty",
+        science_theme="modern research laboratory, scientific equipment, experimental facility, discovery and innovation, academic research",
+        creative_theme="artistic studio, gallery space, creative workshop, design environment, artistic expression",
         default_theme="professional workspace, modern environment, clean business setting"
     ),
 
@@ -75,6 +90,11 @@ STYLE_CONFIGS: Dict[VisualStyle, StyleConfig] = {
         healthcare_theme="illustrated healthcare scene, cartoon medical facility, artistic hospital environment, whimsical clinical setting",
         tech_theme="illustrated technology workspace, cartoon tech environment, artistic digital innovation, playful tech patterns",
         finance_theme="illustrated business office, cartoon city skyline, artistic workspace, whimsical financial district",
+        religious_theme="illustrated sacred temple, artistic spiritual scene, whimsical religious architecture, hand-painted devotional setting, cartoon ceremonial atmosphere",
+        education_theme="illustrated campus scene, cartoon library, artistic classroom, whimsical learning environment, hand-painted academic setting",
+        nature_theme="illustrated natural landscape, cartoon wildlife scene, artistic environmental setting, whimsical nature, hand-painted ecosystem",
+        science_theme="illustrated laboratory, cartoon scientific discovery, artistic research scene, whimsical experiments, hand-painted innovation",
+        creative_theme="illustrated art studio, cartoon gallery scene, artistic creative space, whimsical design workshop, hand-painted artistic environment",
         default_theme="illustrated professional workspace, cartoon environment, artistic business setting"
     ),
 
@@ -84,6 +104,11 @@ STYLE_CONFIGS: Dict[VisualStyle, StyleConfig] = {
         healthcare_theme="colorful hospital adventure, fun medical scene, exciting healthcare setting, playful clinical environment",
         tech_theme="fun tech playground, colorful digital world, exciting technology adventure, playful innovation",
         finance_theme="exciting business world, colorful office adventure, fun workspace, vibrant professional setting",
+        religious_theme="colorful temple adventure, fun spiritual journey, exciting ceremonial celebration, playful sacred scene, vibrant religious festival",
+        education_theme="colorful school adventure, fun classroom scene, exciting learning journey, playful library, vibrant campus life",
+        nature_theme="colorful nature adventure, fun wildlife encounter, exciting forest exploration, playful ocean scene, vibrant outdoor journey",
+        science_theme="colorful lab adventure, fun experiment scene, exciting scientific discovery, playful research journey, vibrant innovation",
+        creative_theme="colorful art adventure, fun creative journey, exciting artistic exploration, playful design workshop, vibrant artistic expression",
         default_theme="colorful workspace adventure, fun environment, exciting setting"
     )
 }
@@ -124,24 +149,70 @@ def get_domain_theme(
     Returns:
         Domain-specific theme descriptor string
     """
-    # Healthcare detection
+    # Religious/Spiritual detection (check first - more specific)
     if any(word in combined_text for word in [
+        'shiva', 'hindu', 'temple', 'prayer', 'spiritual', 'sacred',
+        'meditation', 'worship', 'divine', 'god', 'goddess', 'religious',
+        'ceremony', 'ritual', 'faith', 'church', 'mosque', 'synagogue',
+        'buddha', 'buddhist', 'christian', 'islam', 'jewish', 'dharma',
+        'karma', 'mantra', 'yoga', 'enlightenment', 'devotion', 'pilgrimage',
+        'lingam', 'puja', 'aarti', 'vedic', 'scripture', 'blessing'
+    ]):
+        return style_config.religious_theme
+
+    # Healthcare detection
+    elif any(word in combined_text for word in [
         'health', 'medical', 'hospital', 'patient', 'diagnostic',
-        'clinical', 'doctor', 'nurse', 'healthcare'
+        'clinical', 'doctor', 'nurse', 'healthcare', 'medicine',
+        'therapy', 'treatment', 'wellness', 'pharmaceutical'
     ]):
         return style_config.healthcare_theme
 
     # Tech detection
     elif any(word in combined_text for word in [
         'tech', 'software', 'digital', 'ai', 'data', 'cloud',
-        'code', 'algorithm', 'computing', 'system'
+        'code', 'algorithm', 'computing', 'system', 'cyber',
+        'machine learning', 'automation', 'programming', 'developer'
     ]):
         return style_config.tech_theme
+
+    # Science/Research detection
+    elif any(word in combined_text for word in [
+        'research', 'experiment', 'laboratory', 'chemistry', 'physics',
+        'biology', 'scientific', 'discovery', 'hypothesis', 'analysis',
+        'study', 'findings', 'methodology', 'empirical', 'scientist'
+    ]):
+        return style_config.science_theme
+
+    # Education detection
+    elif any(word in combined_text for word in [
+        'school', 'university', 'student', 'learning', 'education',
+        'teach', 'academic', 'classroom', 'course', 'curriculum',
+        'professor', 'degree', 'graduate', 'college', 'training'
+    ]):
+        return style_config.education_theme
+
+    # Nature/Environment detection
+    elif any(word in combined_text for word in [
+        'nature', 'environment', 'climate', 'green', 'sustainable',
+        'wildlife', 'forest', 'ocean', 'conservation', 'ecosystem',
+        'biodiversity', 'ecological', 'renewable', 'earth', 'planet'
+    ]):
+        return style_config.nature_theme
+
+    # Creative/Art detection
+    elif any(word in combined_text for word in [
+        'art', 'design', 'creative', 'music', 'artist', 'gallery',
+        'paint', 'sculpture', 'photography', 'illustration', 'visual',
+        'aesthetic', 'artistic', 'exhibition', 'performance', 'culture'
+    ]):
+        return style_config.creative_theme
 
     # Finance detection
     elif any(word in combined_text for word in [
         'finance', 'business', 'market', 'trading', 'investment',
-        'bank', 'revenue', 'profit', 'economy'
+        'bank', 'revenue', 'profit', 'economy', 'financial',
+        'stock', 'portfolio', 'capital', 'corporate', 'enterprise'
     ]):
         return style_config.finance_theme
 
