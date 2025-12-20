@@ -4,12 +4,12 @@ H1-Generated Generator - Title Slide with AI Background Image
 Wrapper that delegates to existing TitleSlideWithImageGenerator,
 adding structured field extraction for Layout Service compatibility.
 
-Version: 1.2.1
+Version: 1.2.2
 """
 
 import logging
 import time
-from typing import Any, Optional, Callable
+from typing import Callable
 
 from .base_slide_generator import BaseSlideGenerator
 from .field_extractor import extract_structured_fields
@@ -34,25 +34,17 @@ class H1GeneratedGenerator(BaseSlideGenerator):
     Layout Service Alias: L29
     """
 
-    def __init__(
-        self,
-        llm_service: Callable,
-        image_service: Optional[Any] = None
-    ):
+    def __init__(self, llm_service: Callable):
         """
         Initialize H1 generator.
 
         Args:
             llm_service: Async LLM callable
-            image_service: Image service client (required for image generation)
         """
-        super().__init__(llm_service, image_service)
+        super().__init__(llm_service)
 
-        # Create wrapped generator
-        self._hero_generator = TitleSlideWithImageGenerator(
-            llm_service=llm_service,
-            image_client=image_service
-        )
+        # Create wrapped generator (obtains image service internally)
+        self._hero_generator = TitleSlideWithImageGenerator(llm_service)
 
     @property
     def layout_type(self) -> SlideLayoutType:

@@ -22,7 +22,7 @@ Endpoints:
     GET  /v1.2/slides/health        - Health check
     GET  /v1.2/slides/layouts       - List all layouts
 
-Version: 1.2.1
+Version: 1.2.2
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Response
@@ -88,11 +88,10 @@ def get_image_service():
 
 
 def get_h1_generated_generator(
-    llm_service=Depends(get_llm_service),
-    image_service=Depends(get_image_service)
+    llm_service=Depends(get_llm_service)
 ) -> H1GeneratedGenerator:
-    """Get H1-generated generator with services."""
-    return H1GeneratedGenerator(llm_service, image_service)
+    """Get H1-generated generator with LLM service."""
+    return H1GeneratedGenerator(llm_service)
 
 
 def get_h1_structured_generator(
@@ -125,7 +124,7 @@ def get_c1_text_generator(
     return C1TextGenerator(llm_service)
 
 
-def get_iseries_generator(layout_type: ISeriesLayoutType, llm_service, image_service):
+def get_iseries_generator(layout_type: ISeriesLayoutType, llm_service):
     """Get I-series generator for specific layout type."""
     generators = {
         ISeriesLayoutType.I1: I1Generator,
@@ -136,7 +135,7 @@ def get_iseries_generator(layout_type: ISeriesLayoutType, llm_service, image_ser
     generator_class = generators.get(layout_type)
     if not generator_class:
         raise ValueError(f"Unknown I-series layout type: {layout_type}")
-    return generator_class(llm_service, image_service)
+    return generator_class(llm_service)
 
 
 # ---------------------------------------------------------
@@ -309,8 +308,7 @@ async def generate_c1_text(
 @router.post("/I1", response_model=ISeriesSlideResponse)
 async def generate_i1(
     request: UnifiedSlideRequest,
-    llm_service=Depends(get_llm_service),
-    image_service=Depends(get_image_service)
+    llm_service=Depends(get_llm_service)
 ) -> ISeriesSlideResponse:
     """
     Generate I1 layout: Wide image left (660x1080), content right.
@@ -321,7 +319,7 @@ async def generate_i1(
     try:
         # Convert to I-series request
         iseries_request = _convert_to_iseries_request(request, ISeriesLayoutType.I1)
-        generator = get_iseries_generator(ISeriesLayoutType.I1, llm_service, image_service)
+        generator = get_iseries_generator(ISeriesLayoutType.I1, llm_service)
         response = await generator.generate(iseries_request)
 
         # Enhance with Layout Service aliases
@@ -339,8 +337,7 @@ async def generate_i1(
 @router.post("/I2", response_model=ISeriesSlideResponse)
 async def generate_i2(
     request: UnifiedSlideRequest,
-    llm_service=Depends(get_llm_service),
-    image_service=Depends(get_image_service)
+    llm_service=Depends(get_llm_service)
 ) -> ISeriesSlideResponse:
     """
     Generate I2 layout: Wide image right (660x1080), content left.
@@ -350,7 +347,7 @@ async def generate_i2(
 
     try:
         iseries_request = _convert_to_iseries_request(request, ISeriesLayoutType.I2)
-        generator = get_iseries_generator(ISeriesLayoutType.I2, llm_service, image_service)
+        generator = get_iseries_generator(ISeriesLayoutType.I2, llm_service)
         response = await generator.generate(iseries_request)
         enhanced = _enhance_iseries_response(response)
         elapsed = int((time.time() - start) * 1000)
@@ -366,8 +363,7 @@ async def generate_i2(
 @router.post("/I3", response_model=ISeriesSlideResponse)
 async def generate_i3(
     request: UnifiedSlideRequest,
-    llm_service=Depends(get_llm_service),
-    image_service=Depends(get_image_service)
+    llm_service=Depends(get_llm_service)
 ) -> ISeriesSlideResponse:
     """
     Generate I3 layout: Narrow image left (360x1080), large content right.
@@ -377,7 +373,7 @@ async def generate_i3(
 
     try:
         iseries_request = _convert_to_iseries_request(request, ISeriesLayoutType.I3)
-        generator = get_iseries_generator(ISeriesLayoutType.I3, llm_service, image_service)
+        generator = get_iseries_generator(ISeriesLayoutType.I3, llm_service)
         response = await generator.generate(iseries_request)
         enhanced = _enhance_iseries_response(response)
         elapsed = int((time.time() - start) * 1000)
@@ -393,8 +389,7 @@ async def generate_i3(
 @router.post("/I4", response_model=ISeriesSlideResponse)
 async def generate_i4(
     request: UnifiedSlideRequest,
-    llm_service=Depends(get_llm_service),
-    image_service=Depends(get_image_service)
+    llm_service=Depends(get_llm_service)
 ) -> ISeriesSlideResponse:
     """
     Generate I4 layout: Narrow image right (360x1080), large content left.
@@ -404,7 +399,7 @@ async def generate_i4(
 
     try:
         iseries_request = _convert_to_iseries_request(request, ISeriesLayoutType.I4)
-        generator = get_iseries_generator(ISeriesLayoutType.I4, llm_service, image_service)
+        generator = get_iseries_generator(ISeriesLayoutType.I4, llm_service)
         response = await generator.generate(iseries_request)
         enhanced = _enhance_iseries_response(response)
         elapsed = int((time.time() - start) * 1000)
@@ -455,7 +450,7 @@ async def slides_health():
     return {
         "status": "healthy",
         "router": "/v1.2/slides",
-        "version": "1.2.1",
+        "version": "1.2.2",
         "features": {
             "combined_generation": True,
             "structured_fields": True,
