@@ -98,14 +98,15 @@ class H1GeneratedGenerator(BaseSlideGenerator):
             # Convert request format
             hero_request = self._convert_to_hero_request(request)
 
-            # Call wrapped generator
+            # Call wrapped generator (returns dict, not object)
             hero_response = await self._hero_generator.generate(hero_request)
 
             # Extract structured fields from HTML
-            extracted = extract_structured_fields(hero_response.content, "H1-generated")
+            content_html = hero_response["content"]
+            extracted = extract_structured_fields(content_html, "H1-generated")
 
             # Build enhanced response
-            metadata = hero_response.metadata.copy()
+            metadata = hero_response["metadata"].copy()
             metadata.update({
                 "layout_type": "H1-generated",
                 "generation_time_ms": int((time.time() - start_time) * 1000),
@@ -114,8 +115,8 @@ class H1GeneratedGenerator(BaseSlideGenerator):
             # H1-generated uses hero_content (full-slide HTML with embedded background)
             # Per SLIDE_GENERATION_INPUT_SPEC.md: no separate background_color needed
             response = HeroSlideResponse(
-                hero_content=hero_response.content,  # Full-slide HTML (1920x1080)
-                content=hero_response.content,  # Deprecated, kept for backward compat
+                hero_content=content_html,  # Full-slide HTML (1920x1080)
+                content=content_html,  # Deprecated, kept for backward compat
                 slide_title=extracted.get("slide_title"),
                 subtitle=extracted.get("subtitle"),
                 background_image=extracted.get("background_image"),
