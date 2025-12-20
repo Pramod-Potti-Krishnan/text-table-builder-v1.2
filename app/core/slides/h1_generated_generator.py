@@ -110,6 +110,7 @@ class H1GeneratedGenerator(BaseSlideGenerator):
             metadata.update({
                 "layout_type": "H1-generated",
                 "generation_time_ms": int((time.time() - start_time) * 1000),
+                "visual_style": request.visual_style.value,
             })
 
             # H1-generated uses hero_content (full-slide HTML with embedded background)
