@@ -29,6 +29,9 @@ from app.api.v1_2_routes import router as v1_2_router
 from app.api.hero_routes import router as hero_router
 from app.api.layout_routes import router as layout_router
 from app.api.async_routes import router as async_router
+from app.api.coordination_routes import router as coordination_router
+from app.api.iseries_routes import router as iseries_router
+from app.api.slides_routes import router as slides_router
 
 # Configure logging
 logging.basicConfig(
@@ -75,6 +78,25 @@ async def lifespan(app: FastAPI):
     logger.info("  - /v1.2/async/status/{job_id} (poll progress)")
     logger.info("  - /v1.2/async/result/{job_id} (fetch result)")
     logger.info("  - /v1.2/async/queue/stats (queue health)")
+    logger.info("✓ Service Coordination API (Director Agent):")
+    logger.info("  - /v1.2/capabilities (service discovery)")
+    logger.info("  - /v1.2/can-handle (content negotiation)")
+    logger.info("  - /v1.2/recommend-variant (variant recommendations)")
+    logger.info("✓ I-Series Layout API (image + text):")
+    logger.info("  - /v1.2/iseries/generate (any I-series layout)")
+    logger.info("  - /v1.2/iseries/I1 (wide image left)")
+    logger.info("  - /v1.2/iseries/I2 (wide image right)")
+    logger.info("  - /v1.2/iseries/I3 (narrow image left)")
+    logger.info("  - /v1.2/iseries/I4 (narrow image right)")
+    logger.info("✓ Unified Slides API (Layout Service aligned):")
+    logger.info("  - /v1.2/slides/H1-generated (title with AI image)")
+    logger.info("  - /v1.2/slides/H1-structured (title with gradient)")
+    logger.info("  - /v1.2/slides/H2-section (section divider)")
+    logger.info("  - /v1.2/slides/H3-closing (closing slide)")
+    logger.info("  - /v1.2/slides/C1-text (combined generation - saves 2 LLM calls)")
+    logger.info("  - /v1.2/slides/I1-I4 (image + text layouts)")
+    logger.info("  - /v1.2/slides/L29 (alias for H1-generated)")
+    logger.info("  - /v1.2/slides/L25 (alias for C1-text)")
     logger.info("✓ Gemini integration enabled")
     logger.info("✓ Image Builder API integration enabled")
     logger.info(f"✓ LLM Pool enabled: {os.getenv('USE_LLM_POOL', 'true')}")
@@ -162,6 +184,15 @@ app.include_router(layout_router)
 # Include async queue routes (Redis-based job queue for high-load scenarios)
 app.include_router(async_router)
 
+# Include coordination routes (Director Agent integration - service discovery)
+app.include_router(coordination_router)
+
+# Include I-series routes (image + text layouts)
+app.include_router(iseries_router)
+
+# Include unified slides routes (Layout Service aligned - H1, H2, H3, C1, I1-I4)
+app.include_router(slides_router)
+
 
 @app.get("/")
 async def root():
@@ -194,7 +225,21 @@ async def root():
             },
             "hero_health_check": "GET /v1.2/hero/health",
             "list_variants": "GET /v1.2/variants",
-            "variant_details": "GET /v1.2/variant/{variant_id}"
+            "variant_details": "GET /v1.2/variant/{variant_id}",
+            "service_coordination": {
+                "capabilities": "GET /v1.2/capabilities",
+                "can_handle": "POST /v1.2/can-handle",
+                "recommend_variant": "POST /v1.2/recommend-variant"
+            },
+            "iseries_layouts": {
+                "generate": "POST /v1.2/iseries/generate",
+                "I1_wide_image_left": "POST /v1.2/iseries/I1",
+                "I2_wide_image_right": "POST /v1.2/iseries/I2",
+                "I3_narrow_image_left": "POST /v1.2/iseries/I3",
+                "I4_narrow_image_right": "POST /v1.2/iseries/I4",
+                "health": "GET /v1.2/iseries/health",
+                "layouts_info": "GET /v1.2/iseries/layouts"
+            }
         },
         "features": {
             "element_based_generation": True,
@@ -206,12 +251,15 @@ async def root():
             "ai_generated_backgrounds": True,
             "layout_service_integration": True,
             "grid_based_constraints": True,
-            "content_suggestions": True
+            "content_suggestions": True,
+            "iseries_image_text_layouts": True
         },
         "total_variants": 26,
-        "total_endpoints": 17,
+        "total_endpoints": 27,
         "hero_endpoints": 6,
         "layout_ai_endpoints": 8,
+        "coordination_endpoints": 3,
+        "iseries_endpoints": 7,
         "slide_types": [
             "matrix", "grid", "comparison", "sequential",
             "asymmetric", "hybrid", "metrics", "single_column",

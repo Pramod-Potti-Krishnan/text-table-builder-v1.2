@@ -38,6 +38,14 @@ class SlideType(str, Enum):
     CLOSING = "closing"
 
 
+class ISeriesLayoutType(str, Enum):
+    """I-series layout types for portrait image generation."""
+    I1 = "I1"  # Wide image left (660x1080)
+    I2 = "I2"  # Wide image right (660x1080)
+    I3 = "I3"  # Narrow image left (360x1080)
+    I4 = "I4"  # Narrow image right (360x1080)
+
+
 class ImageServiceClient:
     """
     Async client for Image Builder v2.0 API.
@@ -229,6 +237,163 @@ class ImageServiceClient:
             f"{last_error}"
         )
         raise last_error
+
+    async def generate_iseries_image(
+        self,
+        prompt: str,
+        layout_type: str,
+        visual_style: str = "illustrated",
+        metadata: Optional[Dict[str, Any]] = None,
+        model: Optional[str] = None,
+        archetype: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Generate portrait-oriented image for I-series layouts.
+
+        I-series layouts require tall portrait images (9:16 aspect ratio)
+        instead of the landscape 16:9 used for hero slides.
+
+        Args:
+            prompt: Image description/prompt
+            layout_type: I-series layout type (I1, I2, I3, I4)
+            visual_style: Visual style (professional, illustrated, kids)
+            metadata: Custom metadata to store with image
+            model: Imagen model to use (default based on visual_style)
+            archetype: Image style archetype (default based on visual_style)
+
+        Returns:
+            API response dict with image URLs and metadata
+
+        Raises:
+            httpx.HTTPError: If request fails after retries
+            ValueError: If response is invalid
+        """
+        self.total_requests += 1
+
+        # Determine archetype from visual style if not provided
+        if archetype is None:
+            archetype_map = {
+                "professional": "photorealistic",
+                "illustrated": "spot_illustration",
+                "kids": "spot_illustration"
+            }
+            archetype = archetype_map.get(visual_style, "spot_illustration")
+
+        # Determine model from visual style if not provided
+        if model is None:
+            model_map = {
+                "professional": "imagen-3.0-generate-001",
+                "illustrated": "imagen-3.0-fast-generate-001",
+                "kids": "imagen-3.0-fast-generate-001"
+            }
+            model = model_map.get(visual_style, "imagen-3.0-fast-generate-001")
+
+        # Build negative prompt for I-series (portrait orientation)
+        negative_prompt = self._get_iseries_negative_prompt(layout_type)
+
+        # Build request payload with portrait aspect ratio
+        payload = {
+            "prompt": prompt,
+            "aspect_ratio": "9:16",  # Portrait for I-series (576x1024)
+            "model": model,
+            "archetype": archetype,
+            "negative_prompt": negative_prompt,
+            "options": {
+                "remove_background": False,
+                "crop_anchor": "center",  # Center crop for portrait
+                "store_in_cloud": True,
+                "return_base64": False
+            },
+            "metadata": metadata or {}
+        }
+
+        # Add layout info to metadata
+        payload["metadata"]["layout_type"] = layout_type
+        payload["metadata"]["visual_style"] = visual_style
+        payload["metadata"]["aspect_ratio"] = "9:16"
+
+        logger.info(
+            f"Generating I-series {layout_type} portrait image "
+            f"(style={visual_style}, archetype={archetype})"
+        )
+
+        # Attempt generation with retries
+        last_error = None
+        for attempt in range(self.max_retries + 1):
+            try:
+                async with httpx.AsyncClient(timeout=self.timeout) as client:
+                    response = await client.post(
+                        f"{self.base_url}/api/v2/generate",
+                        json=payload,
+                        headers=self._get_headers()
+                    )
+
+                    # Check HTTP status
+                    response.raise_for_status()
+
+                    # Parse response
+                    result = response.json()
+
+                    # Check API success field
+                    if not result.get("success", False):
+                        error_msg = result.get("error", "Unknown error")
+                        raise ValueError(f"I-series image generation failed: {error_msg}")
+
+                    # Validate response structure
+                    if "urls" not in result or "original" not in result["urls"]:
+                        raise ValueError("Invalid response: missing image URLs")
+
+                    # Success!
+                    self.successful_requests += 1
+
+                    generation_time = result.get("metadata", {}).get("generation_time_ms", 0)
+                    logger.info(
+                        f"I-series image generated successfully in {generation_time}ms "
+                        f"(layout={layout_type}, attempt {attempt + 1}/{self.max_retries + 1})"
+                    )
+
+                    return result
+
+            except (httpx.HTTPError, ValueError) as e:
+                last_error = e
+                logger.warning(
+                    f"I-series image generation attempt {attempt + 1} failed: {e}"
+                )
+
+                # Exponential backoff before retry
+                if attempt < self.max_retries:
+                    backoff_time = 2.0 * (attempt + 1)
+                    logger.info(f"Retrying in {backoff_time}s...")
+                    await asyncio.sleep(backoff_time)
+
+        # All retries exhausted
+        self.failed_requests += 1
+        logger.error(
+            f"I-series image generation failed after {self.max_retries + 1} attempts: "
+            f"{last_error}"
+        )
+        raise last_error
+
+    def _get_iseries_negative_prompt(self, layout_type: str) -> str:
+        """
+        Get negative prompt for I-series portrait images.
+
+        Args:
+            layout_type: I-series layout type (I1, I2, I3, I4)
+
+        Returns:
+            Negative prompt string optimized for portrait composition
+        """
+        # Strong negative prompts - no text, no people, clean composition
+        common = (
+            "text, words, letters, numbers, typography, labels, titles, captions, "
+            "watermarks, logos, brands, signatures, writing, characters, symbols, "
+            "people, faces, persons, humans, portraits, bodies, crowds, "
+            "low quality, blurry, pixelated, noisy, distorted, cluttered, busy, "
+            "horizontal composition, landscape orientation"
+        )
+
+        return common
 
     def _get_default_negative_prompt(self, slide_type: SlideType) -> str:
         """
