@@ -1,5 +1,5 @@
 """
-Service Coordination Routes for Text & Table Builder v1.2
+Service Coordination Routes for Text & Table Builder v1.3
 
 Implements Director Agent integration endpoints:
 - GET /v1.2/capabilities - Service capabilities discovery
@@ -8,6 +8,12 @@ Implements Director Agent integration endpoints:
 
 These endpoints support the 4-Step Strawman Process for intelligent
 content routing and layout selection.
+
+v1.3.0 Updates:
+- supports_themes=True (theme_config, content_context, styling_mode, available_space)
+- Multi-step content generation with ~85% space utilization
+- CSS class output mode (styling_mode="css_classes")
+- Theme registry sync with Layout Service
 """
 
 from fastapi import APIRouter
@@ -38,7 +44,7 @@ router = APIRouter(prefix="/v1.2", tags=["coordination"])
 # Service Configuration
 # =============================================================================
 
-SERVICE_VERSION = "1.2.2"
+SERVICE_VERSION = "1.3.0"
 
 # 10 slide types supported by Text Service
 SUPPORTED_SLIDE_TYPES = [
@@ -152,7 +158,7 @@ async def get_capabilities():
             slide_types=SUPPORTED_SLIDE_TYPES,
             variants=SUPPORTED_VARIANTS,
             max_items_per_slide=8,
-            supports_themes=False,
+            supports_themes=True,  # v1.3.0: theme_config, content_context, styling_mode
             parallel_generation=True
         ),
         content_signals=ContentSignals(

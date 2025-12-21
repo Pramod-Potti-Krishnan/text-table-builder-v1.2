@@ -1,5 +1,5 @@
 """
-Unified Slides Models for Text Service v1.2 - Layout Service Aligned
+Unified Slides Models for Text Service v1.3.0 - Layout Service Aligned
 
 This module provides unified request/response models for the /v1.2/slides/* router.
 Aligned with Layout Service naming conventions (H1, H2, H3, C1, I1-I4).
@@ -9,13 +9,74 @@ Key Features:
 - Enhanced responses with structured fields alongside HTML
 - Backward-compatible with existing endpoints
 - L29/L25 aliases for Layout Service integration
+- v1.3.0: theme_config, content_context, styling_mode, available_space support
 
-Version: 1.2.1
+Version: 1.3.0
 """
 
-from typing import Dict, Any, Optional, List, Literal
+from typing import Dict, Any, Optional, List, Literal, TYPE_CHECKING
 from pydantic import BaseModel, Field, field_validator
 from enum import Enum
+
+# Avoid circular imports by using TYPE_CHECKING
+if TYPE_CHECKING:
+    from app.models.requests import ThemeConfig
+    from app.models.content_context import ContentContext
+
+
+# =============================================================================
+# Styling Mode for v1.3.0
+# =============================================================================
+
+class StylingMode(str, Enum):
+    """
+    Output styling mode for generated HTML.
+
+    Per THEME_SYSTEM_DESIGN.md Section 12.3 Q4:
+    - inline_styles: Full CSS in style attributes (current default)
+    - css_classes: .deckster-t1 through .deckster-t4 class references
+    """
+    INLINE_STYLES = "inline_styles"
+    CSS_CLASSES = "css_classes"
+
+
+# =============================================================================
+# Available Space Model for Multi-Step Generation
+# =============================================================================
+
+class AvailableSpace(BaseModel):
+    """
+    Available space for content generation.
+
+    Passed by Director to enable multi-step generation with accurate
+    character budget calculations.
+    """
+    width: int = Field(
+        description="Width in grids or pixels"
+    )
+    height: int = Field(
+        description="Height in grids or pixels"
+    )
+    unit: str = Field(
+        default="grids",
+        description="Unit: 'grids' (60px each) or 'pixels'"
+    )
+
+    def to_pixels(self) -> tuple:
+        """Convert to pixel dimensions."""
+        if self.unit == "pixels":
+            return (self.width, self.height)
+        # 60px per grid
+        return (self.width * 60, self.height * 60)
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "width": 30,
+                "height": 14,
+                "unit": "grids"
+            }
+        }
 
 
 class SlideLayoutType(str, Enum):
@@ -172,7 +233,37 @@ class UnifiedSlideRequest(BaseModel):
         description="I-series: Maximum bullet points for content"
     )
 
+    # =========================================================================
+    # v1.3.0: Theme System Integration Parameters
+    # =========================================================================
+
+    # Theme configuration (full typography + colors)
+    theme_config: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="v1.3.0: Full theme configuration with typography (t1-t4) and colors"
+    )
+
+    # Content context (Audience/Purpose/Time)
+    content_context: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="v1.3.0: Content context with audience, purpose, and time settings"
+    )
+
+    # Styling mode for HTML output
+    styling_mode: str = Field(
+        default="inline_styles",
+        description="v1.3.0: Output mode - 'inline_styles' or 'css_classes'"
+    )
+
+    # Available space for multi-step generation
+    available_space: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="v1.3.0: Available space {width, height, unit} for multi-step generation"
+    )
+
     class Config:
+        # Ignore unknown fields for forward compatibility (per Q2 answer)
+        extra = "ignore"
         json_schema_extra = {
             "examples": [
                 {

@@ -5,25 +5,282 @@ Request Models for Text and Table Content Builder
 Pydantic models for incoming API requests from Content Orchestrator.
 
 v1.2.1: Added ThemeConfig for Theme Service integration.
+v1.3.0: Expanded ThemeConfig with full color palette and typography specs.
+        Added ContentContext support for Audience/Purpose/Time.
 """
 
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel, Field
 
 
-class ThemeConfig(BaseModel):
-    """
-    Theme configuration from Theme Service (v1.2.1).
+# =============================================================================
+# Typography Specification Models (v1.3.0)
+# =============================================================================
 
-    Optional field that allows Director Agent to pass theme-specific
-    styling to Text Service for consistent slide appearance.
+class TypographySpec(BaseModel):
     """
-    theme_id: str = Field(
-        default="professional",
-        description="Theme identifier (professional, executive, educational, children_young, children_older)"
+    Typography specification for a single text level.
+
+    Per THEME_SYSTEM_DESIGN.md Section 4.5:
+    - t1: 32px, weight 700, line_height 1.2 (headings)
+    - t2: 24px, weight 600, line_height 1.3 (subheadings)
+    - t3: 20px, weight 500, line_height 1.4 (body emphasized)
+    - t4: 16px, weight 400, line_height 1.5 (body normal)
+    """
+    size: int = Field(
+        description="Font size in pixels"
+    )
+    weight: int = Field(
+        default=400,
+        description="Font weight (100-900)"
+    )
+    color: str = Field(
+        description="Text color (hex)"
+    )
+    line_height: float = Field(
+        default=1.5,
+        description="Line height multiplier"
+    )
+    letter_spacing: Optional[str] = Field(
+        default=None,
+        description="Letter spacing (CSS value)"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "size": 32,
+                "weight": 700,
+                "color": "#1f2937",
+                "line_height": 1.2
+            }
+        }
+
+
+class TypographyConfig(BaseModel):
+    """
+    Complete typography configuration with t1-t4 hierarchy.
+
+    Per THEME_SYSTEM_DESIGN.md Section 1.3:
+    - 3 Groups: Hero (72-96px), Slide-level (42-48px), Content (t1-t4)
+    - t1 MUST be smaller than slide_subtitle
+    - All 34 variants map to t1-t4 levels
+    """
+    t1: TypographySpec = Field(
+        default_factory=lambda: TypographySpec(size=32, weight=700, color="#1f2937", line_height=1.2),
+        description="Level 1: Headings (32px)"
+    )
+    t2: TypographySpec = Field(
+        default_factory=lambda: TypographySpec(size=24, weight=600, color="#374151", line_height=1.3),
+        description="Level 2: Subheadings (24px)"
+    )
+    t3: TypographySpec = Field(
+        default_factory=lambda: TypographySpec(size=20, weight=500, color="#4b5563", line_height=1.4),
+        description="Level 3: Body emphasized (20px)"
+    )
+    t4: TypographySpec = Field(
+        default_factory=lambda: TypographySpec(size=16, weight=400, color="#6b7280", line_height=1.5),
+        description="Level 4: Body normal (16px)"
+    )
+    font_family: str = Field(
+        default="Poppins, sans-serif",
+        description="Primary font family"
+    )
+    font_family_heading: Optional[str] = Field(
+        default=None,
+        description="Optional heading font family (uses font_family if None)"
+    )
+
+    def get_spec(self, level: str) -> TypographySpec:
+        """Get typography spec for a level (t1-t4)."""
+        specs = {"t1": self.t1, "t2": self.t2, "t3": self.t3, "t4": self.t4}
+        return specs.get(level, self.t3)
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "t1": {"size": 32, "weight": 700, "color": "#1f2937", "line_height": 1.2},
+                "t2": {"size": 24, "weight": 600, "color": "#374151", "line_height": 1.3},
+                "t3": {"size": 20, "weight": 500, "color": "#4b5563", "line_height": 1.4},
+                "t4": {"size": 16, "weight": 400, "color": "#6b7280", "line_height": 1.5},
+                "font_family": "Poppins, sans-serif"
+            }
+        }
+
+
+# =============================================================================
+# Color Palette Models (v1.3.0)
+# =============================================================================
+
+class ColorPalette(BaseModel):
+    """
+    Complete color palette for a theme.
+
+    Per THEME_SYSTEM_DESIGN.md Section 1.4-1.6:
+    - All keys use snake_case (Layout Service agreement)
+    - 25 color keys for full theme coverage
+    """
+    # Primary colors
+    primary: str = Field(
+        default="#1e3a5f",
+        description="Primary brand color"
+    )
+    primary_dark: str = Field(
+        default="#152a45",
+        description="Darker primary variant"
+    )
+    primary_light: str = Field(
+        default="#2d4a6f",
+        description="Lighter primary variant"
+    )
+
+    # Accent colors
+    accent: str = Field(
+        default="#3b82f6",
+        description="Accent color for CTAs and highlights"
+    )
+    accent_dark: str = Field(
+        default="#2563eb",
+        description="Darker accent variant"
+    )
+    accent_light: str = Field(
+        default="#60a5fa",
+        description="Lighter accent variant"
+    )
+
+    # Tertiary colors (for variety in charts, boxes)
+    tertiary_1: str = Field(
+        default="#8b5cf6",
+        description="Tertiary color 1 (purple)"
+    )
+    tertiary_2: str = Field(
+        default="#ec4899",
+        description="Tertiary color 2 (pink)"
+    )
+    tertiary_3: str = Field(
+        default="#f59e0b",
+        description="Tertiary color 3 (amber)"
+    )
+
+    # Background and surface colors
+    background: str = Field(
+        default="#ffffff",
+        description="Page/slide background"
+    )
+    surface: str = Field(
+        default="#f8fafc",
+        description="Elevated surface background"
+    )
+    border: str = Field(
+        default="#e5e7eb",
+        description="Border color"
     )
 
     # Text colors
+    text_primary: str = Field(
+        default="#1f2937",
+        description="Primary text color"
+    )
+    text_secondary: str = Field(
+        default="#374151",
+        description="Secondary text color"
+    )
+    text_muted: str = Field(
+        default="#6b7280",
+        description="Muted/caption text color"
+    )
+
+    # Chart colors (for data visualization)
+    chart_1: str = Field(
+        default="#3b82f6",
+        description="Chart color 1 (blue)"
+    )
+    chart_2: str = Field(
+        default="#10b981",
+        description="Chart color 2 (green)"
+    )
+    chart_3: str = Field(
+        default="#f59e0b",
+        description="Chart color 3 (amber)"
+    )
+    chart_4: str = Field(
+        default="#ef4444",
+        description="Chart color 4 (red)"
+    )
+    chart_5: str = Field(
+        default="#8b5cf6",
+        description="Chart color 5 (purple)"
+    )
+    chart_6: str = Field(
+        default="#ec4899",
+        description="Chart color 6 (pink)"
+    )
+
+    # Semantic colors
+    success: str = Field(
+        default="#10b981",
+        description="Success/positive color"
+    )
+    warning: str = Field(
+        default="#f59e0b",
+        description="Warning color"
+    )
+    error: str = Field(
+        default="#ef4444",
+        description="Error/negative color"
+    )
+
+    def get_chart_colors(self) -> List[str]:
+        """Get list of chart colors in order."""
+        return [self.chart_1, self.chart_2, self.chart_3,
+                self.chart_4, self.chart_5, self.chart_6]
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "primary": "#1e3a5f",
+                "accent": "#3b82f6",
+                "tertiary_1": "#8b5cf6",
+                "background": "#ffffff",
+                "text_primary": "#1f2937",
+                "chart_1": "#3b82f6"
+            }
+        }
+
+
+# =============================================================================
+# Theme Configuration (v1.3.0 - Expanded)
+# =============================================================================
+
+class ThemeConfig(BaseModel):
+    """
+    Complete theme configuration for Text Service v1.3.0.
+
+    Per THEME_SYSTEM_DESIGN.md Section 12:
+    - Passed from Director to Text Service
+    - Contains typography (t1-t4) and full color palette
+    - Theme is VISUAL ONLY, orthogonal to Audience/Purpose
+
+    Backward compatible: legacy fields still supported.
+    """
+    theme_id: str = Field(
+        default="professional",
+        description="Theme identifier (professional, executive, educational, children)"
+    )
+
+    # v1.3.0: Full typography configuration
+    typography: Optional[TypographyConfig] = Field(
+        default=None,
+        description="Typography configuration with t1-t4 hierarchy"
+    )
+
+    # v1.3.0: Full color palette
+    colors: Optional[ColorPalette] = Field(
+        default=None,
+        description="Complete color palette"
+    )
+
+    # Legacy text colors (backward compatibility)
     text_primary: str = Field(
         default="#1f2937",
         description="Primary text color for headings"
@@ -37,7 +294,7 @@ class ThemeConfig(BaseModel):
         description="Muted text color for subtitles/captions"
     )
 
-    # Border colors
+    # Legacy border color
     border_light: str = Field(
         default="#e5e7eb",
         description="Light border color"
@@ -71,16 +328,72 @@ class ThemeConfig(BaseModel):
         description="Font size multiplier"
     )
 
+    # v1.3.0: Theme version for cache validation
+    version: Optional[str] = Field(
+        default=None,
+        description="Theme version from Layout Service"
+    )
+
+    def get_typography_spec(self, level: str) -> TypographySpec:
+        """
+        Get typography spec for a level, with fallback.
+
+        Args:
+            level: Typography level (t1, t2, t3, t4)
+
+        Returns:
+            TypographySpec for the level
+        """
+        if self.typography:
+            return self.typography.get_spec(level)
+
+        # Fallback: construct from legacy fields
+        defaults = {
+            "t1": TypographySpec(size=32, weight=700, color=self.text_primary, line_height=1.2),
+            "t2": TypographySpec(size=24, weight=600, color=self.text_secondary, line_height=1.3),
+            "t3": TypographySpec(size=20, weight=500, color=self.text_secondary, line_height=1.4),
+            "t4": TypographySpec(size=16, weight=400, color=self.text_muted, line_height=1.5),
+        }
+        return defaults.get(level, defaults["t3"])
+
+    def get_color(self, key: str) -> str:
+        """
+        Get color by key, with fallback to legacy fields.
+
+        Args:
+            key: Color key (e.g., 'primary', 'accent', 'text_primary')
+
+        Returns:
+            Hex color string
+        """
+        if self.colors:
+            return getattr(self.colors, key, "#000000")
+
+        # Fallback to legacy fields
+        legacy_map = {
+            "text_primary": self.text_primary,
+            "text_secondary": self.text_secondary,
+            "text_muted": self.text_muted,
+            "border": self.border_light,
+        }
+        return legacy_map.get(key, "#000000")
+
     class Config:
         json_schema_extra = {
             "example": {
-                "theme_id": "executive",
-                "text_primary": "#111827",
-                "text_secondary": "#1f2937",
-                "text_muted": "#4b5563",
-                "border_light": "#e2e8f0",
-                "char_multiplier": 0.7,
-                "max_bullets": 3
+                "theme_id": "professional",
+                "typography": {
+                    "t1": {"size": 32, "weight": 700, "color": "#1f2937", "line_height": 1.2},
+                    "t2": {"size": 24, "weight": 600, "color": "#374151", "line_height": 1.3},
+                    "t3": {"size": 20, "weight": 500, "color": "#4b5563", "line_height": 1.4},
+                    "t4": {"size": 16, "weight": 400, "color": "#6b7280", "line_height": 1.5}
+                },
+                "colors": {
+                    "primary": "#1e3a5f",
+                    "accent": "#3b82f6",
+                    "text_primary": "#1f2937",
+                    "chart_1": "#3b82f6"
+                }
             }
         }
 
