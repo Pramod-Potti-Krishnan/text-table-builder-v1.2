@@ -9,12 +9,17 @@ Generators:
 - TitleSlideGenerator: Complete title slide (title + subtitle + content)
 - SectionSlideGenerator: Section divider (title + subtitle)
 - ClosingSlideGenerator: Closing slide (title + subtitle + CTA)
+- GenericTextElementGenerator: Generic elements with multi-step support
 
 All generators:
 - Use 32×18 grid system (1920×1080px HD slides)
 - Calculate precise character constraints based on typography
 - Support theme integration via ThemeServiceClient
 - Return content with dimension/constraint metadata
+
+v1.3.1: GenericTextElementGenerator now uses multi-step generation for
+large body/bullet content areas (>= 10x6 grids, >= 600x360 pixels).
+Single-line types (titles, headings) always use single-step.
 """
 
 import logging
@@ -676,19 +681,84 @@ class GenericTextElementGenerator(SlideTextGenerator):
     """
     Generate generic text element content with full styling control.
 
-    Extends SlideTextGenerator with support for typography levels
-    and custom styling.
+    Extends SlideTextGenerator with support for typography levels,
+    custom styling, and multi-step generation for large content areas.
+
+    v1.3.1: Uses multi-step generation when:
+    - Typography level is multi-line (body, bullets, paragraph)
+    - Content area is large (>= 10x6 grids, >= 600x360 pixels)
+
+    Single-line types (h1-h4, title, subtitle, caption) always use single-step.
     """
+
+    # Typography levels that are single-line (never use multi-step)
+    SINGLE_LINE_LEVELS = {
+        TypographyLevel.H1, TypographyLevel.H2, TypographyLevel.H3, TypographyLevel.H4,
+        TypographyLevel.SUBTITLE, TypographyLevel.CAPTION
+    }
+
+    # Minimum grid dimensions for multi-step (10x6 = 600x360 pixels)
+    MIN_MULTI_STEP_WIDTH = 10
+    MIN_MULTI_STEP_HEIGHT = 6
 
     @property
     def generator_type(self) -> str:
         return "generic_text_element"
 
+    def _should_use_multi_step(self, request: GenericTextElementRequest) -> bool:
+        """
+        Determine if multi-step generation should be used.
+
+        Multi-step is used when:
+        1. Typography level is multi-line (body, bullets - NOT h1-h4, subtitle, caption)
+        2. Content area is large enough (>= 10x6 grids)
+
+        Args:
+            request: The generation request
+
+        Returns:
+            True if multi-step should be used
+        """
+        # Single-line typography never uses multi-step
+        typo_level = request.typographyLevel or TypographyLevel.BODY
+        if typo_level in self.SINGLE_LINE_LEVELS:
+            return False
+
+        # Check grid dimensions
+        constraints = request.constraints
+        if not constraints:
+            return False
+
+        width = constraints.gridWidth or 0
+        height = constraints.gridHeight or 0
+
+        # Multi-step only if area is substantial (>= 600x360 pixels)
+        return width >= self.MIN_MULTI_STEP_WIDTH and height >= self.MIN_MULTI_STEP_HEIGHT
+
     async def generate_from_request(
         self,
         request: GenericTextElementRequest
     ) -> SlideTextResponse:
-        """Generate text element from GenericTextElementRequest."""
+        """
+        Generate text element from GenericTextElementRequest.
+
+        v1.3.1: Routes to multi-step for large body/bullet content areas.
+        """
+        # v1.3.1: Route based on content type and area size
+        if self._should_use_multi_step(request):
+            return await self._generate_multi_step(request)
+        else:
+            return await self._generate_single_step(request)
+
+    async def _generate_single_step(
+        self,
+        request: GenericTextElementRequest
+    ) -> SlideTextResponse:
+        """
+        Generate using single-step (original behavior).
+
+        Used for single-line typography (titles, headings) and small content areas.
+        """
         # Map typography level to text type
         level_to_type = {
             TypographyLevel.H1: SlideTextType.TITLE_SLIDE_TITLE,
@@ -721,6 +791,127 @@ class GenericTextElementGenerator(SlideTextGenerator):
         )
 
         return await self.generate(slide_request)
+
+    async def _generate_multi_step(
+        self,
+        request: GenericTextElementRequest
+    ) -> SlideTextResponse:
+        """
+        Generate using multi-step pipeline for large content areas.
+
+        v1.3.1: Uses MultiStepGenerator for ~85% space utilization.
+        Converts grid dimensions to pixels (60px per grid cell).
+
+        Args:
+            request: GenericTextElementRequest with constraints
+
+        Returns:
+            SlideTextResponse with multi-step metadata
+        """
+        import time
+        from app.core.content import MultiStepGenerator
+        from app.models.content_context import ContentContext
+        from app.models.requests import ThemeConfig
+        from app.services.theme_registry import get_theme
+
+        start_time = time.time()
+        generation_id = str(uuid.uuid4())
+
+        logger.info(
+            f"[Element] Multi-step generation "
+            f"(grid: {request.constraints.gridWidth}x{request.constraints.gridHeight}, "
+            f"level: {request.typographyLevel})"
+        )
+
+        try:
+            # Convert grid to pixels (60px per grid cell)
+            width_px = request.constraints.gridWidth * 60
+            height_px = request.constraints.gridHeight * 60
+
+            # Get theme_config from theme registry if themeId provided
+            theme_config = None
+            if request.themeId:
+                try:
+                    theme_dict = get_theme(request.themeId)
+                    if theme_dict:
+                        theme_config = ThemeConfig(**theme_dict)
+                except Exception as e:
+                    logger.warning(f"[Element] Failed to get theme {request.themeId}: {e}")
+
+            # Parse content_context if provided
+            content_context = None
+            if request.content_context:
+                try:
+                    content_context = ContentContext(**request.content_context)
+                except Exception as e:
+                    logger.warning(f"[Element] Failed to parse content_context: {e}")
+
+            # Use MultiStepGenerator
+            multi_step = MultiStepGenerator(self.llm_service)
+            result = await multi_step.generate(
+                narrative=request.prompt,
+                topics=[],  # Element endpoint doesn't have topics
+                available_width_px=width_px,
+                available_height_px=height_px,
+                theme_config=theme_config,
+                content_context=content_context,
+                styling_mode=request.styling_mode or "inline_styles",
+                slide_number=1  # Element doesn't track slide numbers
+            )
+
+            elapsed = int((time.time() - start_time) * 1000)
+            logger.info(
+                f"[Element] Multi-step completed in {elapsed}ms "
+                f"(space: {width_px}x{height_px}px)"
+            )
+
+            # Build SlideTextResponse from multi-step result
+            # Get dimensions for response
+            calc_result = self._calculate_constraints(
+                request.constraints,
+                {"fontSize": 20, "lineHeight": 1.5},  # Default typography
+                0.5
+            )
+
+            data = SlideTextContentData(
+                generationId=generation_id,
+                content=result.body,
+                dimensions=ElementDimensions(
+                    gridWidth=request.constraints.gridWidth,
+                    gridHeight=request.constraints.gridHeight,
+                    elementWidth=calc_result["dimensions"].element_width,
+                    elementHeight=calc_result["dimensions"].element_height,
+                    contentWidth=calc_result["dimensions"].content_width,
+                    contentHeight=calc_result["dimensions"].content_height
+                ),
+                constraintsUsed=TextConstraintsUsed(
+                    charsPerLine=calc_result["text_constraints"].chars_per_line,
+                    maxLines=calc_result["text_constraints"].max_lines,
+                    maxCharacters=calc_result["text_constraints"].max_characters,
+                    targetCharacters=calc_result["text_constraints"].target_characters,
+                    minCharacters=calc_result["text_constraints"].min_characters
+                ),
+                typographyApplied=TypographyApplied(
+                    fontFamily="Inter",
+                    fontSize=20,
+                    fontWeight=400,
+                    lineHeight=1.5,
+                    color="#374151",
+                    source="multi_step"
+                ),
+                characterCount=len(result.body),
+                lineCount=result.body.count('\n') + 1,
+                fits=True
+            )
+
+            return SlideTextResponse(success=True, data=data)
+
+        except Exception as e:
+            elapsed = int((time.time() - start_time) * 1000)
+            logger.error(f"[Element] Multi-step failed after {elapsed}ms: {e}")
+            # Fall back to single-step
+            logger.info("[Element] Falling back to single-step generation")
+            return await self._generate_single_step(request)
 
 
 # =============================================================================

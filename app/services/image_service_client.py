@@ -245,13 +245,17 @@ class ImageServiceClient:
         visual_style: str = "illustrated",
         metadata: Optional[Dict[str, Any]] = None,
         model: Optional[str] = None,
-        archetype: Optional[str] = None
+        archetype: Optional[str] = None,
+        aspect_ratio: str = "9:16"
     ) -> Dict[str, Any]:
         """
         Generate portrait-oriented image for I-series layouts.
 
-        I-series layouts require tall portrait images (9:16 aspect ratio)
-        instead of the landscape 16:9 used for hero slides.
+        v1.3.1: Uses per-layout aspect ratio for correct image dimensions.
+        - I1: 11:18 (660×1080) - wide portrait
+        - I2: 2:3 (720×1080) - standard portrait
+        - I3: 1:3 (360×1080) - very narrow
+        - I4: 7:18 (420×1080) - narrow
 
         Args:
             prompt: Image description/prompt
@@ -260,6 +264,7 @@ class ImageServiceClient:
             metadata: Custom metadata to store with image
             model: Imagen model to use (default based on visual_style)
             archetype: Image style archetype (default based on visual_style)
+            aspect_ratio: Target aspect ratio (default 9:16, can be custom)
 
         Returns:
             API response dict with image URLs and metadata
@@ -291,10 +296,11 @@ class ImageServiceClient:
         # Build negative prompt for I-series (portrait orientation)
         negative_prompt = self._get_iseries_negative_prompt(layout_type)
 
-        # Build request payload with portrait aspect ratio
+        # Build request payload with per-layout aspect ratio
+        # v1.3.1: Use passed aspect_ratio instead of hardcoded 9:16
         payload = {
             "prompt": prompt,
-            "aspect_ratio": "9:16",  # Portrait for I-series (576x1024)
+            "aspect_ratio": aspect_ratio,  # Per-layout ratio (I1: 11:18, I2: 2:3, etc.)
             "model": model,
             "archetype": archetype,
             "negative_prompt": negative_prompt,
@@ -310,7 +316,7 @@ class ImageServiceClient:
         # Add layout info to metadata
         payload["metadata"]["layout_type"] = layout_type
         payload["metadata"]["visual_style"] = visual_style
-        payload["metadata"]["aspect_ratio"] = "9:16"
+        payload["metadata"]["aspect_ratio"] = aspect_ratio  # v1.3.1: Use actual per-layout ratio
 
         logger.info(
             f"Generating I-series {layout_type} portrait image "

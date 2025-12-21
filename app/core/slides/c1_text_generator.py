@@ -7,11 +7,12 @@ This is the key innovation in the v1.2.1 endpoint restructuring.
 Supports all 34 content variants via variant_id parameter.
 
 v1.3.0: Added multi-step generation when available_space is provided.
+v1.3.1: ALWAYS uses multi-step generation with hardcoded 1800×840 dimensions.
 - Multi-step uses 2 LLM calls for ~85% space utilization
-- Single-step (1 LLM call) remains default for backward compatibility
+- Single-step fallback only on multi-step error
 - Supports theme_config, content_context, styling_mode parameters
 
-Version: 1.3.0
+Version: 1.3.1
 """
 
 import json
@@ -35,6 +36,14 @@ from ...models.content_context import ContentContext, get_default_content_contex
 from ...models.requests import ThemeConfig
 
 logger = logging.getLogger(__name__)
+
+# =============================================================================
+# Hardcoded C1 Content Dimensions (from Layout Service)
+# =============================================================================
+# C1-text layout has a FIXED 30×14 grid (1800×840 pixels at 60px/cell).
+# No need to wait for available_space parameter - always use multi-step.
+
+C1_CONTENT_DIMENSIONS = {"width_px": 1800, "height_px": 840}
 
 
 class C1TextGenerator(BaseSlideGenerator):
@@ -262,22 +271,20 @@ Return ONLY the JSON object. Do NOT include ```json markers."""
         """
         Generate content slide with combined title + subtitle + body.
 
-        v1.3.0 behavior:
-        - If available_space provided: Use multi-step generation (2 LLM calls, ~85% space utilization)
-        - Otherwise: Use single-step generation (1 LLM call, backward compatible)
+        v1.3.1 behavior:
+        - ALWAYS uses multi-step generation with hardcoded 1800×840 dimensions
+        - Ignores available_space parameter (no longer needed for C1)
+        - Falls back to single-step only on multi-step error
 
         Args:
             request: UnifiedSlideRequest with narrative, topics, variant_id,
-                     and optional theme_config, content_context, styling_mode, available_space
+                     and optional theme_config, content_context, styling_mode
 
         Returns:
             ContentSlideResponse with structured fields
         """
-        # v1.3.0: Route based on available_space
-        if request.available_space:
-            return await self._generate_multi_step(request)
-        else:
-            return await self._generate_single_step(request)
+        # v1.3.1: Always use multi-step with hardcoded C1 dimensions
+        return await self._generate_multi_step(request)
 
     async def _generate_multi_step(
         self,
@@ -286,11 +293,12 @@ Return ONLY the JSON object. Do NOT include ```json markers."""
         """
         Generate using 3-phase multi-step pipeline.
 
-        Activated when available_space is provided.
+        v1.3.1: ALWAYS uses hardcoded 1800×840 dimensions (C1 content area).
+        No need for available_space parameter - dimensions are fixed.
         Uses 2 LLM calls for ~85% space utilization.
 
         Args:
-            request: UnifiedSlideRequest with available_space
+            request: UnifiedSlideRequest with narrative, topics, variant_id
 
         Returns:
             ContentSlideResponse with enhanced metadata
@@ -298,13 +306,16 @@ Return ONLY the JSON object. Do NOT include ```json markers."""
         start_time = time.time()
         variant_id = request.variant_id or "bullets"
 
-        logger.info(f"[C1-text] Multi-step generation for variant={variant_id}")
+        # v1.3.1: Use hardcoded C1 content dimensions
+        width_px = C1_CONTENT_DIMENSIONS["width_px"]
+        height_px = C1_CONTENT_DIMENSIONS["height_px"]
+
+        logger.info(
+            f"[C1-text] Multi-step generation for variant={variant_id} "
+            f"(hardcoded dims: {width_px}x{height_px}px)"
+        )
 
         try:
-            # Parse available_space Dict → AvailableSpace model
-            space = AvailableSpace(**request.available_space)
-            width_px, height_px = space.to_pixels()
-
             # Parse theme_config Dict → ThemeConfig (or None for defaults)
             theme_config = None
             if request.theme_config:
@@ -321,7 +332,7 @@ Return ONLY the JSON object. Do NOT include ```json markers."""
                 except Exception as e:
                     logger.warning(f"[C1-text] Failed to parse content_context, using defaults: {e}")
 
-            # Use MultiStepGenerator
+            # Use MultiStepGenerator with hardcoded dimensions
             multi_step = MultiStepGenerator(self.llm_service)
             response = await multi_step.generate(
                 narrative=request.narrative,
