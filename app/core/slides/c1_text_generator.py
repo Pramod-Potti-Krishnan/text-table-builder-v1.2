@@ -6,7 +6,12 @@ This is the key innovation in the v1.2.1 endpoint restructuring.
 
 Supports all 34 content variants via variant_id parameter.
 
-Version: 1.2.1
+v1.3.0: Added multi-step generation when available_space is provided.
+- Multi-step uses 2 LLM calls for ~85% space utilization
+- Single-step (1 LLM call) remains default for backward compatibility
+- Supports theme_config, content_context, styling_mode parameters
+
+Version: 1.3.0
 """
 
 import json
@@ -21,8 +26,13 @@ from ...models.slides_models import (
     SlideLayoutType,
     ContentStyle,
     ALL_C1_VARIANTS,
-    C1_VARIANT_CATEGORIES
+    C1_VARIANT_CATEGORIES,
+    AvailableSpace
 )
+# v1.3.0: Multi-step generation imports
+from ...core.content import MultiStepGenerator
+from ...models.content_context import ContentContext, get_default_content_context
+from ...models.requests import ThemeConfig
 
 logger = logging.getLogger(__name__)
 
@@ -252,7 +262,103 @@ Return ONLY the JSON object. Do NOT include ```json markers."""
         """
         Generate content slide with combined title + subtitle + body.
 
-        Uses single LLM call for all three components (saves 2 calls).
+        v1.3.0 behavior:
+        - If available_space provided: Use multi-step generation (2 LLM calls, ~85% space utilization)
+        - Otherwise: Use single-step generation (1 LLM call, backward compatible)
+
+        Args:
+            request: UnifiedSlideRequest with narrative, topics, variant_id,
+                     and optional theme_config, content_context, styling_mode, available_space
+
+        Returns:
+            ContentSlideResponse with structured fields
+        """
+        # v1.3.0: Route based on available_space
+        if request.available_space:
+            return await self._generate_multi_step(request)
+        else:
+            return await self._generate_single_step(request)
+
+    async def _generate_multi_step(
+        self,
+        request: UnifiedSlideRequest
+    ) -> ContentSlideResponse:
+        """
+        Generate using 3-phase multi-step pipeline.
+
+        Activated when available_space is provided.
+        Uses 2 LLM calls for ~85% space utilization.
+
+        Args:
+            request: UnifiedSlideRequest with available_space
+
+        Returns:
+            ContentSlideResponse with enhanced metadata
+        """
+        start_time = time.time()
+        variant_id = request.variant_id or "bullets"
+
+        logger.info(f"[C1-text] Multi-step generation for variant={variant_id}")
+
+        try:
+            # Parse available_space Dict → AvailableSpace model
+            space = AvailableSpace(**request.available_space)
+            width_px, height_px = space.to_pixels()
+
+            # Parse theme_config Dict → ThemeConfig (or None for defaults)
+            theme_config = None
+            if request.theme_config:
+                try:
+                    theme_config = ThemeConfig(**request.theme_config)
+                except Exception as e:
+                    logger.warning(f"[C1-text] Failed to parse theme_config, using defaults: {e}")
+
+            # Parse content_context Dict → ContentContext (or use defaults)
+            content_context = None
+            if request.content_context:
+                try:
+                    content_context = ContentContext(**request.content_context)
+                except Exception as e:
+                    logger.warning(f"[C1-text] Failed to parse content_context, using defaults: {e}")
+
+            # Use MultiStepGenerator
+            multi_step = MultiStepGenerator(self.llm_service)
+            response = await multi_step.generate(
+                narrative=request.narrative,
+                topics=request.topics or [],
+                available_width_px=width_px,
+                available_height_px=height_px,
+                theme_config=theme_config,
+                content_context=content_context,
+                styling_mode=request.styling_mode,
+                slide_number=request.slide_number,
+                variant_id=variant_id
+            )
+
+            elapsed = int((time.time() - start_time) * 1000)
+            logger.info(
+                f"[C1-text] Multi-step completed in {elapsed}ms "
+                f"(variant={variant_id}, space={width_px}x{height_px}px)"
+            )
+
+            return response
+
+        except Exception as e:
+            elapsed = int((time.time() - start_time) * 1000)
+            logger.error(f"[C1-text] Multi-step generation failed after {elapsed}ms: {e}")
+            # Fall back to single-step on error
+            logger.info("[C1-text] Falling back to single-step generation")
+            return await self._generate_single_step(request)
+
+    async def _generate_single_step(
+        self,
+        request: UnifiedSlideRequest
+    ) -> ContentSlideResponse:
+        """
+        Generate using single LLM call (v1.2.1 behavior).
+
+        Default when available_space is not provided.
+        Uses 1 LLM call for all three components.
 
         Args:
             request: UnifiedSlideRequest with narrative, topics, variant_id
@@ -263,7 +369,7 @@ Return ONLY the JSON object. Do NOT include ```json markers."""
         start_time = time.time()
         variant_id = request.variant_id or "bullets"
 
-        logger.info(f"[C1-text] Generating combined content for variant={variant_id}")
+        logger.info(f"[C1-text] Single-step generation for variant={variant_id}")
 
         try:
             # Get variant configuration
@@ -300,13 +406,14 @@ Return ONLY the JSON object. Do NOT include ```json markers."""
                 start_time=start_time,
                 extra={
                     "llm_calls": 1,
-                    "generation_mode": "combined",
+                    "generation_mode": "single_step",
                     "variant_id": variant_id,
                     "variant_description": variant_config.get("description"),
                     "content_style": request.content_style.value,
                     "title_length": len(slide_title),
                     "subtitle_length": len(subtitle) if subtitle else 0,
                     "body_length": len(body),
+                    "multi_step": {"enabled": False}
                 }
             )
 
@@ -322,7 +429,7 @@ Return ONLY the JSON object. Do NOT include ```json markers."""
             )
 
             logger.info(
-                f"[C1-text] Generated variant={variant_id} in {metadata['generation_time_ms']}ms "
+                f"[C1-text] Single-step completed variant={variant_id} in {metadata['generation_time_ms']}ms "
                 f"(title={len(slide_title)}, body={len(body)} chars)"
             )
 
@@ -330,7 +437,7 @@ Return ONLY the JSON object. Do NOT include ```json markers."""
 
         except Exception as e:
             elapsed = int((time.time() - start_time) * 1000)
-            logger.error(f"[C1-text] Generation failed after {elapsed}ms: {e}")
+            logger.error(f"[C1-text] Single-step generation failed after {elapsed}ms: {e}")
             raise
 
     @classmethod
