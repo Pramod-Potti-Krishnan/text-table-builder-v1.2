@@ -22,6 +22,8 @@ HTML Structure:
 Constraints:
 - Section title: 40-60 characters (clear section name)
 - Section description: 80-120 characters (what's coming next)
+
+Version: 1.3.0 - Added theme_config and content_context support
 """
 
 from typing import Dict, Any
@@ -56,6 +58,9 @@ class SectionDividerGenerator(BaseHeroGenerator):
         Creates a comprehensive prompt that instructs the LLM to generate
         a section transition slide with proper HTML structure and constraints.
 
+        v1.3.0: Uses theme_config for dynamic typography and colors,
+        and content_context for audience-adapted language.
+
         Args:
             request: Hero generation request with narrative and context
 
@@ -68,6 +73,49 @@ class SectionDividerGenerator(BaseHeroGenerator):
         narrative = request.narrative
         topics = request.topics
 
+        # v1.3.0: Extract theme_config for dynamic styling
+        theme_config = request.context.get("theme_config")
+        content_context = request.context.get("content_context")
+
+        # Extract typography from theme_config with defaults
+        if theme_config and "typography" in theme_config:
+            typo = theme_config["typography"]
+            hero_title = typo.get("hero_title", typo.get("slide_title", {}))
+            title_size = hero_title.get("size", 84)
+            title_weight = hero_title.get("weight", 700)
+            hero_subtitle = typo.get("hero_subtitle", typo.get("t1", {}))
+            context_size = hero_subtitle.get("size", 42)
+        else:
+            title_size, title_weight = 84, 700
+            context_size = 42
+
+        # Extract colors from theme_config
+        if theme_config and "colors" in theme_config:
+            colors = theme_config["colors"]
+            background_color = colors.get("surface_dark", "#1f2937")
+            accent_color = colors.get("accent", "#667eea")
+            muted_color = colors.get("text_muted", "#9ca3af")
+        else:
+            background_color = "#1f2937"
+            accent_color = "#667eea"
+            muted_color = "#9ca3af"
+
+        # v1.3.0: Build audience context section
+        context_section = ""
+        if content_context:
+            audience_info = content_context.get("audience", {})
+            purpose_info = content_context.get("purpose", {})
+            audience_type = audience_info.get("audience_type", "professional")
+            complexity = audience_info.get("complexity_level", "moderate")
+            purpose_type = purpose_info.get("purpose_type", "inform")
+
+            context_section = f"""
+## 📊 AUDIENCE & PURPOSE
+- **Audience**: {audience_type} ({complexity} complexity)
+- **Purpose**: {purpose_type}
+- **Language**: Adapt vocabulary and tone for {audience_type} audience
+"""
+
         # Build rich prompt based on v1.1 world-class template
         prompt = f"""Generate HTML content for a SECTION DIVIDER SLIDE (L29 Hero Layout).
 
@@ -75,7 +123,7 @@ class SectionDividerGenerator(BaseHeroGenerator):
 **Cognitive Function**: Signal topic transition with minimal distraction
 **When to Use**: Between major presentation sections
 **Word Count Target**: 25-45 words total
-
+{context_section}
 ## 📋 Content Requirements
 
 1. **Section Title** (3-6 words)
@@ -92,14 +140,14 @@ class SectionDividerGenerator(BaseHeroGenerator):
 ## 🎨 MANDATORY Styling (CRITICAL - DO NOT SKIP)
 
 ### Typography (EXACT sizes required):
-- Section Title: font-size: 84px; font-weight: 700
-- Context Text: font-size: 42px; font-weight: 400; color: #9ca3af (muted gray)
+- Section Title: font-size: {title_size}px; font-weight: {title_weight}
+- Context Text: font-size: {context_size}px; font-weight: 400; color: {muted_color}
 
 ### Visual Requirements (ALL REQUIRED):
-- ✅ Dark solid background (#1f2937) - creates contrast
-- ✅ Colored left border accent (12px wide)
+- ✅ Dark solid background ({background_color}) - creates contrast
+- ✅ Colored left border accent (12px wide): {accent_color}
 - ✅ White text color for title
-- ✅ Muted gray (#9ca3af) for context text
+- ✅ Muted gray ({muted_color}) for context text
 - ✅ Left-aligned text block (NOT centered)
 - ✅ Padding-left: 48px (text offset from border)
 
@@ -108,35 +156,29 @@ class SectionDividerGenerator(BaseHeroGenerator):
 - Flexbox centered vertically: display: flex; align-items: center; justify-content: center
 - Content block has left border accent
 
-## 🎨 Border Color Options (Choose based on section theme):
-Strategy/Planning: border-left: 12px solid #667eea (Purple)
-Execution/Action: border-left: 12px solid #1a73e8 (Blue)
-Results/Success: border-left: 12px solid #34a853 (Green)
-Innovation: border-left: 12px solid #9333ea (Deep Purple)
-
 ## ✨ GOLDEN EXAMPLE (Follow this EXACTLY):
 ```html
 <div style="width: 100%;
             height: 100%;
-            background: #1f2937;
+            background: {background_color};
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 80px;">
 
-  <div style="border-left: 12px solid #667eea;
+  <div style="border-left: 12px solid {accent_color};
               padding-left: 48px;">
 
-    <h2 style="font-size: 84px;
+    <h2 style="font-size: {title_size}px;
                color: white;
-               font-weight: 700;
+               font-weight: {title_weight};
                margin: 0 0 24px 0;
                line-height: 1.1;">
       Implementation Roadmap
     </h2>
 
-    <p style="font-size: 42px;
-              color: #9ca3af;
+    <p style="font-size: {context_size}px;
+              color: {muted_color};
               font-weight: 400;
               margin: 0;
               line-height: 1.3;">
@@ -153,10 +195,10 @@ Innovation: border-left: 12px solid #9333ea (Deep Purple)
 - NO markdown code blocks (```html)
 - NO explanations or comments
 - MUST include ALL inline styles shown
-- MUST use dark background (#1f2937)
-- MUST use left border accent (12px solid color)
-- MUST use large font size (84px for title)
-- Context text MUST be muted gray (#9ca3af)
+- MUST use dark background ({background_color})
+- MUST use left border accent (12px solid {accent_color})
+- MUST use the exact font size ({title_size}px for title)
+- Context text MUST be muted ({muted_color})
 
 **Content Inputs**:
 Narrative: {narrative}

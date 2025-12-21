@@ -20,6 +20,8 @@ Purpose:
 - Opening slide with visual impact
 - AI-generated background relevant to presentation topic
 - Main title + subtitle on left side (white text on dark overlay)
+
+Version: 1.3.0 - Added theme_config and content_context support
 """
 
 import asyncio
@@ -165,6 +167,9 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
         Modified from parent to use LEFT-aligned text and CSS gradient overlay
         instead of full gradient background.
 
+        v1.3.0: Uses theme_config for dynamic typography and accent colors,
+        and content_context for audience-adapted language.
+
         Args:
             request: Hero generation request with narrative and context
 
@@ -178,13 +183,58 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
         narrative = request.narrative
         topics = request.topics
 
+        # v1.3.0: Extract theme_config for dynamic styling
+        theme_config = request.context.get("theme_config")
+        content_context = request.context.get("content_context")
+
+        # Extract typography from theme_config with defaults
+        if theme_config and "typography" in theme_config:
+            typo = theme_config["typography"]
+            hero_title = typo.get("hero_title", {})
+            # Convert px to rem (base 16px)
+            title_size_px = hero_title.get("size", 88)
+            title_size = f"{title_size_px / 16:.2f}rem"
+            title_weight = hero_title.get("weight", 800)
+            hero_subtitle = typo.get("hero_subtitle", typo.get("slide_title", {}))
+            subtitle_size_px = hero_subtitle.get("size", 34)
+            subtitle_size = f"{subtitle_size_px / 16:.2f}rem"
+        else:
+            title_size, title_weight = "5.5rem", 800
+            subtitle_size = "2.1rem"
+
+        # Extract accent colors from theme_config
+        if theme_config and "colors" in theme_config:
+            colors = theme_config["colors"]
+            accent = colors.get("accent", "#4facfe")
+            accent_light = colors.get("accent_light", "#00f2fe")
+            accent_gradient = f"linear-gradient(135deg, {accent} 0%, {accent_light} 100%)"
+        else:
+            accent_gradient = "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+
+        # v1.3.0: Build audience context section
+        context_section = ""
+        if content_context:
+            audience_info = content_context.get("audience", {})
+            purpose_info = content_context.get("purpose", {})
+            audience_type = audience_info.get("audience_type", "professional")
+            complexity = audience_info.get("complexity_level", "moderate")
+            purpose_type = purpose_info.get("purpose_type", "inform")
+
+            context_section = f"""
+## 📊 AUDIENCE & PURPOSE
+- **Audience**: {audience_type} ({complexity} complexity)
+- **Purpose**: {purpose_type}
+- **Language**: Adapt vocabulary and tone for {audience_type} audience
+- **Avoid jargon**: {"Yes - use simple language" if audience_info.get("avoid_jargon") else "Use professional terminology as appropriate"}
+"""
+
         # Build prompt with IMPROVED professional design
         prompt = f"""Generate HTML content for a PROFESSIONAL TITLE SLIDE with AI background image.
 
 ## 🎯 Slide Purpose
 **Function**: Opening slide with maximum visual impact
 **Word Count**: 40-55 words total (brief and punchy)
-
+{context_section}
 ## 📋 Content Requirements
 
 1. **Main Title** (5-8 words maximum)
@@ -204,8 +254,8 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 ## 🎨 MANDATORY STYLING (Modern Professional Design)
 
 ### Typography (Inter font, fixed sizes for reveal.js scaling):
-- Title: font-size: 5.5rem; font-weight: 800; letter-spacing: -0.04em
-- Subtitle: font-size: 2.1rem; font-weight: 300; line-height: 1.5
+- Title: font-size: {title_size}; font-weight: {title_weight}; letter-spacing: -0.04em
+- Subtitle: font-size: {subtitle_size}; font-weight: 300; line-height: 1.5
 - Footer: font-size: 1.6rem; font-weight: 400; letter-spacing: 0.05em
 
 ### Layout (Professional, Balanced):
@@ -226,16 +276,16 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
   <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column;
               justify-content: center; padding-left: 6%; padding-right: 50%; color: #ffffff;">
 
-    <h1 style="font-size: 5.5rem; font-weight: 800; line-height: 1.05;
+    <h1 style="font-size: {title_size}; font-weight: {title_weight}; line-height: 1.05;
                letter-spacing: -0.04em; margin: 0 0 28px 0; color: #ffffff;
                text-shadow: 0 4px 12px rgba(0,0,0,0.4); max-width: 100%;">
-      Your Title with <span style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      Your Title with <span style="background: {accent_gradient};
                                     -webkit-background-clip: text;
                                     -webkit-text-fill-color: transparent;
                                     background-clip: text;">Key Word</span> Here
     </h1>
 
-    <p style="font-size: 2.1rem; font-weight: 300; line-height: 1.5;
+    <p style="font-size: {subtitle_size}; font-weight: 300; line-height: 1.5;
               color: rgba(255,255,255,0.92); margin: 0; max-width: 90%;
               text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
       Your focused subtitle benefit statement here.
@@ -258,7 +308,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
 ## 📤 OUTPUT INSTRUCTIONS
 - Return ONLY the HTML (NO code blocks, NO explanations)
-- Use EXACT structure above with fixed rem font sizes
+- Use EXACT structure above with the specified font sizes
 - Keep subtitle BRIEF (8-12 words max, NOT a paragraph)
 - Use Inter font (included in template)
 - Footer must have separators and proper date format
@@ -267,8 +317,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 ## ✨ ACCENT COLOR HIGHLIGHTING (MANDATORY)
 - Wrap 1-2 KEY WORDS in title with accent color gradient span
 - Choose the most important/impactful word(s) from narrative/topics
-- Use the EXACT gradient style shown in template
-- Gradient colors: #4facfe → #00f2fe (healthcare blue)
+- Use the EXACT gradient style: {accent_gradient}
 - Example: "AI in <span style='...gradient...'>Healthcare</span>"
 - The highlighted word should be the CORE TOPIC or KEY CONCEPT
 
@@ -407,11 +456,18 @@ Generate the professional title slide HTML NOW:"""
         Raises:
             Exception: If generation fails after retries
         """
+        # Detect domain from narrative/topics for semantic cache
+        combined_text = f"{request.narrative} {' '.join(request.topics) if request.topics else ''}".lower()
+        domain = self._detect_domain(combined_text)
+
         metadata = {
             "slide_type": "title_slide",
             "slide_number": request.slide_number,
             "narrative": request.narrative[:100],  # Truncate for storage
-            "visual_style": request.visual_style
+            "visual_style": request.visual_style,
+            # Semantic cache fields
+            "topics": request.topics[:5] if request.topics else [],  # Top 5 topics
+            "domain": domain
         }
 
         # Get appropriate model based on slide type and visual style
@@ -424,6 +480,75 @@ Generate the professional title slide HTML NOW:"""
             model=model,
             archetype=archetype
         )
+
+    def _detect_domain(self, text: str) -> str:
+        """
+        Detect content domain from text for semantic cache categorization.
+
+        Args:
+            text: Combined narrative and topics text (lowercase)
+
+        Returns:
+            Domain identifier string
+        """
+        # Religious/Spiritual
+        if any(word in text for word in [
+            'shiva', 'hindu', 'temple', 'prayer', 'spiritual', 'sacred',
+            'meditation', 'worship', 'divine', 'god', 'goddess', 'religious',
+            'buddha', 'christian', 'islam', 'church', 'mosque', 'dharma'
+        ]):
+            return "religious"
+
+        # Healthcare
+        if any(word in text for word in [
+            'health', 'medical', 'hospital', 'patient', 'diagnostic',
+            'clinical', 'doctor', 'nurse', 'healthcare', 'medicine'
+        ]):
+            return "healthcare"
+
+        # Technology
+        if any(word in text for word in [
+            'tech', 'software', 'digital', 'ai', 'data', 'cloud',
+            'code', 'algorithm', 'computing', 'system', 'cyber'
+        ]):
+            return "tech"
+
+        # Education
+        if any(word in text for word in [
+            'school', 'university', 'student', 'learning', 'education',
+            'teach', 'academic', 'classroom', 'course', 'curriculum'
+        ]):
+            return "education"
+
+        # Finance
+        if any(word in text for word in [
+            'finance', 'business', 'market', 'trading', 'investment',
+            'bank', 'revenue', 'profit', 'economy', 'financial'
+        ]):
+            return "finance"
+
+        # Nature/Environment
+        if any(word in text for word in [
+            'nature', 'environment', 'climate', 'green', 'sustainable',
+            'wildlife', 'forest', 'ocean', 'conservation', 'ecosystem'
+        ]):
+            return "nature"
+
+        # Science
+        if any(word in text for word in [
+            'research', 'experiment', 'laboratory', 'chemistry', 'physics',
+            'biology', 'scientific', 'discovery', 'hypothesis', 'analysis'
+        ]):
+            return "science"
+
+        # Creative
+        if any(word in text for word in [
+            'art', 'design', 'creative', 'music', 'artist', 'gallery',
+            'paint', 'sculpture', 'photography', 'illustration', 'visual'
+        ]):
+            return "creative"
+
+        return "default"
 
     async def _generate_content(
         self,

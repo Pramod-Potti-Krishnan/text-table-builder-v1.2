@@ -24,6 +24,8 @@ Constraints:
 - Closing message: 50-80 characters (thank you + takeaway)
 - Call-to-action: 80-120 characters (next steps)
 - Contact info: 60-100 characters (email, website, or social)
+
+Version: 1.3.0 - Added theme_config and content_context support
 """
 
 from typing import Dict, Any
@@ -59,6 +61,9 @@ class ClosingSlideGenerator(BaseHeroGenerator):
         Creates a comprehensive prompt that instructs the LLM to generate
         a closing slide with proper HTML structure and constraints.
 
+        v1.3.0: Uses theme_config for dynamic typography and colors,
+        and content_context for audience-adapted language.
+
         Args:
             request: Hero generation request with narrative and context
 
@@ -72,6 +77,55 @@ class ClosingSlideGenerator(BaseHeroGenerator):
         narrative = request.narrative
         topics = request.topics
 
+        # v1.3.0: Extract theme_config for dynamic styling
+        theme_config = request.context.get("theme_config")
+        content_context = request.context.get("content_context")
+
+        # Extract typography from theme_config with defaults
+        if theme_config and "typography" in theme_config:
+            typo = theme_config["typography"]
+            hero_title = typo.get("hero_title", {})
+            closing_size = hero_title.get("size", 72)
+            closing_weight = hero_title.get("weight", 700)
+            t1 = typo.get("t1", {})
+            supporting_size = t1.get("size", 36)
+            cta_size = typo.get("t2", {}).get("size", 32)
+            contact_size = typo.get("t3", {}).get("size", 28)
+        else:
+            closing_size, closing_weight = 72, 700
+            supporting_size = 36
+            cta_size = 32
+            contact_size = 28
+
+        # Extract colors from theme_config
+        if theme_config and "colors" in theme_config:
+            colors = theme_config["colors"]
+            primary = colors.get("primary", "#667eea")
+            secondary = colors.get("secondary", "#764ba2")
+            gradient = f"linear-gradient(135deg, {primary} 0%, {secondary} 100%)"
+            button_text_color = primary  # Button text matches gradient
+        else:
+            gradient = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+            button_text_color = "#667eea"
+
+        # v1.3.0: Build audience context section
+        context_section = ""
+        if content_context:
+            audience_info = content_context.get("audience", {})
+            purpose_info = content_context.get("purpose", {})
+            audience_type = audience_info.get("audience_type", "professional")
+            complexity = audience_info.get("complexity_level", "moderate")
+            purpose_type = purpose_info.get("purpose_type", "inform")
+            include_cta = purpose_info.get("include_cta", True)
+
+            context_section = f"""
+## 📊 AUDIENCE & PURPOSE
+- **Audience**: {audience_type} ({complexity} complexity)
+- **Purpose**: {purpose_type}
+- **Language**: Adapt vocabulary and tone for {audience_type} audience
+- **Include CTA**: {"Yes - emphasize call to action" if include_cta else "Focus on thank you and summary"}
+"""
+
         # Build rich prompt based on v1.1 world-class template
         prompt = f"""Generate HTML content for a CLOSING SLIDE (L29 Hero Layout).
 
@@ -79,7 +133,7 @@ class ClosingSlideGenerator(BaseHeroGenerator):
 **Cognitive Function**: Drive action with clear next steps and contact info
 **When to Use**: Final slide ONLY - lasting impression
 **Word Count Target**: 65-85 words total
-
+{context_section}
 ## 📋 Content Requirements
 
 1. **Closing Message** (5-8 words)
@@ -111,17 +165,17 @@ class ClosingSlideGenerator(BaseHeroGenerator):
 ## 🎨 MANDATORY Styling (CRITICAL - DO NOT SKIP)
 
 ### Typography (EXACT sizes required):
-- Closing Message: font-size: 72px; font-weight: 700
-- Supporting Text: font-size: 36px; font-weight: 400
-- CTA Button: font-size: 32px; font-weight: 700
-- Contact Info: font-size: 28px; font-weight: 400
+- Closing Message: font-size: {closing_size}px; font-weight: {closing_weight}
+- Supporting Text: font-size: {supporting_size}px; font-weight: 400
+- CTA Button: font-size: {cta_size}px; font-weight: 700
+- Contact Info: font-size: {contact_size}px; font-weight: 400
 
 ### Visual Requirements (ALL REQUIRED):
-- ✅ Gradient background (choose from options below)
+- ✅ Gradient background: {gradient}
 - ✅ White text color on all elements
 - ✅ Text shadows on ALL text (0 4px 12px rgba for h2)
 - ✅ Center alignment (text-align: center)
-- ✅ CTA button: white background, colored text matching gradient
+- ✅ CTA button: white background, colored text ({button_text_color})
 - ✅ Button shadow: 0 8px 24px rgba(0,0,0,0.3)
 - ✅ Generous spacing (48-64px between elements)
 - ✅ 80px padding around edges
@@ -134,31 +188,25 @@ class ClosingSlideGenerator(BaseHeroGenerator):
 ### CTA Button Requirements (CRITICAL):
 padding: 32px 72px;
 background: white;
-color: #667eea;  /* Matches gradient */
+color: {button_text_color};
 border-radius: 12px;
 box-shadow: 0 8px 24px rgba(0,0,0,0.3);
 font-weight: 700;
-
-## 🎨 Gradient Options (Choose based on theme: {theme}):
-Professional: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)
-Bold/Modern: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
-Warm: linear-gradient(135deg, #ffa751 0%, #ffe259 100%)
-Deep Navy: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)
 
 ## ✨ GOLDEN EXAMPLE (Follow this EXACTLY):
 ```html
 <div style="width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: {gradient};
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 80px;">
 
-  <h2 style="font-size: 72px;
+  <h2 style="font-size: {closing_size}px;
              color: white;
-             font-weight: 700;
+             font-weight: {closing_weight};
              text-align: center;
              margin: 0 0 48px 0;
              line-height: 1.2;
@@ -166,7 +214,7 @@ Deep Navy: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)
     Ready to Transform Your Operations?
   </h2>
 
-  <p style="font-size: 36px;
+  <p style="font-size: {supporting_size}px;
             color: rgba(255,255,255,0.95);
             text-align: center;
             max-width: 1400px;
@@ -177,9 +225,9 @@ Deep Navy: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)
   </p>
 
   <div style="padding: 32px 72px;
-              font-size: 32px;
+              font-size: {cta_size}px;
               background: white;
-              color: #667eea;
+              color: {button_text_color};
               border-radius: 12px;
               font-weight: 700;
               box-shadow: 0 8px 24px rgba(0,0,0,0.3);
@@ -187,7 +235,7 @@ Deep Navy: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)
     Schedule Your Demo Today
   </div>
 
-  <div style="font-size: 28px;
+  <div style="font-size: {contact_size}px;
               color: rgba(255,255,255,0.9);
               text-align: center;
               text-shadow: 0 2px 6px rgba(0,0,0,0.2);">
@@ -203,8 +251,8 @@ Deep Navy: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)
 - NO explanations or comments
 - MUST include ALL inline styles shown
 - MUST use gradient background
-- MUST use large font sizes (72px/36px/32px/28px)
-- MUST include white CTA button with colored text
+- MUST use the exact font sizes ({closing_size}px/{supporting_size}px/{cta_size}px/{contact_size}px)
+- MUST include white CTA button with colored text ({button_text_color})
 - Word count target: 65-85 words
 
 **Content Inputs**:

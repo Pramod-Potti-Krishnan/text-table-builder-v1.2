@@ -20,6 +20,8 @@ Purpose:
 - Closing slide with inspiring visual
 - AI-generated background relevant to presentation outcome/impact
 - Call-to-action with center-aligned layout
+
+Version: 1.3.0 - Added theme_config and content_context support
 """
 
 import asyncio
@@ -184,6 +186,9 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
         LEFT column: text content (eyebrow, title, description, contact)
         RIGHT column: image with gradient overlay
 
+        v1.3.0: Uses theme_config for dynamic typography and accent colors,
+        and content_context for audience-adapted language.
+
         Args:
             request: Hero generation request with narrative and context
 
@@ -197,8 +202,54 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
         narrative = request.narrative
         topics = request.topics
 
+        # v1.3.0: Extract theme_config for dynamic styling
+        theme_config = request.context.get("theme_config")
+        content_context = request.context.get("content_context")
+
+        # v1.3.0: Extract typography from theme_config with defaults
+        if theme_config and "typography" in theme_config:
+            typo = theme_config["typography"]
+            hero_title = typo.get("hero_title", {})
+            title_size_px = hero_title.get("size", 88)
+            title_size = f"{title_size_px / 16:.2f}rem"
+            title_weight = hero_title.get("weight", 700)
+            hero_subtitle = typo.get("hero_subtitle", typo.get("slide_title", {}))
+            desc_size_px = hero_subtitle.get("size", 34)
+            desc_size = f"{desc_size_px / 16:.2f}rem"
+        else:
+            title_size, title_weight = "5.5rem", 700
+            desc_size = "2.1rem"
+
+        # v1.3.0: Extract accent colors from theme_config
+        if theme_config and "colors" in theme_config:
+            colors = theme_config["colors"]
+            accent = colors.get("accent", "#00d9ff")
+            background_dark = colors.get("surface_dark", "#0b0f19")
+        else:
+            accent = "#00d9ff"
+            background_dark = "#0b0f19"
+
+        # v1.3.0: Build audience context section
+        context_section = ""
+        if content_context:
+            audience_info = content_context.get("audience", {})
+            purpose_info = content_context.get("purpose", {})
+            audience_type = audience_info.get("audience_type", "professional")
+            complexity = audience_info.get("complexity_level", "moderate")
+            purpose_type = purpose_info.get("purpose_type", "inform")
+            include_cta = purpose_info.get("include_cta", True)
+
+            context_section = f"""
+## 📊 AUDIENCE & PURPOSE
+- **Audience**: {audience_type} ({complexity} complexity)
+- **Purpose**: {purpose_type}
+- **Language**: Adapt vocabulary and tone for {audience_type} audience
+- **Include CTA**: {"Yes - emphasize call to action" if include_cta else "Focus on thank you and summary"}
+"""
+
         # Build prompt with split-layout design
         prompt = f"""Generate HTML content for a MODERN CLOSING SLIDE with SPLIT LAYOUT.
+{context_section}
 
 ## 🎯 Slide Purpose
 **Function**: Final slide with strong visual impact and clear call-to-action
@@ -234,44 +285,44 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 ## 🎨 MANDATORY STYLING (Professional Dark Theme)
 
 ### Layout Structure (EXACT):
-- Container: display: flex; width: 100%; height: 100%; background: #0b0f19
+- Container: display: flex; width: 100%; height: 100%; background: {background_dark}
 - LEFT column (flex: 1): Text content, padding: 8% 6%
 - RIGHT column (flex: 1.1): Image with gradient overlay
 
 ### Typography (Inter font, fixed sizes for reveal.js scaling):
-- Eyebrow: font-size: 1.6rem; letter-spacing: 0.15em; color: #00d9ff
-- Title: font-size: 5.5rem; font-weight: 700; color: #ffffff
-- Description: font-size: 2.1rem; font-weight: 300; color: rgba(255,255,255,0.8)
+- Eyebrow: font-size: 1.6rem; letter-spacing: 0.15em; color: {accent}
+- Title: font-size: {title_size}; font-weight: {title_weight}; color: #ffffff
+- Description: font-size: {desc_size}; font-weight: 300; color: rgba(255,255,255,0.8)
 - Contact: font-size: 1.6rem; font-weight: 400; color: rgba(255,255,255,0.9)
 
 ### Visual Elements:
-- Eyebrow has cyan ::before line (width: 50px, height: 3px, background: #00d9ff)
+- Eyebrow has accent ::before line (width: 50px, height: 3px, background: {accent})
 - Contact info in rounded boxes with icons (circular backgrounds)
 - Icon circles: width: 44px; height: 44px; border-radius: 50%; background: rgba(0,217,255,0.1)
 - Use Font Awesome icons (fa-envelope, fa-linkedin)
 
 ## ✨ EXACT TEMPLATE (Use this structure):
 ```html
-<div style="display: flex; width: 100%; height: 100%; background: #0b0f19; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+<div style="display: flex; width: 100%; height: 100%; background: {background_dark}; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
 
   <!-- LEFT COLUMN: Text Content -->
   <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8% 6%; color: #ffffff;">
 
     <!-- Eyebrow with decorative line -->
     <div style="position: relative; display: inline-block; margin-bottom: 24px;">
-      <div style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 50px; height: 3px; background: #00d9ff; margin-right: 15px;"></div>
-      <span style="padding-left: 65px; font-size: 1.6rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #00d9ff;">
+      <div style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 50px; height: 3px; background: {accent}; margin-right: 15px;"></div>
+      <span style="padding-left: 65px; font-size: 1.6rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: {accent};">
         NEXT STEPS
       </span>
     </div>
 
     <!-- Main Title -->
-    <h1 style="font-size: 5.5rem; font-weight: 700; line-height: 1.1; margin: 0 0 28px 0; color: #ffffff; max-width: 90%;">
+    <h1 style="font-size: {title_size}; font-weight: {title_weight}; line-height: 1.1; margin: 0 0 28px 0; color: #ffffff; max-width: 90%;">
       Ready to Transform Your Healthcare?
     </h1>
 
     <!-- Description -->
-    <p style="font-size: 2.1rem; font-weight: 300; line-height: 1.6; color: rgba(255,255,255,0.8); margin: 0 0 48px 0; max-width: 85%;">
+    <p style="font-size: {desc_size}; font-weight: 300; line-height: 1.6; color: rgba(255,255,255,0.8); margin: 0 0 48px 0; max-width: 85%;">
       Join leading organizations using AI-powered diagnostics to improve patient outcomes and reduce costs.
     </p>
 
@@ -280,7 +331,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
       <!-- Email -->
       <div style="display: flex; align-items: center; gap: 12px;">
         <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(0,217,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <i class="fa-solid fa-envelope" style="color: #00d9ff; font-size: 26px;"></i>
+          <i class="fa-solid fa-envelope" style="color: {accent}; font-size: 26px;"></i>
         </div>
         <span style="font-size: 1.6rem; font-weight: 400; color: rgba(255,255,255,0.9);">
           contact@company.com
@@ -290,7 +341,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
       <!-- LinkedIn -->
       <div style="display: flex; align-items: center; gap: 12px;">
         <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(0,217,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-          <i class="fa-brands fa-linkedin" style="color: #00d9ff; font-size: 26px;"></i>
+          <i class="fa-brands fa-linkedin" style="color: {accent}; font-size: 26px;"></i>
         </div>
         <span style="font-size: 1.6rem; font-weight: 400; color: rgba(255,255,255,0.9);">
           linkedin.com/company/yourcompany
@@ -306,7 +357,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
     <div style="position: absolute; inset: 0; background-size: cover; background-position: center;"></div>
 
     <!-- Gradient overlay for smooth transition from left -->
-    <div style="position: absolute; inset: 0; background: linear-gradient(90deg, #0b0f19 0%, rgba(11,15,25,0.3) 20%, transparent 40%);"></div>
+    <div style="position: absolute; inset: 0; background: linear-gradient(90deg, {background_dark} 0%, rgba(11,15,25,0.3) 20%, transparent 40%);"></div>
   </div>
 
 </div>
@@ -321,10 +372,11 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 - LEFT column: eyebrow + title + description + contact
 - RIGHT column: image placeholder with gradient overlay
 - Must include Font Awesome link at bottom
-- Cyan accent color (#00d9ff) for eyebrow and icons
-- Dark background (#0b0f19)
+- Accent color ({accent}) for eyebrow and icons
+- Dark background ({background_dark})
 - Contact info with icon circles (fa-envelope, fa-linkedin)
 - Replace placeholder contact info with contextually appropriate details
+- Use typography sizes: title {title_size}, description {desc_size}
 
 **Content Inputs**:
 Narrative: {narrative}
@@ -460,11 +512,18 @@ Generate the professional split-layout closing slide HTML NOW:"""
         Raises:
             Exception: If generation fails after retries
         """
+        # Detect domain from narrative/topics for semantic cache
+        combined_text = f"{request.narrative} {' '.join(request.topics) if request.topics else ''}".lower()
+        domain = self._detect_domain(combined_text)
+
         metadata = {
             "slide_type": "closing_slide",
             "slide_number": request.slide_number,
             "narrative": request.narrative[:100],  # Truncate for storage
-            "visual_style": request.visual_style
+            "visual_style": request.visual_style,
+            # Semantic cache fields
+            "topics": request.topics[:5] if request.topics else [],  # Top 5 topics
+            "domain": domain
         }
 
         # Closing slides always use fast model (all styles)
@@ -477,6 +536,75 @@ Generate the professional split-layout closing slide HTML NOW:"""
             model=model,
             archetype=archetype
         )
+
+    def _detect_domain(self, text: str) -> str:
+        """
+        Detect content domain from text for semantic cache categorization.
+
+        Args:
+            text: Combined narrative and topics text (lowercase)
+
+        Returns:
+            Domain identifier string
+        """
+        # Religious/Spiritual
+        if any(word in text for word in [
+            'shiva', 'hindu', 'temple', 'prayer', 'spiritual', 'sacred',
+            'meditation', 'worship', 'divine', 'god', 'goddess', 'religious',
+            'buddha', 'christian', 'islam', 'church', 'mosque', 'dharma'
+        ]):
+            return "religious"
+
+        # Healthcare
+        if any(word in text for word in [
+            'health', 'medical', 'hospital', 'patient', 'diagnostic',
+            'clinical', 'doctor', 'nurse', 'healthcare', 'medicine'
+        ]):
+            return "healthcare"
+
+        # Technology
+        if any(word in text for word in [
+            'tech', 'software', 'digital', 'ai', 'data', 'cloud',
+            'code', 'algorithm', 'computing', 'system', 'cyber'
+        ]):
+            return "tech"
+
+        # Education
+        if any(word in text for word in [
+            'school', 'university', 'student', 'learning', 'education',
+            'teach', 'academic', 'classroom', 'course', 'curriculum'
+        ]):
+            return "education"
+
+        # Finance
+        if any(word in text for word in [
+            'finance', 'business', 'market', 'trading', 'investment',
+            'bank', 'revenue', 'profit', 'economy', 'financial'
+        ]):
+            return "finance"
+
+        # Nature/Environment
+        if any(word in text for word in [
+            'nature', 'environment', 'climate', 'green', 'sustainable',
+            'wildlife', 'forest', 'ocean', 'conservation', 'ecosystem'
+        ]):
+            return "nature"
+
+        # Science
+        if any(word in text for word in [
+            'research', 'experiment', 'laboratory', 'chemistry', 'physics',
+            'biology', 'scientific', 'discovery', 'hypothesis', 'analysis'
+        ]):
+            return "science"
+
+        # Creative
+        if any(word in text for word in [
+            'art', 'design', 'creative', 'music', 'artist', 'gallery',
+            'paint', 'sculpture', 'photography', 'illustration', 'visual'
+        ]):
+            return "creative"
+
+        return "default"
 
     async def _generate_content(
         self,

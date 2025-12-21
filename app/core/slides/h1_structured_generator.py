@@ -80,6 +80,14 @@ class H1StructuredGenerator(BaseSlideGenerator):
         if request.date_info:
             context["date_info"] = request.date_info
 
+        # v1.3.0: Pass theme and content context through context dict
+        if request.theme_config:
+            context["theme_config"] = request.theme_config
+        if request.content_context:
+            context["content_context"] = request.content_context
+        if request.styling_mode:
+            context["styling_mode"] = request.styling_mode
+
         return HeroGenerationRequest(
             slide_number=request.slide_number,
             slide_type="title_slide",

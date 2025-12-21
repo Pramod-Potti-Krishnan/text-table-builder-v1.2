@@ -10,6 +10,8 @@ Pattern follows:
 - Graceful fallback if image fails
 - Style-aware image prompts (professional, illustrated, kids)
 - Content validation and HTML builders
+
+Version: 1.3.0 - Added content_context support for audience-adapted text
 """
 
 import asyncio
@@ -219,6 +221,9 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
         """
         Build LLM prompt for text content generation.
 
+        v1.3.0: Extracts content_context from request.context for
+        audience-adapted language and vocabulary.
+
         Args:
             request: Generation request with narrative and content config
 
@@ -228,6 +233,44 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
         content_style = request.content_style.value
         max_bullets = request.max_bullets
         content_dims = self.content_dimensions
+
+        # v1.3.0: Extract content_context from request context
+        context = request.context if hasattr(request, 'context') and request.context else {}
+        content_context = context.get("content_context")
+        theme_config = context.get("theme_config")
+
+        # v1.3.0: Build audience section
+        audience_section = ""
+        if content_context:
+            audience_info = content_context.get("audience", {})
+            purpose_info = content_context.get("purpose", {})
+            audience_type = audience_info.get("audience_type", "professional")
+            complexity = audience_info.get("complexity_level", "moderate")
+            avoid_jargon = audience_info.get("avoid_jargon", False)
+            purpose_type = purpose_info.get("purpose_type", "inform")
+            include_data = purpose_info.get("include_data", True)
+
+            # Adjust max_bullets based on audience
+            if audience_type in ["kids_tween", "kids_teen"]:
+                max_bullets = min(max_bullets, 3)
+            elif complexity == "low":
+                max_bullets = min(max_bullets, 4)
+
+            audience_section = f"""
+## 📊 AUDIENCE & PURPOSE
+- **Audience**: {audience_type} ({complexity} complexity)
+- **Purpose**: {purpose_type}
+- **Language**: {"Simple, clear language without jargon" if avoid_jargon else f"Professional language appropriate for {audience_type}"}
+- **Data/Stats**: {"Include relevant numbers and data" if include_data else "Focus on concepts, minimize data"}
+- **Tone**: {"Educational and encouraging" if audience_type.startswith("kids") else "Professional and authoritative" if purpose_type == "inform" else "Compelling and persuasive" if purpose_type == "persuade" else "Clear and instructive"}
+"""
+
+        # v1.3.0: Extract colors from theme_config with defaults
+        if theme_config and "colors" in theme_config:
+            colors = theme_config["colors"]
+            text_color = colors.get("text_primary", "#374151")
+        else:
+            text_color = "#374151"
 
         # Determine format instructions based on content style
         if content_style == "bullets":
@@ -253,7 +296,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 ## Slide Information
 Title: {request.title}
 {f"Subtitle: {request.subtitle}" if request.subtitle else ""}
-
+{audience_section}
 ## Narrative/Topic
 {request.narrative}
 
@@ -275,7 +318,7 @@ Include these inline CSS styles:
 - Font family: 'Inter', -apple-system, sans-serif
 - Font size: 1.5rem for body text
 - Line height: 1.7
-- Color: #374151
+- Color: {text_color}
 - Bullet/list spacing: margin-bottom: 0.75rem per item
 - List style: disc for bullets
 

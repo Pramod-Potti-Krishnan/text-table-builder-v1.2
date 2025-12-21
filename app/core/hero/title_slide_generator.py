@@ -24,6 +24,8 @@ Constraints:
 - Main title: 40-80 characters (punchy and memorable)
 - Subtitle: 80-120 characters (compelling value proposition)
 - Attribution: 60-100 characters (presenter + company + date)
+
+Version: 1.3.0 - Added theme_config and content_context support
 """
 
 from typing import Dict, Any
@@ -59,6 +61,9 @@ class TitleSlideGenerator(BaseHeroGenerator):
         Creates a comprehensive prompt that instructs the LLM to generate
         a title slide with proper HTML structure and character constraints.
 
+        v1.3.0: Uses theme_config for dynamic typography and content_context
+        for audience-adapted language when available.
+
         Args:
             request: Hero generation request with narrative and context
 
@@ -72,6 +77,49 @@ class TitleSlideGenerator(BaseHeroGenerator):
         narrative = request.narrative
         topics = request.topics
 
+        # v1.3.0: Extract theme_config for dynamic typography
+        theme_config = request.context.get("theme_config")
+        content_context = request.context.get("content_context")
+
+        # Extract typography from theme_config with defaults
+        if theme_config and "typography" in theme_config:
+            typo = theme_config["typography"]
+            hero_title = typo.get("hero_title", {})
+            title_size = hero_title.get("size", 96)
+            title_weight = hero_title.get("weight", 900)
+            hero_subtitle = typo.get("hero_subtitle", typo.get("slide_title", {}))
+            subtitle_size = hero_subtitle.get("size", 42)
+            subtitle_weight = hero_subtitle.get("weight", 400)
+        else:
+            title_size, title_weight = 96, 900
+            subtitle_size, subtitle_weight = 42, 400
+
+        # Extract colors from theme_config
+        if theme_config and "colors" in theme_config:
+            colors = theme_config["colors"]
+            primary = colors.get("primary", "#667eea")
+            secondary = colors.get("secondary", "#764ba2")
+            gradient = f"linear-gradient(135deg, {primary} 0%, {secondary} 100%)"
+        else:
+            gradient = "linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+
+        # v1.3.0: Build audience context section
+        context_section = ""
+        if content_context:
+            audience_info = content_context.get("audience", {})
+            purpose_info = content_context.get("purpose", {})
+            audience_type = audience_info.get("audience_type", "professional")
+            complexity = audience_info.get("complexity_level", "moderate")
+            purpose_type = purpose_info.get("purpose_type", "inform")
+
+            context_section = f"""
+## 📊 AUDIENCE & PURPOSE
+- **Audience**: {audience_type} ({complexity} complexity)
+- **Purpose**: {purpose_type}
+- **Language**: Adapt vocabulary and tone for {audience_type} audience
+- **Avoid jargon**: {"Yes" if audience_info.get("avoid_jargon") else "Use professional terminology as appropriate"}
+"""
+
         # Build rich prompt based on v1.1 world-class template
         prompt = f"""Generate HTML content for a TITLE SLIDE (L29 Hero Layout).
 
@@ -79,7 +127,7 @@ class TitleSlideGenerator(BaseHeroGenerator):
 **Cognitive Function**: Set presentation tone with elegant simplicity
 **When to Use**: Opening slide ONLY - first impression
 **Word Count Target**: 40-60 words total
-
+{context_section}
 ## 📋 Content Requirements
 
 1. **Main Title** (5-10 words)
@@ -99,12 +147,12 @@ class TitleSlideGenerator(BaseHeroGenerator):
 ## 🎨 MANDATORY Styling (CRITICAL - DO NOT SKIP)
 
 ### Typography (EXACT sizes required):
-- Title: font-size: 96px; font-weight: 900; letter-spacing: -2px
-- Subtitle: font-size: 42px; font-weight: 400
+- Title: font-size: {title_size}px; font-weight: {title_weight}; letter-spacing: -2px
+- Subtitle: font-size: {subtitle_size}px; font-weight: {subtitle_weight}
 - Attribution: font-size: 32px; font-weight: 400
 
 ### Visual Requirements (ALL REQUIRED):
-- ✅ Gradient background (choose from options below)
+- ✅ Gradient background: {gradient}
 - ✅ White text color on all elements
 - ✅ Text shadows on ALL text (0 4px 12px rgba(0,0,0,0.3) for title)
 - ✅ Center alignment (text-align: center)
@@ -116,26 +164,20 @@ class TitleSlideGenerator(BaseHeroGenerator):
 - Flexbox centered: display: flex; justify-content: center; align-items: center
 - Vertical stack: flex-direction: column
 
-## 🎨 Gradient Options (Choose based on theme: {theme})
-Professional: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)
-Bold/Modern: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
-Warm: linear-gradient(135deg, #ffa751 0%, #ffe259 100%)
-Deep Navy: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)
-
 ## ✨ GOLDEN EXAMPLE (Follow this EXACTLY):
 ```html
 <div style="width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: {gradient};
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 80px;">
 
-  <h1 style="font-size: 96px;
+  <h1 style="font-size: {title_size}px;
              color: white;
-             font-weight: 900;
+             font-weight: {title_weight};
              text-align: center;
              margin: 0 0 40px 0;
              text-shadow: 0 4px 12px rgba(0,0,0,0.3);
@@ -144,7 +186,7 @@ Deep Navy: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)
     Your Catchy Title Here
   </h1>
 
-  <p style="font-size: 42px;
+  <p style="font-size: {subtitle_size}px;
             color: rgba(255,255,255,0.95);
             text-align: center;
             margin: 0 0 64px 0;
@@ -169,7 +211,7 @@ Deep Navy: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)
 - NO explanations or comments
 - MUST include ALL inline styles shown
 - MUST use gradient background
-- MUST use large font sizes (96px/42px/32px)
+- MUST use the exact font sizes shown ({title_size}px/{subtitle_size}px/32px)
 
 **Content Inputs**:
 Narrative: {narrative}

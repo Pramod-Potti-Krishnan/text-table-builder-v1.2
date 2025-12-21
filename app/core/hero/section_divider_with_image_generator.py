@@ -164,6 +164,9 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
         Modified from parent to use RIGHT-aligned text and CSS gradient overlay.
 
+        v1.3.0: Uses theme_config for dynamic typography and accent colors,
+        and content_context for audience-adapted language.
+
         Args:
             request: Hero generation request with narrative and context
 
@@ -175,13 +178,53 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
         narrative = request.narrative
         topics = request.topics
 
+        # v1.3.0: Extract theme_config for dynamic styling
+        theme_config = request.context.get("theme_config")
+        content_context = request.context.get("content_context")
+
+        # Extract typography from theme_config with defaults
+        if theme_config and "typography" in theme_config:
+            typo = theme_config["typography"]
+            hero_title = typo.get("hero_title", {})
+            title_size_px = hero_title.get("size", 88)
+            title_size = f"{title_size_px / 16:.2f}rem"
+            title_weight = hero_title.get("weight", 800)
+            hero_subtitle = typo.get("hero_subtitle", typo.get("slide_title", {}))
+            context_size_px = hero_subtitle.get("size", 34)
+            context_size = f"{context_size_px / 16:.2f}rem"
+        else:
+            title_size, title_weight = "5.5rem", 800
+            context_size = "2.1rem"
+
+        # Extract accent colors from theme_config
+        if theme_config and "colors" in theme_config:
+            colors = theme_config["colors"]
+            accent = colors.get("accent", "#00d9ff")
+            accent_light = colors.get("accent_light", "#4facfe")
+            accent_gradient = f"linear-gradient(135deg, {accent_light} 0%, {accent} 100%)"
+        else:
+            accent = "#00d9ff"
+            accent_gradient = "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+
+        # v1.3.0: Build audience context section
+        context_section = ""
+        if content_context:
+            audience_info = content_context.get("audience", {})
+            purpose_info = content_context.get("purpose", {})
+            audience_type = audience_info.get("audience_type", "professional")
+            context_section = f"""
+## 📊 AUDIENCE & PURPOSE
+- **Audience**: {audience_type}
+- **Language**: Adapt vocabulary for {audience_type} audience
+"""
+
         # Build prompt with modern design principles
         prompt = f"""Generate HTML content for a PROFESSIONAL SECTION DIVIDER SLIDE with AI background image.
 
 ## 🎯 Slide Purpose
 **Function**: Signal major topic transition with visual context
 **Word Count**: 20-35 words total (concise and impactful)
-
+{context_section}
 ## 📋 Content Requirements
 
 1. **Section Title** (3-6 words maximum)
@@ -197,13 +240,13 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 ## 🎨 MANDATORY STYLING (Modern Professional Design)
 
 ### Typography (Inter font, fixed sizes for reveal.js scaling):
-- Section Title: font-size: 5.5rem; font-weight: 800; letter-spacing: -0.03em
-- Context Text: font-size: 2.1rem; font-weight: 300; line-height: 1.4
+- Section Title: font-size: {title_size}; font-weight: {title_weight}; letter-spacing: -0.03em
+- Context Text: font-size: {context_size}; font-weight: 300; line-height: 1.4
 
 ### Layout (Professional, RIGHT-aligned):
 - Gradient: linear-gradient(to left, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.05) 100%)
 - Padding: 80px 120px 80px 200px (text stays on RIGHT half)
-- Text block: border-left: 8px solid #00d9ff (cyan accent)
+- Text block: border-left: 8px solid {accent}
 
 ## ✨ EXACT TEMPLATE (Use this structure):
 ```html
@@ -219,18 +262,18 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
               align-items: center; justify-content: flex-end;
               padding: 80px 120px 80px 200px;">
 
-    <div style="border-left: 8px solid #00d9ff; padding-left: 48px; max-width: 50%;">
+    <div style="border-left: 8px solid {accent}; padding-left: 48px; max-width: 50%;">
 
-      <h2 style="font-size: 5.5rem; font-weight: 800; line-height: 1.05;
+      <h2 style="font-size: {title_size}; font-weight: {title_weight}; line-height: 1.05;
                  letter-spacing: -0.03em; margin: 0 0 24px 0; color: #ffffff;
                  text-shadow: 0 4px 12px rgba(0,0,0,0.4); text-align: left;">
-        Implementation <span style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        Implementation <span style="background: {accent_gradient};
                                       -webkit-background-clip: text;
                                       -webkit-text-fill-color: transparent;
                                       background-clip: text;">Roadmap</span>
       </h2>
 
-      <p style="font-size: 2.1rem; font-weight: 300; line-height: 1.4;
+      <p style="font-size: {context_size}; font-weight: 300; line-height: 1.4;
                 color: rgba(255,255,255,0.92); margin: 0; text-align: left;
                 text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
         From Strategy to Full Deployment
@@ -245,17 +288,16 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
 ## 📤 OUTPUT INSTRUCTIONS
 - Return ONLY the HTML (NO code blocks, NO explanations)
-- Use EXACT structure above with fixed rem font sizes
+- Use EXACT structure above with the specified font sizes
 - Keep context text BRIEF (5-12 words max, NOT a paragraph)
 - Use Inter font (included in template)
 - Text must be RIGHT-aligned (justify-content: flex-end)
-- Cyan accent border: border-left: 8px solid #00d9ff
+- Accent border: border-left: 8px solid {accent}
 
 ## ✨ ACCENT COLOR HIGHLIGHTING (MANDATORY)
 - Wrap 1-2 KEY WORDS in section title with accent color gradient span
 - Choose the most important/impactful word(s) from narrative/topics
-- Use the EXACT gradient style shown in template
-- Gradient colors: #4facfe → #00f2fe (cyan-blue)
+- Use the EXACT gradient style: {accent_gradient}
 - Example: "Implementation <span style='...gradient...'>Roadmap</span>"
 - The highlighted word should be the CORE TOPIC or KEY CONCEPT
 
@@ -392,11 +434,18 @@ Generate the professional section divider HTML NOW:"""
         Raises:
             Exception: If generation fails after retries
         """
+        # Detect domain from narrative/topics for semantic cache
+        combined_text = f"{request.narrative} {' '.join(request.topics) if request.topics else ''}".lower()
+        domain = self._detect_domain(combined_text)
+
         metadata = {
             "slide_type": "section_divider",
             "slide_number": request.slide_number,
             "narrative": request.narrative[:100],  # Truncate for storage
-            "visual_style": request.visual_style
+            "visual_style": request.visual_style,
+            # Semantic cache fields
+            "topics": request.topics[:5] if request.topics else [],  # Top 5 topics
+            "domain": domain
         }
 
         # Section dividers always use fast model (all styles)
@@ -409,6 +458,75 @@ Generate the professional section divider HTML NOW:"""
             model=model,
             archetype=archetype
         )
+
+    def _detect_domain(self, text: str) -> str:
+        """
+        Detect content domain from text for semantic cache categorization.
+
+        Args:
+            text: Combined narrative and topics text (lowercase)
+
+        Returns:
+            Domain identifier string
+        """
+        # Religious/Spiritual
+        if any(word in text for word in [
+            'shiva', 'hindu', 'temple', 'prayer', 'spiritual', 'sacred',
+            'meditation', 'worship', 'divine', 'god', 'goddess', 'religious',
+            'buddha', 'christian', 'islam', 'church', 'mosque', 'dharma'
+        ]):
+            return "religious"
+
+        # Healthcare
+        if any(word in text for word in [
+            'health', 'medical', 'hospital', 'patient', 'diagnostic',
+            'clinical', 'doctor', 'nurse', 'healthcare', 'medicine'
+        ]):
+            return "healthcare"
+
+        # Technology
+        if any(word in text for word in [
+            'tech', 'software', 'digital', 'ai', 'data', 'cloud',
+            'code', 'algorithm', 'computing', 'system', 'cyber'
+        ]):
+            return "tech"
+
+        # Education
+        if any(word in text for word in [
+            'school', 'university', 'student', 'learning', 'education',
+            'teach', 'academic', 'classroom', 'course', 'curriculum'
+        ]):
+            return "education"
+
+        # Finance
+        if any(word in text for word in [
+            'finance', 'business', 'market', 'trading', 'investment',
+            'bank', 'revenue', 'profit', 'economy', 'financial'
+        ]):
+            return "finance"
+
+        # Nature/Environment
+        if any(word in text for word in [
+            'nature', 'environment', 'climate', 'green', 'sustainable',
+            'wildlife', 'forest', 'ocean', 'conservation', 'ecosystem'
+        ]):
+            return "nature"
+
+        # Science
+        if any(word in text for word in [
+            'research', 'experiment', 'laboratory', 'chemistry', 'physics',
+            'biology', 'scientific', 'discovery', 'hypothesis', 'analysis'
+        ]):
+            return "science"
+
+        # Creative
+        if any(word in text for word in [
+            'art', 'design', 'creative', 'music', 'artist', 'gallery',
+            'paint', 'sculpture', 'photography', 'illustration', 'visual'
+        ]):
+            return "creative"
+
+        return "default"
 
     async def _generate_content(
         self,
