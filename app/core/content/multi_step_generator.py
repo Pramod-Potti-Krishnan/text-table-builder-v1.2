@@ -331,12 +331,8 @@ class MultiStepGenerator:
             styling_instructions=styling_instructions
         )
 
-        # Call LLM
-        response = await self.llm_service.generate_text(
-            prompt=prompt,
-            max_tokens=2000,
-            temperature=0.5
-        )
+        # Call LLM (callable function)
+        response = await self.llm_service(prompt)
 
         # Parse response
         return self._parse_content_response(response)

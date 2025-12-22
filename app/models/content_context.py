@@ -16,8 +16,8 @@ Version: 1.3.0
 """
 
 from enum import Enum
-from typing import Optional, Dict, Any, List
-from pydantic import BaseModel, Field
+from typing import Optional, Dict, Any, List, Union
+from pydantic import BaseModel, Field, field_validator
 
 
 # =============================================================================
@@ -58,12 +58,22 @@ class AudienceConfig(BaseModel):
         default=AudienceType.PROFESSIONAL,
         description="Target audience type"
     )
-    complexity_level: int = Field(
+    complexity_level: Union[int, str] = Field(
         default=3,
-        ge=1,
-        le=5,
-        description="Complexity level (1=simplest, 5=most complex)"
+        description="Complexity level (1=simplest, 5=most complex) or string like 'moderate'"
     )
+
+    @field_validator('complexity_level', mode='before')
+    @classmethod
+    def convert_complexity_level(cls, v):
+        """Convert string complexity to int."""
+        if isinstance(v, str):
+            mapping = {
+                'very_simple': 1, 'simple': 2, 'moderate': 3,
+                'complex': 4, 'very_complex': 5
+            }
+            return mapping.get(v.lower(), 3)
+        return v
     max_sentence_words: int = Field(
         default=15,
         ge=5,

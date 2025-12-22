@@ -149,12 +149,8 @@ class StructureAnalyzer:
         )
 
         try:
-            # Call LLM for structure analysis
-            response = await self.llm_service.generate_text(
-                prompt=prompt,
-                max_tokens=1000,
-                temperature=0.3  # Lower temperature for more consistent structure
-            )
+            # Call LLM for structure analysis (callable function)
+            response = await self.llm_service(prompt)
 
             # Parse JSON response
             structure_data = self._parse_response(response)
