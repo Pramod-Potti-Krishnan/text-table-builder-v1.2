@@ -96,7 +96,7 @@ def publish_all_3_slides():
                     "subtitle": f"Variant: {variant_id}",
                     "rich_content": html,
                     "presentation_name": "Comparison Layouts Showcase",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
             slides.append(slide)

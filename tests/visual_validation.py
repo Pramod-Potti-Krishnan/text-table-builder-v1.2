@@ -111,7 +111,7 @@ def generate_all_variants():
                     "subtitle": f"Variant: {variant_id}",
                     "rich_content": result["html"],
                     "presentation_name": "v1.2 Visual Validation",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
 

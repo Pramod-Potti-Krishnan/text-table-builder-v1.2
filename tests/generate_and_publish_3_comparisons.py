@@ -103,7 +103,7 @@ def generate_and_publish():
                             "subtitle": f"Colored bullets - {variant_id}",
                             "rich_content": html,
                             "presentation_name": "Comparison Layouts Showcase",
-                            "company_logo": ""
+                            "logo": ""
                         }
                     }
                 ]

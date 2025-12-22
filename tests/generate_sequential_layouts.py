@@ -102,7 +102,7 @@ def generate_and_publish_sequential():
                     "subtitle": f"Variant: {variant_id}",
                     "rich_content": html,
                     "presentation_name": "Sequential Layouts Showcase",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
             slides.append(slide)

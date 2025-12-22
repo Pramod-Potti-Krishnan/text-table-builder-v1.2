@@ -61,7 +61,7 @@ def main():
                     "subtitle": f"Variant: {variant_id}",
                     "rich_content": result["html"],
                     "presentation_name": "Asymmetric Templates Review",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
             

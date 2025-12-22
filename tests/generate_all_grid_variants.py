@@ -72,7 +72,7 @@ def main():
                     "subtitle": f"Variant: {variant_id}",
                     "rich_content": result["html"],
                     "presentation_name": "All 9 Grid Variants Review",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
 

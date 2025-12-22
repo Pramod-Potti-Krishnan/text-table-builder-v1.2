@@ -39,7 +39,7 @@ def main():
                 "subtitle": f"Variant: {variant_id}",
                 "rich_content": html_content,
                 "presentation_name": "Comparison Layouts - 3 Variants",
-                "company_logo": ""
+                "logo": ""
             }
         }
         slides.append(slide)

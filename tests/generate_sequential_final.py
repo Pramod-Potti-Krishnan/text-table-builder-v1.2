@@ -108,7 +108,7 @@ def generate_and_publish_sequential_final():
                     "subtitle": f"Variant: {variant_id} - FINAL",
                     "rich_content": html,
                     "presentation_name": "Sequential Layouts - FINAL",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
             slides.append(slide)

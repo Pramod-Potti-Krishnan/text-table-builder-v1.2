@@ -101,7 +101,7 @@ def generate_and_publish_single_column():
                     "subtitle": f"Variant: {variant_id}",
                     "rich_content": html,
                     "presentation_name": "Single Column Layouts",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
             slides.append(slide)

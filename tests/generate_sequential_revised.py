@@ -105,7 +105,7 @@ def generate_and_publish_sequential_revised():
                     "subtitle": f"Variant: {variant_id} - REVISED",
                     "rich_content": html,
                     "presentation_name": "Sequential Layouts - REVISED",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
             slides.append(slide)

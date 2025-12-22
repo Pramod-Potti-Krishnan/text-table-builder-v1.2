@@ -41,7 +41,7 @@ def main():
             "subtitle": "Variant: impact_quote",
             "rich_content": result["html"],
             "presentation_name": "v1.2 Impact Quote - Final Review",
-            "company_logo": ""
+            "logo": ""
         }
     }
     

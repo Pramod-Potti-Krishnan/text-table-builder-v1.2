@@ -99,7 +99,7 @@ def generate_and_publish_hybrid():
                     "subtitle": f"Variant: {variant_id}",
                     "rich_content": html,
                     "presentation_name": "Hybrid Layouts Preview",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
             slides.append(slide)

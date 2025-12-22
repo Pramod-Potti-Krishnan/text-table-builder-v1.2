@@ -109,7 +109,7 @@ def generate_and_publish_sequential_complete():
                     "subtitle": f"Variant: {variant_id} - COMPLETE",
                     "rich_content": html,
                     "presentation_name": "Sequential Layouts - COMPLETE",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
             slides.append(slide)

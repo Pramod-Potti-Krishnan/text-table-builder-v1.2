@@ -62,7 +62,7 @@ def main():
                     "subtitle": f"Variant: {variant_id}",
                     "rich_content": result["html"],
                     "presentation_name": "Grid & Hybrid Templates Review",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
 

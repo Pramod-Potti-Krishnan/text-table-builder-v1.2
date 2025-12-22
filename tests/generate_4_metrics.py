@@ -101,7 +101,7 @@ def generate_and_publish_metrics():
                     "subtitle": f"Variant: {variant_id}",
                     "rich_content": html,
                     "presentation_name": "Metrics Layouts Showcase",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
             slides.append(slide)

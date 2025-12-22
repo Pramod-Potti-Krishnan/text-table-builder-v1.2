@@ -111,7 +111,7 @@ def main():
                     "subtitle": f"Variant: {variant_id}",
                     "rich_content": result["html"],
                     "presentation_name": "Remaining 4 Grid Templates - With Fixes",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
             slides.append(slide)

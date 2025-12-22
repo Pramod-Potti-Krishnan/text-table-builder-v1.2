@@ -105,7 +105,7 @@ def generate_and_publish_hybrid_updated():
                     "subtitle": f"Variant: {variant_id} - UPDATED",
                     "rich_content": html,
                     "presentation_name": "Hybrid Layouts - UPDATED",
-                    "company_logo": ""
+                    "logo": ""
                 }
             }
             slides.append(slide)

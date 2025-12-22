@@ -87,7 +87,7 @@ def generate_single_metrics_2x2():
                 "subtitle": "Variant: metrics_2x2_grid - UPDATED",
                 "rich_content": html,
                 "presentation_name": "Metrics 2×2 Grid - UPDATED",
-                "company_logo": ""
+                "logo": ""
             }
         }
 
