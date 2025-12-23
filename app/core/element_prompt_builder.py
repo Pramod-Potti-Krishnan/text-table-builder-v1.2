@@ -35,12 +35,15 @@ class ElementPromptBuilder:
         with open(index_path, 'r') as f:
             return json.load(f)
 
-    def load_variant_spec(self, variant_id: str) -> Dict:
+    def load_variant_spec(self, variant_id: str, layout_id: str = "L25") -> Dict:
         """
         Load variant specification from JSON file.
+        Supports layout-aware resolution: when layout_id is not "L25",
+        tries to find a layout-specific variant first (e.g., comparison_2col_c1).
 
         Args:
             variant_id: The variant identifier (e.g., "matrix_2x2")
+            layout_id: Layout ID for template selection ("L25" or "C1")
 
         Returns:
             Dictionary containing variant specification
@@ -48,18 +51,28 @@ class ElementPromptBuilder:
         Raises:
             ValueError: If variant_id is not found
         """
+        # Build cache key that includes layout_id for layout-specific caching
+        cache_key = f"{variant_id}_{layout_id}" if layout_id != "L25" else variant_id
+
         # Check cache first
-        if variant_id in self._spec_cache:
-            return self._spec_cache[variant_id]
+        if cache_key in self._spec_cache:
+            return self._spec_cache[cache_key]
+
+        # For non-L25 layouts, try layout-specific variant first
+        effective_variant_id = variant_id
+        if layout_id != "L25":
+            layout_variant_id = f"{variant_id}_{layout_id.lower()}"
+            if layout_variant_id in self.variant_index["variant_lookup"]:
+                effective_variant_id = layout_variant_id
 
         # Get slide type from variant_id
-        if variant_id not in self.variant_index["variant_lookup"]:
-            raise ValueError(f"Unknown variant_id: {variant_id}")
+        if effective_variant_id not in self.variant_index["variant_lookup"]:
+            raise ValueError(f"Unknown variant_id: {effective_variant_id}")
 
-        slide_type = self.variant_index["variant_lookup"][variant_id]
+        slide_type = self.variant_index["variant_lookup"][effective_variant_id]
 
         # Load spec file
-        spec_path = self.variant_specs_dir / slide_type / f"{variant_id}.json"
+        spec_path = self.variant_specs_dir / slide_type / f"{effective_variant_id}.json"
 
         if not spec_path.exists():
             raise ValueError(f"Variant spec not found: {spec_path}")
@@ -68,7 +81,7 @@ class ElementPromptBuilder:
             spec = json.load(f)
 
         # Cache for future use
-        self._spec_cache[variant_id] = spec
+        self._spec_cache[cache_key] = spec
 
         return spec
 
@@ -178,6 +191,17 @@ Example format:
                 "- IMPORTANT: Start each list item with a bold subheading followed by colon\n"
                 "- Format: <li><strong>Subheading:</strong> Description text here</li>\n"
                 "- Example: <li><strong>Focus:</strong> Reaching a broad audience through mass media.</li>\n"
+                "- Use consistent subheading categories across columns for easy comparison\n"
+                "- Focus on distinct, comparable points\n"
+                "- Use parallel structure for easy comparison"
+            ),
+            "comparison_column_explicit": (
+                "- Heading should clearly identify what's being compared\n"
+                "- Each item (item_1 through item_7) should be a single point\n"
+                "- IMPORTANT: Start each item with a bold subheading followed by colon\n"
+                "- Format: <strong>Subheading:</strong> Description text here\n"
+                "- Example: <strong>Focus:</strong> Reaching a broad audience through mass media.\n"
+                "- DO NOT include bullets or list tags - template provides bullet symbols\n"
                 "- Use consistent subheading categories across columns for easy comparison\n"
                 "- Focus on distinct, comparable points\n"
                 "- Use parallel structure for easy comparison"

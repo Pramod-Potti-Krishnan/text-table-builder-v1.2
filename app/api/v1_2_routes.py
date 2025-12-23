@@ -102,18 +102,29 @@ async def generate_slide_content(
     start_time = time.time()
 
     # Extract request info for logging
-    variant_id = request.variant_id
+    base_variant_id = request.variant_id
+    layout_id = request.layout_id or "L25"
     slide_title = ''
     if request.slide_spec and hasattr(request.slide_spec, 'slide_title'):
         slide_title = (request.slide_spec.slide_title or '')[:40]
 
+    # Layout-aware variant resolution: if layout_id is not L25, try layout-specific variant
+    effective_variant_id = base_variant_id
+    if layout_id != "L25":
+        layout_variant_id = f"{base_variant_id}_{layout_id.lower()}"
+        # Check if layout-specific variant exists in the index
+        variant_index = generator.prompt_builder.variant_index
+        if layout_variant_id in variant_index.get("variant_lookup", {}):
+            effective_variant_id = layout_variant_id
+            print(f"[GEN-LAYOUT] Resolved {base_variant_id} + {layout_id} -> {effective_variant_id}")
+
     # REQUEST ARRIVAL LOGGING
-    print(f"[GEN-REQ] variant={variant_id}, title='{slide_title}'")
+    print(f"[GEN-REQ] variant={effective_variant_id}, layout={layout_id}, title='{slide_title}'")
 
     try:
         # Generate slide content using ASYNC method (production-quality)
         result = await generator.generate_slide_content_async(
-            variant_id=request.variant_id,
+            variant_id=effective_variant_id,
             slide_spec=request.slide_spec.model_dump(),
             presentation_spec=request.presentation_spec.model_dump() if request.presentation_spec else None,
             element_relationships=request.element_relationships
@@ -124,7 +135,7 @@ async def generate_slide_content(
         if request.validate_character_counts:
             validation_result = generator.validate_character_counts(
                 element_contents=result["elements"],
-                variant_id=request.variant_id
+                variant_id=effective_variant_id
             )
 
             validation = ValidationResult(

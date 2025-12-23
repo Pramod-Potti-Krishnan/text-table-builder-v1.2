@@ -1,6 +1,6 @@
 {
   "version": "1.2.0",
-  "total_variants": 34,
+  "total_variants": 37,
   "slide_types": {
     "matrix": {
       "description": "Matrix layouts with boxes in grid formation",
@@ -84,6 +84,21 @@
           "variant_id": "comparison_4col",
           "spec_path": "variant_specs/comparison/comparison_4col.json",
           "layout": "4 columns with headers and item lists"
+        },
+        {
+          "variant_id": "comparison_2col_c1",
+          "spec_path": "variant_specs/comparison/comparison_2col_c1.json",
+          "layout": "2 columns with 7 explicit bullets each (C1 layout)"
+        },
+        {
+          "variant_id": "comparison_3col_c1",
+          "spec_path": "variant_specs/comparison/comparison_3col_c1.json",
+          "layout": "3 columns with 7 explicit bullets each (C1 layout)"
+        },
+        {
+          "variant_id": "comparison_4col_c1",
+          "spec_path": "variant_specs/comparison/comparison_4col_c1.json",
+          "layout": "4 columns with 7 explicit bullets each (C1 layout)"
         }
       ]
     },
@@ -238,6 +253,9 @@
     "comparison_2col": "comparison",
     "comparison_3col": "comparison",
     "comparison_4col": "comparison",
+    "comparison_2col_c1": "comparison",
+    "comparison_3col_c1": "comparison",
+    "comparison_4col_c1": "comparison",
     "sequential_3col": "sequential",
     "sequential_4col": "sequential",
     "sequential_5col": "sequential",
