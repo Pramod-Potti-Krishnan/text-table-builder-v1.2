@@ -155,7 +155,7 @@ async def generate_slide_content(
         # SUCCESS LOGGING
         elapsed_ms = int((time.time() - start_time) * 1000)
         html_len = len(result.get("html", ""))
-        print(f"[GEN-OK] variant={variant_id}, time={elapsed_ms}ms, html={html_len} chars")
+        print(f"[GEN-OK] variant={effective_variant_id}, time={elapsed_ms}ms, html={html_len} chars")
 
         # Build response
         return V1_2_GenerationResponse(
@@ -171,19 +171,19 @@ async def generate_slide_content(
     except ValueError as e:
         # VALIDATION ERROR LOGGING
         elapsed_ms = int((time.time() - start_time) * 1000)
-        print(f"[GEN-400] variant={variant_id}, time={elapsed_ms}ms, error={str(e)[:100]}")
+        print(f"[GEN-400] variant={effective_variant_id}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(status_code=400, detail=str(e))
 
     except FileNotFoundError as e:
         # NOT FOUND ERROR LOGGING
         elapsed_ms = int((time.time() - start_time) * 1000)
-        print(f"[GEN-404] variant={variant_id}, time={elapsed_ms}ms, error={str(e)[:100]}")
+        print(f"[GEN-404] variant={effective_variant_id}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(status_code=404, detail=f"Variant or template not found: {str(e)}")
 
     except QueueFullError as e:
         # QUEUE FULL ERROR - Service at capacity
         elapsed_ms = int((time.time() - start_time) * 1000)
-        print(f"[GEN-429] variant={variant_id}, time={elapsed_ms}ms, error=Queue full")
+        print(f"[GEN-429] variant={effective_variant_id}, time={elapsed_ms}ms, error=Queue full")
         raise HTTPException(
             status_code=429,
             detail="Service at capacity. Please retry in 30 seconds.",
@@ -193,7 +193,7 @@ async def generate_slide_content(
     except asyncio.TimeoutError:
         # LLM TIMEOUT ERROR
         elapsed_ms = int((time.time() - start_time) * 1000)
-        print(f"[GEN-504] variant={variant_id}, time={elapsed_ms}ms, error=LLM timeout")
+        print(f"[GEN-504] variant={effective_variant_id}, time={elapsed_ms}ms, error=LLM timeout")
         raise HTTPException(
             status_code=504,
             detail="LLM request timed out. Please retry."
@@ -202,7 +202,7 @@ async def generate_slide_content(
     except Exception as e:
         # GENERATION ERROR LOGGING
         elapsed_ms = int((time.time() - start_time) * 1000)
-        print(f"[GEN-ERROR] variant={variant_id}, time={elapsed_ms}ms, error={str(e)[:100]}")
+        print(f"[GEN-ERROR] variant={effective_variant_id}, time={elapsed_ms}ms, error={str(e)[:100]}")
         raise HTTPException(status_code=500, detail=f"Generation failed: {str(e)}")
 
 
