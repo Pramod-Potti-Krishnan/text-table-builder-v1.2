@@ -35,14 +35,12 @@ class ElementPromptBuilder:
         with open(index_path, 'r') as f:
             return json.load(f)
 
-    def load_variant_spec(self, variant_id: str, layout_id: Optional[str] = None) -> Dict:
+    def load_variant_spec(self, variant_id: str) -> Dict:
         """
         Load variant specification from JSON file.
 
         Args:
             variant_id: The variant identifier (e.g., "matrix_2x2")
-            layout_id: Optional layout identifier (e.g., "C1") - if provided,
-                       will try to load a layout-specific spec first
 
         Returns:
             Dictionary containing variant specification
@@ -50,12 +48,9 @@ class ElementPromptBuilder:
         Raises:
             ValueError: If variant_id is not found
         """
-        # Build cache key including layout_id if provided
-        cache_key = f"{variant_id}_{layout_id}" if layout_id else variant_id
-
         # Check cache first
-        if cache_key in self._spec_cache:
-            return self._spec_cache[cache_key]
+        if variant_id in self._spec_cache:
+            return self._spec_cache[variant_id]
 
         # Get slide type from variant_id
         if variant_id not in self.variant_index["variant_lookup"]:
@@ -63,17 +58,8 @@ class ElementPromptBuilder:
 
         slide_type = self.variant_index["variant_lookup"][variant_id]
 
-        # Try layout-specific spec first if layout_id is provided
-        spec_path = None
-        if layout_id:
-            layout_spec_id = f"{variant_id}_{layout_id.lower()}"
-            layout_spec_path = self.variant_specs_dir / slide_type / f"{layout_spec_id}.json"
-            if layout_spec_path.exists():
-                spec_path = layout_spec_path
-
-        # Fall back to base spec
-        if spec_path is None:
-            spec_path = self.variant_specs_dir / slide_type / f"{variant_id}.json"
+        # Load spec file
+        spec_path = self.variant_specs_dir / slide_type / f"{variant_id}.json"
 
         if not spec_path.exists():
             raise ValueError(f"Variant spec not found: {spec_path}")
@@ -82,7 +68,7 @@ class ElementPromptBuilder:
             spec = json.load(f)
 
         # Cache for future use
-        self._spec_cache[cache_key] = spec
+        self._spec_cache[variant_id] = spec
 
         return spec
 
@@ -268,8 +254,7 @@ Example format:
         self,
         variant_id: str,
         slide_context: str,
-        presentation_context: Optional[str] = None,
-        layout_id: Optional[str] = None
+        presentation_context: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """
         Build prompts for all elements in a variant.
@@ -278,12 +263,11 @@ Example format:
             variant_id: The variant identifier
             slide_context: Context about the current slide
             presentation_context: Optional presentation context
-            layout_id: Optional layout ID for loading layout-specific specs
 
         Returns:
             List of dictionaries containing element info and prompts
         """
-        spec = self.load_variant_spec(variant_id, layout_id)
+        spec = self.load_variant_spec(variant_id)
 
         element_prompts = []
         for element in spec["elements"]:
@@ -308,8 +292,7 @@ Example format:
         self,
         variant_id: str,
         slide_context: str,
-        presentation_context: Optional[str] = None,
-        layout_id: Optional[str] = None
+        presentation_context: Optional[str] = None
     ) -> str:
         """
         Build a single prompt for generating ALL elements of a slide at once.
@@ -322,12 +305,11 @@ Example format:
             variant_id: The variant identifier
             slide_context: Context about the current slide
             presentation_context: Optional presentation context
-            layout_id: Optional layout ID for loading layout-specific specs
 
         Returns:
             Complete prompt string for generating all slide elements
         """
-        spec = self.load_variant_spec(variant_id, layout_id)
+        spec = self.load_variant_spec(variant_id)
 
         # Build the prompt header
         prompt = f"""Generate complete content for a presentation slide.
@@ -417,42 +399,23 @@ CRITICAL INSTRUCTIONS:
 
         return prompt
 
-    def get_variant_metadata(self, variant_id: str, layout_id: str = "L25") -> Dict:
+    def get_variant_metadata(self, variant_id: str) -> Dict:
         """
         Get metadata about a variant (layout info, description, etc.).
 
         Args:
             variant_id: The variant identifier
-            layout_id: Layout ID for template selection ('L25' or 'C1')
-                       - L25: 720px content height (default)
-                       - C1: 840px content height (20px top padding)
 
         Returns:
-            Dictionary with variant metadata including resolved template_path
+            Dictionary with variant metadata
         """
-        # Load layout-specific spec if available (e.g., comparison_2col_c1.json for C1)
-        spec = self.load_variant_spec(variant_id, layout_id)
-
-        # Get base template path from spec
-        base_template_path = spec["template_path"]
-
-        # Resolve template path based on layout_id
-        # Note: If a C1-specific spec was loaded, its template_path already points to _c1.html
-        # For fallback specs (non-layout-specific), we transform the path
-        if layout_id == "C1" and not base_template_path.endswith("_c1.html"):
-            # Transform: "app/templates/matrix/matrix_2x2.html"
-            #        -> "app/templates/matrix/matrix_2x2_c1.html"
-            template_path = base_template_path.replace(".html", "_c1.html")
-        else:
-            # Default: use template as-is from spec
-            template_path = base_template_path
+        spec = self.load_variant_spec(variant_id)
 
         return {
             "variant_id": spec["variant_id"],
             "slide_type": spec["slide_type"],
             "description": spec["description"],
-            "template_path": template_path,
+            "template_path": spec["template_path"],
             "layout": spec.get("layout", {}),
-            "element_count": len(spec["elements"]),
-            "layout_id": layout_id
+            "element_count": len(spec["elements"])
         }
