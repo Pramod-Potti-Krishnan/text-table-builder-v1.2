@@ -103,12 +103,13 @@ async def generate_slide_content(
 
     # Extract request info for logging
     variant_id = request.variant_id
+    layout_id = request.layout_id or "L25"
     slide_title = ''
     if request.slide_spec and hasattr(request.slide_spec, 'slide_title'):
         slide_title = (request.slide_spec.slide_title or '')[:40]
 
     # REQUEST ARRIVAL LOGGING
-    print(f"[GEN-REQ] variant={variant_id}, title='{slide_title}'")
+    print(f"[GEN-REQ] variant={variant_id}, layout={layout_id}, title='{slide_title}'")
 
     try:
         # Generate slide content using ASYNC method (production-quality)
@@ -116,7 +117,8 @@ async def generate_slide_content(
             variant_id=request.variant_id,
             slide_spec=request.slide_spec.model_dump(),
             presentation_spec=request.presentation_spec.model_dump() if request.presentation_spec else None,
-            element_relationships=request.element_relationships
+            element_relationships=request.element_relationships,
+            layout_id=layout_id
         )
 
         # Validate character counts if requested
@@ -124,7 +126,8 @@ async def generate_slide_content(
         if request.validate_character_counts:
             validation_result = generator.validate_character_counts(
                 element_contents=result["elements"],
-                variant_id=request.variant_id
+                variant_id=request.variant_id,
+                layout_id=layout_id
             )
 
             validation = ValidationResult(

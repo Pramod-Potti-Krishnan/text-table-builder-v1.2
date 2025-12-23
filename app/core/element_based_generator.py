@@ -65,7 +65,8 @@ class ElementBasedContentGenerator:
         variant_id: str,
         slide_spec: Dict[str, Any],
         presentation_spec: Optional[Dict[str, Any]] = None,
-        element_relationships: Optional[Dict[str, str]] = None
+        element_relationships: Optional[Dict[str, str]] = None,
+        layout_id: str = "L25"
     ) -> Dict[str, Any]:
         """
         Generate complete slide content using SINGLE-CALL architecture.
@@ -84,6 +85,7 @@ class ElementBasedContentGenerator:
                 - audience (str, optional)
             presentation_spec: Optional presentation-level context
             element_relationships: Optional element relationship descriptions
+            layout_id: Layout ID for template selection ('L25' or 'C1')
 
         Returns:
             Dictionary containing:
@@ -106,15 +108,16 @@ class ElementBasedContentGenerator:
             element_relationships=element_relationships
         )
 
-        # Step 2: Get variant metadata and template path
-        variant_metadata = self.prompt_builder.get_variant_metadata(variant_id)
+        # Step 2: Get variant metadata and template path (with layout_id for C1 support)
+        variant_metadata = self.prompt_builder.get_variant_metadata(variant_id, layout_id=layout_id)
         template_path = variant_metadata["template_path"]
 
         # Step 3: Build COMPLETE slide prompt (all elements at once)
         complete_prompt = self.prompt_builder.build_complete_slide_prompt(
             variant_id=variant_id,
             slide_context=contexts["slide_context"],
-            presentation_context=contexts.get("presentation_context")
+            presentation_context=contexts.get("presentation_context"),
+            layout_id=layout_id
         )
 
         # Step 4: Generate content with ONE LLM call
@@ -123,7 +126,8 @@ class ElementBasedContentGenerator:
         # Step 5: Parse response into element contents
         element_contents = self._parse_complete_response(
             llm_response=llm_response,
-            variant_id=variant_id
+            variant_id=variant_id,
+            layout_id=layout_id
         )
 
         # Step 6: Build content map for template assembly
@@ -154,7 +158,8 @@ class ElementBasedContentGenerator:
         variant_id: str,
         slide_spec: Dict[str, Any],
         presentation_spec: Optional[Dict[str, Any]] = None,
-        element_relationships: Optional[Dict[str, str]] = None
+        element_relationships: Optional[Dict[str, str]] = None,
+        layout_id: str = "L25"
     ) -> Dict[str, Any]:
         """
         Generate complete slide content using SINGLE-CALL architecture (ASYNC).
@@ -176,6 +181,7 @@ class ElementBasedContentGenerator:
                 - audience (str, optional)
             presentation_spec: Optional presentation-level context
             element_relationships: Optional element relationship descriptions
+            layout_id: Layout ID for template selection ('L25' or 'C1')
 
         Returns:
             Dictionary containing:
@@ -201,15 +207,16 @@ class ElementBasedContentGenerator:
             element_relationships=element_relationships
         )
 
-        # Step 2: Get variant metadata and template path (sync operations)
-        variant_metadata = self.prompt_builder.get_variant_metadata(variant_id)
+        # Step 2: Get variant metadata and template path (with layout_id for C1 support)
+        variant_metadata = self.prompt_builder.get_variant_metadata(variant_id, layout_id=layout_id)
         template_path = variant_metadata["template_path"]
 
         # Step 3: Build COMPLETE slide prompt (all elements at once) (sync operation)
         complete_prompt = self.prompt_builder.build_complete_slide_prompt(
             variant_id=variant_id,
             slide_context=contexts["slide_context"],
-            presentation_context=contexts.get("presentation_context")
+            presentation_context=contexts.get("presentation_context"),
+            layout_id=layout_id
         )
 
         # STAGE LOGGING: Prompt built
@@ -227,7 +234,8 @@ class ElementBasedContentGenerator:
         # Step 5: Parse response into element contents (sync operation)
         element_contents = self._parse_complete_response(
             llm_response=llm_response,
-            variant_id=variant_id
+            variant_id=variant_id,
+            layout_id=layout_id
         )
 
         # Step 6: Build content map for template assembly (sync operation)
@@ -260,7 +268,8 @@ class ElementBasedContentGenerator:
     def _parse_complete_response(
         self,
         llm_response: str,
-        variant_id: str
+        variant_id: str,
+        layout_id: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         """
         Parse LLM response containing ALL elements into element content list.
@@ -271,6 +280,7 @@ class ElementBasedContentGenerator:
         Args:
             llm_response: Raw LLM response string
             variant_id: The variant identifier
+            layout_id: Optional layout ID for loading layout-specific specs
 
         Returns:
             List of element content dictionaries
@@ -285,8 +295,8 @@ class ElementBasedContentGenerator:
             # Try to extract JSON from response (handles markdown code blocks)
             all_elements_data = self._extract_json_from_response(llm_response)
 
-        # Load variant spec to get element structure
-        spec = self.prompt_builder.load_variant_spec(variant_id)
+        # Load variant spec to get element structure (layout-specific if available)
+        spec = self.prompt_builder.load_variant_spec(variant_id, layout_id)
 
         # Convert to element contents format
         element_contents = []
@@ -497,7 +507,8 @@ class ElementBasedContentGenerator:
     def validate_character_counts(
         self,
         element_contents: List[Dict[str, Any]],
-        variant_id: str
+        variant_id: str,
+        layout_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Validate that generated content meets character count requirements.
@@ -505,13 +516,14 @@ class ElementBasedContentGenerator:
         Args:
             element_contents: List of generated element content
             variant_id: The variant identifier
+            layout_id: Optional layout ID for loading layout-specific specs
 
         Returns:
             Dictionary with validation results:
                 - valid (bool): Whether all counts are valid
                 - violations (List): List of character count violations
         """
-        spec = self.prompt_builder.load_variant_spec(variant_id)
+        spec = self.prompt_builder.load_variant_spec(variant_id, layout_id)
         violations = []
 
         for i, element in enumerate(spec["elements"]):
