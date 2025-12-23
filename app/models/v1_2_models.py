@@ -67,6 +67,10 @@ class V1_2_GenerationRequest(BaseModel):
         description="Variant identifier (e.g., 'matrix_2x2', 'table_3col')",
         example="matrix_2x2"
     )
+    layout_id: Optional[str] = Field(
+        default="L25",
+        description="Layout ID for template selection: 'L25' (720px content height) or 'C1' (840px content height)"
+    )
     slide_spec: SlideSpecification = Field(
         ...,
         description="Slide-level specifications and context"
