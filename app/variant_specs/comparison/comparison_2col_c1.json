@@ -2,7 +2,7 @@
   "variant_id": "comparison_2col_c1",
   "slide_type": "comparison",
   "template_path": "app/templates/multilateral_comparison/comparison_2col_c1.html",
-  "description": "2-column comparison layout with 7 explicit bullet points per column (C1 layout)",
+  "description": "2-column comparison layout with 7 explicit items per column (C1 layout, no bullets)",
   "elements": [
     {
       "element_id": "column_1",
@@ -34,39 +34,39 @@
           "max": 40
         },
         "item_1": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_2": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_3": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_4": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_5": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_6": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_7": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         }
       }
     },
@@ -100,39 +100,39 @@
           "max": 40
         },
         "item_1": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_2": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_3": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_4": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_5": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_6": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         },
         "item_7": {
-          "baseline": 70,
-          "min": 55,
-          "max": 90
+          "baseline": 84,
+          "min": 66,
+          "max": 108
         }
       }
     }

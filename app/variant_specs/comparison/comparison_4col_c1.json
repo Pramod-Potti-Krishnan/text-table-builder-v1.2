@@ -2,7 +2,7 @@
   "variant_id": "comparison_4col_c1",
   "slide_type": "comparison",
   "template_path": "app/templates/multilateral_comparison/comparison_4col_c1.html",
-  "description": "4-column comparison layout with 7 explicit bullet points per column (C1 layout)",
+  "description": "4-column comparison layout with 7 explicit items per column (C1 layout, no bullets)",
   "elements": [
     {
       "element_id": "column_1",
@@ -29,44 +29,44 @@
       },
       "character_requirements": {
         "heading": {
-          "baseline": 20,
-          "min": 15,
-          "max": 25
+          "baseline": 18,
+          "min": 14,
+          "max": 22
         },
         "item_1": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_2": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_3": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_4": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_5": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_6": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_7": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         }
       }
     },
@@ -95,44 +95,44 @@
       },
       "character_requirements": {
         "heading": {
-          "baseline": 20,
-          "min": 15,
-          "max": 25
+          "baseline": 18,
+          "min": 14,
+          "max": 22
         },
         "item_1": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_2": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_3": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_4": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_5": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_6": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_7": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         }
       }
     },
@@ -161,44 +161,44 @@
       },
       "character_requirements": {
         "heading": {
-          "baseline": 20,
-          "min": 15,
-          "max": 25
+          "baseline": 18,
+          "min": 14,
+          "max": 22
         },
         "item_1": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_2": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_3": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_4": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_5": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_6": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_7": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         }
       }
     },
@@ -227,44 +227,44 @@
       },
       "character_requirements": {
         "heading": {
-          "baseline": 20,
-          "min": 15,
-          "max": 25
+          "baseline": 18,
+          "min": 14,
+          "max": 22
         },
         "item_1": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_2": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_3": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_4": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_5": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_6": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         },
         "item_7": {
-          "baseline": 32,
-          "min": 25,
-          "max": 45
+          "baseline": 29,
+          "min": 22,
+          "max": 40
         }
       }
     }
