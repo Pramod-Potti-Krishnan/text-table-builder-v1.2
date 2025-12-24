@@ -174,12 +174,22 @@ class BaseISeriesGenerator(ABC):
         styling_mode = context.get("styling_mode", "inline_styles")
 
         # v1.3.2: Load variant spec if content_variant is specified
+        # v1.3.3: Also check context["variant_spec"] from slides_routes auto-selection
         variant_spec = None
-        if hasattr(request, 'content_variant') and request.content_variant:
+
+        # First, check if variant_spec is passed in context (auto-selected by slides_routes)
+        if context.get("variant_spec"):
+            variant_spec = context["variant_spec"]
+            logger.info(
+                f"Using auto-selected variant spec from context: {variant_spec.get('variant_id')} "
+                f"(layout: {variant_spec.get('iseries_layout', 'unknown')})"
+            )
+        # Fallback: check if content_variant is specified on request (legacy way)
+        elif hasattr(request, 'content_variant') and request.content_variant:
             variant_spec = load_iseries_variant_spec(request.content_variant)
             if variant_spec:
                 logger.info(
-                    f"Using I-series variant spec: {request.content_variant} "
+                    f"Using I-series variant spec from request: {request.content_variant} "
                     f"(layout: {variant_spec.get('iseries_layout', 'unknown')})"
                 )
 

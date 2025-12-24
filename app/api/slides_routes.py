@@ -26,10 +26,11 @@ Version: 1.2.2
 """
 
 from fastapi import APIRouter, HTTPException, Depends, Response
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, Optional
 import logging
 import os
 import time
+import json
 
 from ..models.slides_models import (
     UnifiedSlideRequest,
@@ -529,11 +530,107 @@ async def list_c1_variants():
 # Helper Functions
 # ---------------------------------------------------------
 
+def _get_iseries_variant_spec(
+    layout_type: ISeriesLayoutType,
+    topics: list,
+    variant_id: Optional[str] = None
+) -> Optional[dict]:
+    """Auto-select variant spec based on layout type and topics count.
+
+    Maps:
+    - I1/I2 (wide image) → _i1 suffix (20% character reduction)
+    - I3/I4 (narrow image) → _i3 suffix (15% character reduction)
+
+    Default to single_column layout based on topics count.
+    """
+    import os
+
+    topic_count = len(topics) if topics else 3
+
+    # Determine base layout type from variant_id or default to single_column
+    if variant_id:
+        # Parse variant_id to extract base type
+        if "comparison" in variant_id:
+            if "2col" in variant_id or topic_count <= 2:
+                variant_base = "comparison_2col"
+            else:
+                variant_base = "comparison_3col"
+        elif "sequential" in variant_id:
+            if topic_count <= 3:
+                variant_base = "sequential_3col"
+            else:
+                # Cap at 4 columns for I-series (no space for 5 with image)
+                variant_base = "sequential_4col"
+        else:
+            # Default to single_column
+            if topic_count <= 3:
+                variant_base = "single_column_3section"
+            elif topic_count == 4:
+                variant_base = "single_column_4section"
+            else:
+                variant_base = "single_column_5section"
+    else:
+        # Default mapping based on topic count
+        if topic_count <= 3:
+            variant_base = "single_column_3section"
+        elif topic_count == 4:
+            variant_base = "single_column_4section"
+        else:
+            variant_base = "single_column_5section"
+
+    # Map layout type to suffix
+    suffix = "_i1" if layout_type in [ISeriesLayoutType.I1, ISeriesLayoutType.I2] else "_i3"
+
+    variant_id_full = f"{variant_base}{suffix}"
+
+    # Get base path - resolve relative to this file's location
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    spec_path = os.path.join(base_dir, "variant_specs", "iseries", f"{variant_id_full}.json")
+
+    # Load and return variant spec
+    try:
+        with open(spec_path) as f:
+            spec = json.load(f)
+            logger.info(f"[I-SERIES] Loaded variant spec: {variant_id_full}")
+            return spec
+    except FileNotFoundError:
+        logger.warning(f"[I-SERIES] Variant spec not found: {spec_path}")
+        return None
+    except Exception as e:
+        logger.warning(f"[I-SERIES] Failed to load variant spec {spec_path}: {e}")
+        return None
+
+
 def _convert_to_iseries_request(
     request: UnifiedSlideRequest,
     layout_type: ISeriesLayoutType
 ) -> ISeriesGenerationRequest:
-    """Convert UnifiedSlideRequest to ISeriesGenerationRequest."""
+    """Convert UnifiedSlideRequest to ISeriesGenerationRequest.
+
+    v1.3.0: Merges theme_config, content_context, and styling_mode into context dict.
+    v1.3.1: Auto-selects variant_spec based on layout type and topics count.
+    """
+    # Build context with v1.3.0 params
+    context = dict(request.context) if request.context else {}
+
+    # v1.3.0: Pass theme and content context through context dict
+    if request.theme_config:
+        context["theme_config"] = request.theme_config
+    if request.content_context:
+        context["content_context"] = request.content_context
+    if request.styling_mode:
+        context["styling_mode"] = request.styling_mode
+
+    # v1.3.1: Auto-select variant spec based on layout type and topics
+    variant_spec = _get_iseries_variant_spec(
+        layout_type,
+        request.topics,
+        request.variant_id
+    )
+    if variant_spec:
+        context["variant_spec"] = variant_spec
+        logger.info(f"[I-SERIES] Using variant_spec: {variant_spec.get('variant_id')}")
+
     return ISeriesGenerationRequest(
         slide_number=request.slide_number,
         layout_type=layout_type,
@@ -545,7 +642,7 @@ def _convert_to_iseries_request(
         content_style=request.content_style.value if hasattr(request, 'content_style') else "bullets",
         max_bullets=request.max_bullets,
         image_prompt_hint=request.image_prompt_hint,
-        context=request.context
+        context=context
     )
 
 
