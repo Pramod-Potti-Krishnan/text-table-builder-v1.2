@@ -1,8 +1,8 @@
 {
   "variant_id": "comparison_3col_i1",
   "slide_type": "comparison",
-  "template_path": "app/templates/multilateral_comparison/comparison_3col_c1.html",
-  "description": "3-column comparison layout for I1/I2 wide image layouts (75% character reduction)",
+  "template_path": "app/templates/multilateral_comparison/comparison_3col_c1_themed.html",
+  "description": "3-column comparison layout with 7 items per column for I1/I2 layouts (20% character reduction)",
   "iseries_layout": "wide",
   "elements": [
     {
@@ -20,14 +20,14 @@
         "item_7": "column_1_item_7"
       },
       "character_requirements": {
-        "heading": {"baseline": 19, "min": 14, "max": 24},
-        "item_1": {"baseline": 51, "min": 39, "max": 67},
-        "item_2": {"baseline": 51, "min": 39, "max": 67},
-        "item_3": {"baseline": 51, "min": 39, "max": 67},
-        "item_4": {"baseline": 51, "min": 39, "max": 67},
-        "item_5": {"baseline": 51, "min": 39, "max": 67},
-        "item_6": {"baseline": 51, "min": 39, "max": 67},
-        "item_7": {"baseline": 51, "min": 39, "max": 67}
+        "heading": {"baseline": 24, "min": 16, "max": 32},
+        "item_1": {"baseline": 67, "min": 53, "max": 86},
+        "item_2": {"baseline": 67, "min": 53, "max": 86},
+        "item_3": {"baseline": 67, "min": 53, "max": 86},
+        "item_4": {"baseline": 67, "min": 53, "max": 86},
+        "item_5": {"baseline": 67, "min": 53, "max": 86},
+        "item_6": {"baseline": 67, "min": 53, "max": 86},
+        "item_7": {"baseline": 67, "min": 53, "max": 86}
       }
     },
     {
@@ -45,14 +45,14 @@
         "item_7": "column_2_item_7"
       },
       "character_requirements": {
-        "heading": {"baseline": 19, "min": 14, "max": 24},
-        "item_1": {"baseline": 51, "min": 39, "max": 67},
-        "item_2": {"baseline": 51, "min": 39, "max": 67},
-        "item_3": {"baseline": 51, "min": 39, "max": 67},
-        "item_4": {"baseline": 51, "min": 39, "max": 67},
-        "item_5": {"baseline": 51, "min": 39, "max": 67},
-        "item_6": {"baseline": 51, "min": 39, "max": 67},
-        "item_7": {"baseline": 51, "min": 39, "max": 67}
+        "heading": {"baseline": 24, "min": 16, "max": 32},
+        "item_1": {"baseline": 67, "min": 53, "max": 86},
+        "item_2": {"baseline": 67, "min": 53, "max": 86},
+        "item_3": {"baseline": 67, "min": 53, "max": 86},
+        "item_4": {"baseline": 67, "min": 53, "max": 86},
+        "item_5": {"baseline": 67, "min": 53, "max": 86},
+        "item_6": {"baseline": 67, "min": 53, "max": 86},
+        "item_7": {"baseline": 67, "min": 53, "max": 86}
       }
     },
     {
@@ -70,14 +70,14 @@
         "item_7": "column_3_item_7"
       },
       "character_requirements": {
-        "heading": {"baseline": 19, "min": 14, "max": 24},
-        "item_1": {"baseline": 51, "min": 39, "max": 67},
-        "item_2": {"baseline": 51, "min": 39, "max": 67},
-        "item_3": {"baseline": 51, "min": 39, "max": 67},
-        "item_4": {"baseline": 51, "min": 39, "max": 67},
-        "item_5": {"baseline": 51, "min": 39, "max": 67},
-        "item_6": {"baseline": 51, "min": 39, "max": 67},
-        "item_7": {"baseline": 51, "min": 39, "max": 67}
+        "heading": {"baseline": 24, "min": 16, "max": 32},
+        "item_1": {"baseline": 67, "min": 53, "max": 86},
+        "item_2": {"baseline": 67, "min": 53, "max": 86},
+        "item_3": {"baseline": 67, "min": 53, "max": 86},
+        "item_4": {"baseline": 67, "min": 53, "max": 86},
+        "item_5": {"baseline": 67, "min": 53, "max": 86},
+        "item_6": {"baseline": 67, "min": 53, "max": 86},
+        "item_7": {"baseline": 67, "min": 53, "max": 86}
       }
     }
   ],
