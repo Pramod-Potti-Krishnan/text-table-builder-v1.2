@@ -505,14 +505,13 @@ Generate the content HTML now:"""
         variant_spec: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
-        Generate content using multi-step pipeline for optimal space utilization.
+        Generate content using multi-step pipeline or template assembly.
 
-        v1.3.1: Always uses MultiStepGenerator with hardcoded layout dimensions.
-        Achieves ~85% space utilization vs ~30% with single-step.
-
+        v1.3.1: Uses MultiStepGenerator with hardcoded layout dimensions.
         v1.3.2: Added variant_spec support for I-series character constraints.
-        When a variant spec is provided, its character requirements are passed
-        to the content generator for reduced character counts.
+        v1.3.3: Template-based generation when variant_spec has template_path.
+                Uses TemplateAssembler for rich styled HTML (colored headings,
+                gradient underlines, etc.) matching C1 quality.
 
         Args:
             request: Original generation request
@@ -521,11 +520,24 @@ Generate the content HTML now:"""
             theme_config: Optional theme configuration for styling
             content_context: Optional audience/purpose context
             styling_mode: "inline_styles" or "css_classes"
-            variant_spec: Optional I-series variant spec with character requirements
+            variant_spec: Optional I-series variant spec with template_path and character requirements
 
         Returns:
-            Dict with content HTML, validation, and multi-step metadata
+            Dict with content HTML, validation, and metadata
         """
+        # v1.3.3: Check if variant_spec has template_path for template-based generation
+        if variant_spec and variant_spec.get("template_path"):
+            try:
+                return await self._generate_content_with_template(
+                    request=request,
+                    variant_spec=variant_spec,
+                    theme_config=theme_config,
+                    content_context=content_context
+                )
+            except Exception as e:
+                logger.warning(f"Template-based generation failed: {e}. Falling back to multi-step.")
+
+        # Original multi-step generation (fallback)
         try:
             from app.core.content import MultiStepGenerator
             from app.models.content_context import ContentContext, get_default_content_context
@@ -599,6 +611,239 @@ Generate the content HTML now:"""
             logger.warning("Falling back to single-step content generation")
             content_prompt = self._build_content_prompt(request)
             return await self._generate_content(content_prompt, request)
+
+    async def _generate_content_with_template(
+        self,
+        request: ISeriesGenerationRequest,
+        variant_spec: Dict[str, Any],
+        theme_config: Optional[Dict[str, Any]],
+        content_context: Optional[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """
+        Generate content using template-based assembly for rich styled HTML.
+
+        v1.3.3: New method that uses TemplateAssembler like C1 variants.
+        Produces rich HTML with colored headings, gradient underlines, etc.
+
+        Args:
+            request: Original generation request
+            variant_spec: Variant spec with template_path and elements
+            theme_config: Optional theme configuration
+            content_context: Optional audience/purpose context
+
+        Returns:
+            Dict with rich styled HTML content, validation, and metadata
+        """
+        from app.core.template_assembler import TemplateAssembler
+        from app.models.requests import ThemeConfig
+
+        template_path = variant_spec.get("template_path")
+        variant_id = variant_spec.get("variant_id")
+        elements = variant_spec.get("elements", [])
+
+        logger.info(f"Using template-based generation for {variant_id}")
+
+        # Build LLM prompt to generate content for all placeholders
+        prompt = self._build_template_content_prompt(
+            request=request,
+            variant_spec=variant_spec,
+            content_context=content_context
+        )
+
+        # Generate content with LLM
+        llm_response = await self.llm_service(prompt)
+
+        # Parse LLM response into content map
+        content_map = self._parse_template_response(
+            llm_response=llm_response,
+            variant_spec=variant_spec
+        )
+
+        # Assemble template with content
+        assembler = TemplateAssembler()
+
+        # Parse theme_config if provided
+        parsed_theme = None
+        if theme_config:
+            try:
+                parsed_theme = ThemeConfig(**theme_config)
+            except Exception as e:
+                logger.warning(f"Failed to parse theme_config: {e}")
+
+        # Assemble with theme (handles themed template selection and color overrides)
+        assembled_html = assembler.assemble_with_theme(
+            template_path=template_path,
+            content_map=content_map,
+            theme_config=parsed_theme,
+            variant_id=variant_id
+        )
+
+        return {
+            "content": assembled_html,
+            "validation": {
+                "valid": True,
+                "template_based": True,
+                "template_path": template_path,
+                "variant_id": variant_id
+            },
+            "metadata": {
+                "generation_mode": "template_assembly",
+                "variant_spec": {
+                    "variant_id": variant_id,
+                    "slide_type": variant_spec.get("slide_type"),
+                    "iseries_layout": variant_spec.get("iseries_layout"),
+                    "template_path": template_path
+                }
+            }
+        }
+
+    def _build_template_content_prompt(
+        self,
+        request: ISeriesGenerationRequest,
+        variant_spec: Dict[str, Any],
+        content_context: Optional[Dict[str, Any]]
+    ) -> str:
+        """
+        Build LLM prompt to generate content for template placeholders.
+
+        Args:
+            request: Generation request with narrative and topics
+            variant_spec: Variant spec with elements and character requirements
+            content_context: Optional audience/purpose context
+
+        Returns:
+            Prompt string for LLM
+        """
+        elements = variant_spec.get("elements", [])
+        layout_info = variant_spec.get("layout", {})
+
+        # Build placeholder specifications
+        placeholder_specs = []
+        for element in elements:
+            element_id = element.get("element_id", "")
+            placeholders = element.get("placeholders", {})
+            char_reqs = element.get("character_requirements", {})
+
+            for field_name, placeholder_name in placeholders.items():
+                char_req = char_reqs.get(field_name, {})
+                baseline = char_req.get("baseline", 50)
+                min_chars = char_req.get("min", 20)
+                max_chars = char_req.get("max", 100)
+
+                placeholder_specs.append(
+                    f"- {placeholder_name}: {field_name} for {element_id} "
+                    f"(target: {baseline} chars, range: {min_chars}-{max_chars})"
+                )
+
+        placeholders_section = "\n".join(placeholder_specs)
+
+        # Build audience section if content_context provided
+        audience_section = ""
+        if content_context:
+            audience_info = content_context.get("audience", {})
+            audience_type = audience_info.get("audience_type", "professional")
+            complexity = audience_info.get("complexity_level", "moderate")
+            audience_section = f"""
+## Audience
+- Type: {audience_type}
+- Complexity: {complexity}
+"""
+
+        # Build prompt
+        prompt = f"""Generate slide content for the following presentation slide.
+
+## Slide Information
+Title: {request.title}
+{f"Subtitle: {request.subtitle}" if request.subtitle else ""}
+
+## Narrative/Topic
+{request.narrative}
+
+## Key Topics
+{', '.join(request.topics) if request.topics else 'Based on narrative'}
+{audience_section}
+## Required Placeholders
+Generate content for each placeholder below. Follow character limits carefully.
+{placeholders_section}
+
+## Output Format
+Return a JSON object with each placeholder as a key and the generated content as the value.
+Example:
+{{
+  "section_1_heading": "First Section Title",
+  "section_1_bullet_1": "First bullet point content here",
+  ...
+}}
+
+IMPORTANT:
+1. Generate ONLY plain text content (no HTML tags)
+2. Stay within character limits
+3. Make content cohesive and complementary across all sections
+4. Use professional, concise language
+5. Start bullet points with action verbs where appropriate
+
+Generate the JSON object now:"""
+
+        return prompt
+
+    def _parse_template_response(
+        self,
+        llm_response: str,
+        variant_spec: Dict[str, Any]
+    ) -> Dict[str, str]:
+        """
+        Parse LLM response into content map for template assembly.
+
+        Args:
+            llm_response: Raw LLM response (expected JSON format)
+            variant_spec: Variant spec with expected placeholders
+
+        Returns:
+            Content map dictionary
+        """
+        # Try to parse as JSON
+        try:
+            # Clean markdown wrappers if present
+            cleaned = llm_response.strip()
+            if cleaned.startswith("```json"):
+                cleaned = cleaned[7:]
+            if cleaned.startswith("```"):
+                cleaned = cleaned[3:]
+            if cleaned.endswith("```"):
+                cleaned = cleaned[:-3]
+            cleaned = cleaned.strip()
+
+            content_map = json.loads(cleaned)
+
+            # Validate all expected placeholders are present
+            elements = variant_spec.get("elements", [])
+            expected_placeholders = set()
+            for element in elements:
+                placeholders = element.get("placeholders", {})
+                expected_placeholders.update(placeholders.values())
+
+            missing = expected_placeholders - set(content_map.keys())
+            if missing:
+                logger.warning(f"Missing placeholders in LLM response: {missing}")
+                # Fill missing with placeholder text
+                for placeholder in missing:
+                    content_map[placeholder] = f"[{placeholder}]"
+
+            return content_map
+
+        except json.JSONDecodeError as e:
+            logger.error(f"Failed to parse LLM response as JSON: {e}")
+            logger.debug(f"Raw response: {llm_response[:500]}")
+
+            # Fallback: try to extract key-value pairs
+            content_map = {}
+            elements = variant_spec.get("elements", [])
+            for element in elements:
+                placeholders = element.get("placeholders", {})
+                for field_name, placeholder_name in placeholders.items():
+                    content_map[placeholder_name] = f"[{placeholder_name}]"
+
+            return content_map
 
     def _clean_markdown_wrapper(self, content: str) -> str:
         """
