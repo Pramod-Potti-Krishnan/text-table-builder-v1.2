@@ -1,6 +1,6 @@
 {
   "version": "1.2.0",
-  "total_variants": 37,
+  "total_variants": 40,
   "slide_types": {
     "matrix": {
       "description": "Matrix layouts with boxes in grid formation",
@@ -34,6 +34,11 @@
           "variant_id": "grid_2x2_centered",
           "spec_path": "variant_specs/grid/grid_2x2_centered.json",
           "layout": "2x2 grid centered (4 boxes with icons, 70% extended)"
+        },
+        {
+          "variant_id": "grid_2x2_centered_c1",
+          "spec_path": "variant_specs/grid/grid_2x2_centered_c1.json",
+          "layout": "2x2 grid centered with explicit icon, title, description (C1 layout)"
         },
         {
           "variant_id": "grid_2x3_left",
@@ -111,6 +116,11 @@
           "layout": "3 steps with numbers, titles, and paragraphs"
         },
         {
+          "variant_id": "sequential_3col_c1",
+          "spec_path": "variant_specs/sequential/sequential_3col_c1.json",
+          "layout": "3 steps with explicit number, title, and 4 sentences each (C1 layout)"
+        },
+        {
           "variant_id": "sequential_4col",
           "spec_path": "variant_specs/sequential/sequential_4col.json",
           "layout": "4 steps with numbers, titles, and paragraphs"
@@ -169,6 +179,11 @@
           "variant_id": "metrics_4col",
           "spec_path": "variant_specs/metrics/metrics_4col.json",
           "layout": "4 metric cards with Key Insights box"
+        },
+        {
+          "variant_id": "metrics_4col_c1",
+          "spec_path": "variant_specs/metrics/metrics_4col_c1.json",
+          "layout": "4 metric cards with explicit placeholders + Key Insights (C1 layout)"
         },
         {
           "variant_id": "metrics_3x2_grid",
@@ -244,6 +259,7 @@
     "grid_2x3": "grid",
     "grid_3x2": "grid",
     "grid_2x2_centered": "grid",
+    "grid_2x2_centered_c1": "grid",
     "grid_2x3_left": "grid",
     "grid_3x2_left": "grid",
     "grid_2x2_left": "grid",
@@ -257,6 +273,7 @@
     "comparison_3col_c1": "comparison",
     "comparison_4col_c1": "comparison",
     "sequential_3col": "sequential",
+    "sequential_3col_c1": "sequential",
     "sequential_4col": "sequential",
     "sequential_5col": "sequential",
     "asymmetric_8_4_3section": "asymmetric",
@@ -266,6 +283,7 @@
     "hybrid_left_2x2": "hybrid",
     "metrics_3col": "metrics",
     "metrics_4col": "metrics",
+    "metrics_4col_c1": "metrics",
     "metrics_3x2_grid": "metrics",
     "metrics_2x2_grid": "metrics",
     "impact_quote": "impact_quote",

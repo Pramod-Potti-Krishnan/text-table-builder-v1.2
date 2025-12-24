@@ -1,0 +1,122 @@
+{
+  "variant_id": "grid_2x2_centered_c1",
+  "slide_type": "grid",
+  "template_path": "app/templates/grid/grid_2x2_centered_c1.html",
+  "description": "2x2 grid layout with 4 centered boxes, each with explicit icon, title, and description placeholders (C1 layout)",
+  "elements": [
+    {
+      "element_id": "box_1",
+      "element_type": "grid_box_explicit",
+      "required_fields": ["icon", "title", "description"],
+      "placeholders": {
+        "icon": "box_1_icon",
+        "title": "box_1_title",
+        "description": "box_1_description"
+      },
+      "character_requirements": {
+        "icon": {
+          "baseline": 2,
+          "min": 1,
+          "max": 4
+        },
+        "title": {
+          "baseline": 25,
+          "min": 12,
+          "max": 40
+        },
+        "description": {
+          "baseline": 80,
+          "min": 50,
+          "max": 120
+        }
+      }
+    },
+    {
+      "element_id": "box_2",
+      "element_type": "grid_box_explicit",
+      "required_fields": ["icon", "title", "description"],
+      "placeholders": {
+        "icon": "box_2_icon",
+        "title": "box_2_title",
+        "description": "box_2_description"
+      },
+      "character_requirements": {
+        "icon": {
+          "baseline": 2,
+          "min": 1,
+          "max": 4
+        },
+        "title": {
+          "baseline": 25,
+          "min": 12,
+          "max": 40
+        },
+        "description": {
+          "baseline": 80,
+          "min": 50,
+          "max": 120
+        }
+      }
+    },
+    {
+      "element_id": "box_3",
+      "element_type": "grid_box_explicit",
+      "required_fields": ["icon", "title", "description"],
+      "placeholders": {
+        "icon": "box_3_icon",
+        "title": "box_3_title",
+        "description": "box_3_description"
+      },
+      "character_requirements": {
+        "icon": {
+          "baseline": 2,
+          "min": 1,
+          "max": 4
+        },
+        "title": {
+          "baseline": 25,
+          "min": 12,
+          "max": 40
+        },
+        "description": {
+          "baseline": 80,
+          "min": 50,
+          "max": 120
+        }
+      }
+    },
+    {
+      "element_id": "box_4",
+      "element_type": "grid_box_explicit",
+      "required_fields": ["icon", "title", "description"],
+      "placeholders": {
+        "icon": "box_4_icon",
+        "title": "box_4_title",
+        "description": "box_4_description"
+      },
+      "character_requirements": {
+        "icon": {
+          "baseline": 2,
+          "min": 1,
+          "max": 4
+        },
+        "title": {
+          "baseline": 25,
+          "min": 12,
+          "max": 40
+        },
+        "description": {
+          "baseline": 80,
+          "min": 50,
+          "max": 120
+        }
+      }
+    }
+  ],
+  "layout": {
+    "columns": 2,
+    "rows": 2,
+    "layout_type": "grid_centered",
+    "boxes_count": 4
+  }
+}
