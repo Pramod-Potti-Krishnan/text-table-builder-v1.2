@@ -51,6 +51,60 @@ DIAGRAM_KEYWORDS = [
 
 
 # =============================================================================
+# C1 Variant Mapping (L25 → C1)
+# C1 variants are the new default with explicit bullet placeholders
+# L25 variants are deprecated but still available for explicit requests
+# =============================================================================
+
+C1_VARIANT_MAP = {
+    # Comparison
+    "comparison_2col": "comparison_2col_c1",
+    "comparison_3col": "comparison_3col_c1",
+    "comparison_4col": "comparison_4col_c1",
+    # Sequential
+    "sequential_3col": "sequential_3col_c1",
+    "sequential_4col": "sequential_4col_c1",
+    "sequential_5col": "sequential_5col_c1",
+    # Grid
+    "grid_2x2_centered": "grid_2x2_centered_c1",
+    "grid_2x2_left": "grid_2x2_left_c1",
+    "grid_2x2_numbered": "grid_2x2_numbered_c1",
+    "grid_2x3": "grid_2x3_c1",
+    "grid_2x3_left": "grid_2x3_left_c1",
+    "grid_2x3_numbered": "grid_2x3_numbered_c1",
+    "grid_3x2": "grid_3x2_c1",
+    "grid_3x2_left": "grid_3x2_left_c1",
+    "grid_3x2_numbered": "grid_3x2_numbered_c1",
+    # Matrix
+    "matrix_2x2": "matrix_2x2_c1",
+    "matrix_2x3": "matrix_2x3_c1",
+    # Asymmetric
+    "asymmetric_8_4_3section": "asymmetric_8_4_3section_c1",
+    "asymmetric_8_4_4section": "asymmetric_8_4_4section_c1",
+    "asymmetric_8_4_5section": "asymmetric_8_4_5section_c1",
+    # Hybrid
+    "hybrid_top_2x2": "hybrid_top_2x2_c1",
+    "hybrid_left_2x2": "hybrid_left_2x2_c1",
+    # Metrics
+    "metrics_3col": "metrics_3col_c1",
+    "metrics_4col": "metrics_4col_c1",
+    "metrics_2x2_grid": "metrics_2x2_grid_c1",
+    "metrics_3x2_grid": "metrics_3x2_grid_c1",
+    # Table
+    "table_2col": "table_2col_c1",
+    "table_3col": "table_3col_c1",
+    "table_4col": "table_4col_c1",
+    "table_5col": "table_5col_c1",
+    # Single Column
+    "single_column_3section": "single_column_3section_c1",
+    "single_column_4section": "single_column_4section_c1",
+    "single_column_5section": "single_column_5section_c1",
+    # Impact Quote
+    "impact_quote": "impact_quote_c1",
+}
+
+
+# =============================================================================
 # Variant Specifications
 # =============================================================================
 
@@ -595,10 +649,20 @@ class ContentAnalyzer:
         available_width: int,
         available_height: int,
         layout_id: Optional[str] = None,
-        suggested_type: Optional[str] = None
+        suggested_type: Optional[str] = None,
+        prefer_c1: bool = True
     ) -> Tuple[List[Dict], List[Dict]]:
         """
         Get ranked variant recommendations for the content.
+
+        Args:
+            topic_count: Number of topics/items
+            available_width: Available width in pixels
+            available_height: Available height in pixels
+            layout_id: Optional layout ID for compatibility check
+            suggested_type: Optional suggested slide type
+            prefer_c1: If True (default), return C1 variants instead of L25.
+                       Set to False to get deprecated L25 variants.
 
         Returns:
             Tuple[List[Dict], List[Dict]]: (recommended_variants, not_recommended)
@@ -663,6 +727,15 @@ class ContentAnalyzer:
 
         # Sort by confidence descending
         recommended.sort(key=lambda x: x["confidence"], reverse=True)
+
+        # Apply C1 preference: swap L25 variant IDs to their C1 equivalents
+        if prefer_c1:
+            for rec in recommended:
+                l25_variant = rec["variant_id"]
+                if l25_variant in C1_VARIANT_MAP:
+                    c1_variant = C1_VARIANT_MAP[l25_variant]
+                    rec["variant_id"] = c1_variant
+                    rec["reason"] = rec["reason"] + " (C1 layout)"
 
         return recommended, not_recommended
 
