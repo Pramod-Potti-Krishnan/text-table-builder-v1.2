@@ -1,0 +1,60 @@
+{
+  "variant_id": "comparison_2col_i1",
+  "slide_type": "comparison",
+  "template_path": "app/templates/multilateral_comparison/comparison_2col_c1.html",
+  "description": "2-column comparison layout for I1/I2 wide image layouts (75% character reduction)",
+  "iseries_layout": "wide",
+  "elements": [
+    {
+      "element_id": "column_1",
+      "element_type": "comparison_column_explicit",
+      "required_fields": ["heading", "item_1", "item_2", "item_3", "item_4", "item_5", "item_6", "item_7"],
+      "placeholders": {
+        "heading": "column_1_heading",
+        "item_1": "column_1_item_1",
+        "item_2": "column_1_item_2",
+        "item_3": "column_1_item_3",
+        "item_4": "column_1_item_4",
+        "item_5": "column_1_item_5",
+        "item_6": "column_1_item_6",
+        "item_7": "column_1_item_7"
+      },
+      "character_requirements": {
+        "heading": {"baseline": 22, "min": 15, "max": 30},
+        "item_1": {"baseline": 63, "min": 49, "max": 81},
+        "item_2": {"baseline": 63, "min": 49, "max": 81},
+        "item_3": {"baseline": 63, "min": 49, "max": 81},
+        "item_4": {"baseline": 63, "min": 49, "max": 81},
+        "item_5": {"baseline": 63, "min": 49, "max": 81},
+        "item_6": {"baseline": 63, "min": 49, "max": 81},
+        "item_7": {"baseline": 63, "min": 49, "max": 81}
+      }
+    },
+    {
+      "element_id": "column_2",
+      "element_type": "comparison_column_explicit",
+      "required_fields": ["heading", "item_1", "item_2", "item_3", "item_4", "item_5", "item_6", "item_7"],
+      "placeholders": {
+        "heading": "column_2_heading",
+        "item_1": "column_2_item_1",
+        "item_2": "column_2_item_2",
+        "item_3": "column_2_item_3",
+        "item_4": "column_2_item_4",
+        "item_5": "column_2_item_5",
+        "item_6": "column_2_item_6",
+        "item_7": "column_2_item_7"
+      },
+      "character_requirements": {
+        "heading": {"baseline": 22, "min": 15, "max": 30},
+        "item_1": {"baseline": 63, "min": 49, "max": 81},
+        "item_2": {"baseline": 63, "min": 49, "max": 81},
+        "item_3": {"baseline": 63, "min": 49, "max": 81},
+        "item_4": {"baseline": 63, "min": 49, "max": 81},
+        "item_5": {"baseline": 63, "min": 49, "max": 81},
+        "item_6": {"baseline": 63, "min": 49, "max": 81},
+        "item_7": {"baseline": 63, "min": 49, "max": 81}
+      }
+    }
+  ],
+  "layout": {"columns": 2, "layout_type": "vertical_columns", "items_per_column": 7}
+}

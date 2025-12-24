@@ -98,6 +98,13 @@ class ISeriesGenerationRequest(BaseModel):
         description="Maximum bullet points (if bullets style)"
     )
 
+    # I-series specific content variant
+    content_variant: Optional[str] = Field(
+        default=None,
+        description="I-series content variant (e.g., 'single_column_3section_i1', 'comparison_2col_i3'). "
+                    "When specified, uses variant spec with reduced character counts for image layouts."
+    )
+
     # Context
     context: Dict[str, Any] = Field(
         default_factory=dict,
@@ -115,6 +122,7 @@ class ISeriesGenerationRequest(BaseModel):
                 "visual_style": "illustrated",
                 "content_style": "bullets",
                 "max_bullets": 5,
+                "content_variant": "single_column_3section_i1",
                 "context": {
                     "theme": "professional",
                     "audience": "business executives"

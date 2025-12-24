@@ -1,6 +1,6 @@
 {
   "version": "1.2.0",
-  "total_variants": 68,
+  "total_variants": 82,
   "slide_types": {
     "matrix": {
       "description": "Matrix layouts with boxes in grid formation",
@@ -391,6 +391,81 @@
           "layout": "5 sections with 2 bullets each, explicit placeholders (C1 layout)"
         }
       ]
+    },
+    "iseries": {
+      "description": "I-series image+content layouts with reduced character counts for wide (I1/I2) and narrow (I3/I4) image configurations",
+      "variants": [
+        {
+          "variant_id": "single_column_3section_i1",
+          "spec_path": "variant_specs/iseries/single_column_3section_i1.json",
+          "layout": "3 sections (4 bullets each) for I1/I2 wide image layouts (75% chars)"
+        },
+        {
+          "variant_id": "single_column_3section_i3",
+          "spec_path": "variant_specs/iseries/single_column_3section_i3.json",
+          "layout": "3 sections (4 bullets each) for I3/I4 narrow image layouts (80% chars)"
+        },
+        {
+          "variant_id": "single_column_4section_i1",
+          "spec_path": "variant_specs/iseries/single_column_4section_i1.json",
+          "layout": "4 sections (3 bullets each) for I1/I2 wide image layouts (75% chars)"
+        },
+        {
+          "variant_id": "single_column_4section_i3",
+          "spec_path": "variant_specs/iseries/single_column_4section_i3.json",
+          "layout": "4 sections (3 bullets each) for I3/I4 narrow image layouts (80% chars)"
+        },
+        {
+          "variant_id": "single_column_5section_i1",
+          "spec_path": "variant_specs/iseries/single_column_5section_i1.json",
+          "layout": "5 sections (2 bullets each) for I1/I2 wide image layouts (75% chars)"
+        },
+        {
+          "variant_id": "single_column_5section_i3",
+          "spec_path": "variant_specs/iseries/single_column_5section_i3.json",
+          "layout": "5 sections (2 bullets each) for I3/I4 narrow image layouts (80% chars)"
+        },
+        {
+          "variant_id": "comparison_2col_i1",
+          "spec_path": "variant_specs/iseries/comparison_2col_i1.json",
+          "layout": "2 columns (7 items each) for I1/I2 wide image layouts (75% chars)"
+        },
+        {
+          "variant_id": "comparison_2col_i3",
+          "spec_path": "variant_specs/iseries/comparison_2col_i3.json",
+          "layout": "2 columns (7 items each) for I3/I4 narrow image layouts (80% chars)"
+        },
+        {
+          "variant_id": "comparison_3col_i1",
+          "spec_path": "variant_specs/iseries/comparison_3col_i1.json",
+          "layout": "3 columns (7 items each) for I1/I2 wide image layouts (75% chars)"
+        },
+        {
+          "variant_id": "comparison_3col_i3",
+          "spec_path": "variant_specs/iseries/comparison_3col_i3.json",
+          "layout": "3 columns (7 items each) for I3/I4 narrow image layouts (80% chars)"
+        },
+        {
+          "variant_id": "sequential_2col_i1",
+          "spec_path": "variant_specs/iseries/sequential_2col_i1.json",
+          "layout": "2 steps (4 sentences each) for I1/I2 wide image layouts (75% chars)"
+        },
+        {
+          "variant_id": "sequential_2col_i3",
+          "spec_path": "variant_specs/iseries/sequential_2col_i3.json",
+          "layout": "2 steps (4 sentences each) for I3/I4 narrow image layouts (80% chars)"
+        },
+        {
+          "variant_id": "sequential_3col_i1",
+          "spec_path": "variant_specs/iseries/sequential_3col_i1.json",
+          "layout": "3 steps (4 sentences each) for I1/I2 wide image layouts (75% chars)"
+        },
+        {
+          "variant_id": "sequential_3col_i3",
+          "spec_path": "variant_specs/iseries/sequential_3col_i3.json",
+          "layout": "3 steps (4 sentences each) for I3/I4 narrow image layouts (80% chars)"
+        }
+      ]
     }
   },
   "variant_lookup": {
@@ -461,6 +536,20 @@
     "single_column_4section": "single_column",
     "single_column_4section_c1": "single_column",
     "single_column_5section": "single_column",
-    "single_column_5section_c1": "single_column"
+    "single_column_5section_c1": "single_column",
+    "single_column_3section_i1": "iseries",
+    "single_column_3section_i3": "iseries",
+    "single_column_4section_i1": "iseries",
+    "single_column_4section_i3": "iseries",
+    "single_column_5section_i1": "iseries",
+    "single_column_5section_i3": "iseries",
+    "comparison_2col_i1": "iseries",
+    "comparison_2col_i3": "iseries",
+    "comparison_3col_i1": "iseries",
+    "comparison_3col_i3": "iseries",
+    "sequential_2col_i1": "iseries",
+    "sequential_2col_i3": "iseries",
+    "sequential_3col_i1": "iseries",
+    "sequential_3col_i3": "iseries"
   }
 }

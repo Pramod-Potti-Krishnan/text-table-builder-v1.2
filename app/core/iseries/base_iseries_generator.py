@@ -13,12 +13,16 @@ Pattern follows:
 
 Version: 1.3.0 - Added content_context support for audience-adapted text
 Version: 1.3.1 - Always use multi-step generation with hardcoded dimensions
+Version: 1.3.2 - Added content_variant support for I-series specific character constraints
 """
 
 import asyncio
+import json
 import logging
+import os
 import re
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Dict, Any, Callable, Optional
 
 
@@ -61,6 +65,32 @@ from app.core.hero.style_config import (
 )
 
 logger = logging.getLogger(__name__)
+
+# Path to variant specs directory
+VARIANT_SPECS_DIR = Path(__file__).parent.parent.parent / "variant_specs" / "iseries"
+
+
+def load_iseries_variant_spec(variant_id: str) -> Optional[Dict[str, Any]]:
+    """
+    Load I-series variant spec from JSON file.
+
+    Args:
+        variant_id: Variant ID (e.g., 'single_column_3section_i1')
+
+    Returns:
+        Variant spec dict or None if not found
+    """
+    spec_path = VARIANT_SPECS_DIR / f"{variant_id}.json"
+    if not spec_path.exists():
+        logger.warning(f"Variant spec not found: {spec_path}")
+        return None
+
+    try:
+        with open(spec_path, 'r') as f:
+            return json.load(f)
+    except Exception as e:
+        logger.error(f"Failed to load variant spec {variant_id}: {e}")
+        return None
 
 
 class BaseISeriesGenerator(ABC):
@@ -143,10 +173,21 @@ class BaseISeriesGenerator(ABC):
         content_context = context.get("content_context")
         styling_mode = context.get("styling_mode", "inline_styles")
 
+        # v1.3.2: Load variant spec if content_variant is specified
+        variant_spec = None
+        if hasattr(request, 'content_variant') and request.content_variant:
+            variant_spec = load_iseries_variant_spec(request.content_variant)
+            if variant_spec:
+                logger.info(
+                    f"Using I-series variant spec: {request.content_variant} "
+                    f"(layout: {variant_spec.get('iseries_layout', 'unknown')})"
+                )
+
         logger.info(
             f"Generating {self.layout_type} layout "
             f"(slide #{request.slide_number}, style={request.visual_style.value}, "
-            f"multi-step={content_dims['width_px']}x{content_dims['height_px']}px)"
+            f"multi-step={content_dims['width_px']}x{content_dims['height_px']}px, "
+            f"variant={request.content_variant if hasattr(request, 'content_variant') else 'default'})"
         )
 
         # Build image prompt
@@ -166,7 +207,8 @@ class BaseISeriesGenerator(ABC):
                 content_dims["height_px"],
                 theme_config,
                 content_context,
-                styling_mode
+                styling_mode,
+                variant_spec  # v1.3.2: Pass variant spec for character constraints
             )
         )
 
@@ -459,13 +501,18 @@ Generate the content HTML now:"""
         height_px: int,
         theme_config: Optional[Dict[str, Any]],
         content_context: Optional[Dict[str, Any]],
-        styling_mode: str
+        styling_mode: str,
+        variant_spec: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
         Generate content using multi-step pipeline for optimal space utilization.
 
         v1.3.1: Always uses MultiStepGenerator with hardcoded layout dimensions.
         Achieves ~85% space utilization vs ~30% with single-step.
+
+        v1.3.2: Added variant_spec support for I-series character constraints.
+        When a variant spec is provided, its character requirements are passed
+        to the content generator for reduced character counts.
 
         Args:
             request: Original generation request
@@ -474,6 +521,7 @@ Generate the content HTML now:"""
             theme_config: Optional theme configuration for styling
             content_context: Optional audience/purpose context
             styling_mode: "inline_styles" or "css_classes"
+            variant_spec: Optional I-series variant spec with character requirements
 
         Returns:
             Dict with content HTML, validation, and multi-step metadata
@@ -504,6 +552,12 @@ Generate the content HTML now:"""
 
             # Create generator and run multi-step pipeline
             generator = MultiStepGenerator(self.llm_service)
+
+            # v1.3.2: If variant_spec is provided, use its variant_id
+            variant_id_hint = None
+            if variant_spec:
+                variant_id_hint = variant_spec.get("variant_id")
+
             result = await generator.generate(
                 narrative=request.narrative,
                 topics=request.topics or [],
@@ -512,19 +566,31 @@ Generate the content HTML now:"""
                 theme_config=parsed_theme,
                 content_context=parsed_context,
                 styling_mode=styling_mode,
-                slide_number=request.slide_number
+                slide_number=request.slide_number,
+                variant_id=variant_id_hint
             )
 
             # Extract content from multi-step result
+            # v1.3.2: Include variant spec info in metadata
+            multi_step_metadata = result.metadata.copy() if result.metadata else {}
+            if variant_spec:
+                multi_step_metadata["variant_spec"] = {
+                    "variant_id": variant_spec.get("variant_id"),
+                    "slide_type": variant_spec.get("slide_type"),
+                    "iseries_layout": variant_spec.get("iseries_layout"),
+                    "layout": variant_spec.get("layout", {})
+                }
+
             return {
                 "content": result.body,
                 "validation": {
                     "valid": True,
                     "multi_step": True,
                     "phases_completed": result.metadata.get("multi_step", {}).get("phases_completed", []),
-                    "layout_type": result.metadata.get("multi_step", {}).get("structure_plan", {}).get("layout_type")
+                    "layout_type": result.metadata.get("multi_step", {}).get("structure_plan", {}).get("layout_type"),
+                    "variant_id": variant_id_hint
                 },
-                "metadata": result.metadata
+                "metadata": multi_step_metadata
             }
 
         except Exception as e:

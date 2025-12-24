@@ -1,0 +1,52 @@
+{
+  "variant_id": "sequential_2col_i1",
+  "slide_type": "sequential",
+  "template_path": "app/templates/sequential/sequential_3col_c1.html",
+  "description": "2-step sequential layout for I1/I2 wide image layouts (75% character reduction)",
+  "iseries_layout": "wide",
+  "elements": [
+    {
+      "element_id": "step_1",
+      "element_type": "sequential_step_explicit",
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4"],
+      "placeholders": {
+        "number": "step_1_number",
+        "title": "step_1_title",
+        "sentence_1": "step_1_sentence_1",
+        "sentence_2": "step_1_sentence_2",
+        "sentence_3": "step_1_sentence_3",
+        "sentence_4": "step_1_sentence_4"
+      },
+      "character_requirements": {
+        "number": {"baseline": 1, "min": 1, "max": 2},
+        "title": {"baseline": 18, "min": 8, "max": 24},
+        "sentence_1": {"baseline": 54, "min": 30, "max": 72},
+        "sentence_2": {"baseline": 54, "min": 30, "max": 72},
+        "sentence_3": {"baseline": 54, "min": 30, "max": 72},
+        "sentence_4": {"baseline": 54, "min": 30, "max": 72}
+      }
+    },
+    {
+      "element_id": "step_2",
+      "element_type": "sequential_step_explicit",
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4"],
+      "placeholders": {
+        "number": "step_2_number",
+        "title": "step_2_title",
+        "sentence_1": "step_2_sentence_1",
+        "sentence_2": "step_2_sentence_2",
+        "sentence_3": "step_2_sentence_3",
+        "sentence_4": "step_2_sentence_4"
+      },
+      "character_requirements": {
+        "number": {"baseline": 1, "min": 1, "max": 2},
+        "title": {"baseline": 18, "min": 8, "max": 24},
+        "sentence_1": {"baseline": 54, "min": 30, "max": 72},
+        "sentence_2": {"baseline": 54, "min": 30, "max": 72},
+        "sentence_3": {"baseline": 54, "min": 30, "max": 72},
+        "sentence_4": {"baseline": 54, "min": 30, "max": 72}
+      }
+    }
+  ],
+  "layout": {"columns": 2, "layout_type": "sequential_steps", "steps_count": 2, "sentences_per_step": 4}
+}
