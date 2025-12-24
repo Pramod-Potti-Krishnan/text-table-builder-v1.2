@@ -1,0 +1,119 @@
+{
+  "variant_id": "sequential_5col_c1",
+  "slide_type": "sequential",
+  "template_path": "app/templates/sequential/sequential_5col_c1.html",
+  "description": "5-step sequential layout with explicit placeholders for each step number, title, and 4 sentences (C1 layout)",
+  "elements": [
+    {
+      "element_id": "step_1",
+      "element_type": "sequential_step_explicit",
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4"],
+      "placeholders": {
+        "number": "step_1_number",
+        "title": "step_1_title",
+        "sentence_1": "step_1_sentence_1",
+        "sentence_2": "step_1_sentence_2",
+        "sentence_3": "step_1_sentence_3",
+        "sentence_4": "step_1_sentence_4"
+      },
+      "character_requirements": {
+        "number": {"baseline": 1, "min": 1, "max": 2},
+        "title": {"baseline": 15, "min": 6, "max": 22},
+        "sentence_1": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_2": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_3": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_4": {"baseline": 50, "min": 25, "max": 70}
+      }
+    },
+    {
+      "element_id": "step_2",
+      "element_type": "sequential_step_explicit",
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4"],
+      "placeholders": {
+        "number": "step_2_number",
+        "title": "step_2_title",
+        "sentence_1": "step_2_sentence_1",
+        "sentence_2": "step_2_sentence_2",
+        "sentence_3": "step_2_sentence_3",
+        "sentence_4": "step_2_sentence_4"
+      },
+      "character_requirements": {
+        "number": {"baseline": 1, "min": 1, "max": 2},
+        "title": {"baseline": 15, "min": 6, "max": 22},
+        "sentence_1": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_2": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_3": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_4": {"baseline": 50, "min": 25, "max": 70}
+      }
+    },
+    {
+      "element_id": "step_3",
+      "element_type": "sequential_step_explicit",
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4"],
+      "placeholders": {
+        "number": "step_3_number",
+        "title": "step_3_title",
+        "sentence_1": "step_3_sentence_1",
+        "sentence_2": "step_3_sentence_2",
+        "sentence_3": "step_3_sentence_3",
+        "sentence_4": "step_3_sentence_4"
+      },
+      "character_requirements": {
+        "number": {"baseline": 1, "min": 1, "max": 2},
+        "title": {"baseline": 15, "min": 6, "max": 22},
+        "sentence_1": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_2": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_3": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_4": {"baseline": 50, "min": 25, "max": 70}
+      }
+    },
+    {
+      "element_id": "step_4",
+      "element_type": "sequential_step_explicit",
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4"],
+      "placeholders": {
+        "number": "step_4_number",
+        "title": "step_4_title",
+        "sentence_1": "step_4_sentence_1",
+        "sentence_2": "step_4_sentence_2",
+        "sentence_3": "step_4_sentence_3",
+        "sentence_4": "step_4_sentence_4"
+      },
+      "character_requirements": {
+        "number": {"baseline": 1, "min": 1, "max": 2},
+        "title": {"baseline": 15, "min": 6, "max": 22},
+        "sentence_1": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_2": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_3": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_4": {"baseline": 50, "min": 25, "max": 70}
+      }
+    },
+    {
+      "element_id": "step_5",
+      "element_type": "sequential_step_explicit",
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4"],
+      "placeholders": {
+        "number": "step_5_number",
+        "title": "step_5_title",
+        "sentence_1": "step_5_sentence_1",
+        "sentence_2": "step_5_sentence_2",
+        "sentence_3": "step_5_sentence_3",
+        "sentence_4": "step_5_sentence_4"
+      },
+      "character_requirements": {
+        "number": {"baseline": 1, "min": 1, "max": 2},
+        "title": {"baseline": 15, "min": 6, "max": 22},
+        "sentence_1": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_2": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_3": {"baseline": 50, "min": 25, "max": 70},
+        "sentence_4": {"baseline": 50, "min": 25, "max": 70}
+      }
+    }
+  ],
+  "layout": {
+    "columns": 5,
+    "layout_type": "sequential_steps",
+    "steps_count": 5,
+    "sentences_per_step": 4
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variant_id": "impact_quote_c1",
+  "slide_type": "impact_quote",
+  "template_path": "app/templates/impact_quote/impact_quote_c1.html",
+  "description": "Impact quote slide with quote text and attribution (C1 layout)",
+  "elements": [
+    {"element_id": "quote", "element_type": "quote_content", "required_fields": ["quote_text", "attribution"], "placeholders": {"quote_text": "quote_text", "attribution": "attribution"}, "character_requirements": {"quote_text": {"baseline": 180, "min": 100, "max": 280}, "attribution": {"baseline": 45, "min": 25, "max": 70}}}
+  ],
+  "layout": {"layout_type": "impact_quote"}
+}

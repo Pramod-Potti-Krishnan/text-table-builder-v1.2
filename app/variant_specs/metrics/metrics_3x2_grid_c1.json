@@ -1,0 +1,104 @@
+{
+  "variant_id": "metrics_3x2_grid_c1",
+  "slide_type": "metrics",
+  "template_path": "app/templates/metrics/metrics_3x2_grid_c1.html",
+  "description": "3x2 metrics grid with 6 metric cards (C1 layout)",
+  "elements": [
+    {
+      "element_id": "metric_1",
+      "element_type": "metric_card_explicit",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_1_number",
+        "label": "metric_1_label",
+        "description": "metric_1_description"
+      },
+      "character_requirements": {
+        "number": {"baseline": 8, "min": 2, "max": 12},
+        "label": {"baseline": 18, "min": 8, "max": 25},
+        "description": {"baseline": 60, "min": 35, "max": 85}
+      }
+    },
+    {
+      "element_id": "metric_2",
+      "element_type": "metric_card_explicit",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_2_number",
+        "label": "metric_2_label",
+        "description": "metric_2_description"
+      },
+      "character_requirements": {
+        "number": {"baseline": 8, "min": 2, "max": 12},
+        "label": {"baseline": 18, "min": 8, "max": 25},
+        "description": {"baseline": 60, "min": 35, "max": 85}
+      }
+    },
+    {
+      "element_id": "metric_3",
+      "element_type": "metric_card_explicit",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_3_number",
+        "label": "metric_3_label",
+        "description": "metric_3_description"
+      },
+      "character_requirements": {
+        "number": {"baseline": 8, "min": 2, "max": 12},
+        "label": {"baseline": 18, "min": 8, "max": 25},
+        "description": {"baseline": 60, "min": 35, "max": 85}
+      }
+    },
+    {
+      "element_id": "metric_4",
+      "element_type": "metric_card_explicit",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_4_number",
+        "label": "metric_4_label",
+        "description": "metric_4_description"
+      },
+      "character_requirements": {
+        "number": {"baseline": 8, "min": 2, "max": 12},
+        "label": {"baseline": 18, "min": 8, "max": 25},
+        "description": {"baseline": 60, "min": 35, "max": 85}
+      }
+    },
+    {
+      "element_id": "metric_5",
+      "element_type": "metric_card_explicit",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_5_number",
+        "label": "metric_5_label",
+        "description": "metric_5_description"
+      },
+      "character_requirements": {
+        "number": {"baseline": 8, "min": 2, "max": 12},
+        "label": {"baseline": 18, "min": 8, "max": 25},
+        "description": {"baseline": 60, "min": 35, "max": 85}
+      }
+    },
+    {
+      "element_id": "metric_6",
+      "element_type": "metric_card_explicit",
+      "required_fields": ["number", "label", "description"],
+      "placeholders": {
+        "number": "metric_6_number",
+        "label": "metric_6_label",
+        "description": "metric_6_description"
+      },
+      "character_requirements": {
+        "number": {"baseline": 8, "min": 2, "max": 12},
+        "label": {"baseline": 18, "min": 8, "max": 25},
+        "description": {"baseline": 60, "min": 35, "max": 85}
+      }
+    }
+  ],
+  "layout": {
+    "columns": 3,
+    "rows": 2,
+    "layout_type": "metrics_grid",
+    "metrics_count": 6
+  }
+}
