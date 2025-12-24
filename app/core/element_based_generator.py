@@ -129,10 +129,11 @@ class ElementBasedContentGenerator:
         # Step 6: Build content map for template assembly
         content_map = self._build_content_map(element_contents)
 
-        # Step 7: Assemble template
+        # Step 7: Assemble template (v1.2.2: pass variant_id for themed template selection)
         assembled_html = self.template_assembler.assemble_template(
             template_path=template_path,
-            content_map=content_map
+            content_map=content_map,
+            variant_id=variant_id
         )
 
         # Step 8: Return result
@@ -233,10 +234,11 @@ class ElementBasedContentGenerator:
         # Step 6: Build content map for template assembly (sync operation)
         content_map = self._build_content_map(element_contents)
 
-        # Step 7: Assemble template (sync operation)
+        # Step 7: Assemble template (v1.2.2: pass variant_id for themed template selection)
         assembled_html = self.template_assembler.assemble_template(
             template_path=template_path,
-            content_map=content_map
+            content_map=content_map,
+            variant_id=variant_id
         )
 
         # STAGE LOGGING: HTML assembled
