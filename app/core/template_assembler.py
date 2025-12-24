@@ -9,11 +9,17 @@ Architecture:
     → Apply theme overrides → Return assembled HTML → Cache for future use
 
 v1.2.1: Added theme override support for Theme Service integration.
+v1.2.2: Added CSS variable themed template support (Phase 1).
 """
 
 from pathlib import Path
 from typing import Dict, Optional, Any
 import re
+import logging
+
+from app.core.theme.theming_config import get_theming_settings
+
+logger = logging.getLogger(__name__)
 
 
 class TemplateAssembler:
@@ -28,13 +34,62 @@ class TemplateAssembler:
         """
         self.templates_dir = Path(templates_dir)
         self._template_cache: Dict[str, str] = {}
+        self._theming_settings = get_theming_settings()
 
-    def load_template(self, template_path: str) -> str:
+    def get_themed_template_path(
+        self,
+        template_path: str,
+        variant_id: Optional[str] = None
+    ) -> str:
+        """
+        Get the themed template path if CSS variable theming is enabled for the variant.
+
+        This is part of Phase 1 CSS variable theming rollout. When USE_CSS_VARIABLES=true
+        and the variant_id is in the CSS_VARIABLE_TEMPLATES list, this method returns
+        the path to the _themed.html version of the template.
+
+        Args:
+            template_path: Original template path (e.g., "metrics/metrics_3col_c1.html")
+            variant_id: The variant identifier (e.g., "metrics_3col_c1")
+
+        Returns:
+            The themed template path if applicable, otherwise the original path
+        """
+        # If no variant_id provided, can't determine if theming applies
+        if not variant_id:
+            return template_path
+
+        # Check if this variant should use CSS variables
+        if not self._theming_settings.uses_css_variables(variant_id):
+            return template_path
+
+        # Build themed template path
+        themed_suffix = self._theming_settings.get_themed_template_suffix()
+        if template_path.endswith('.html'):
+            themed_path = template_path.replace('.html', f'{themed_suffix}.html')
+        else:
+            themed_path = f"{template_path}{themed_suffix}.html"
+
+        # Check if themed template exists
+        full_themed_path = self.templates_dir / themed_path
+        if full_themed_path.exists():
+            logger.debug(f"Using themed template for {variant_id}: {themed_path}")
+            return themed_path
+
+        # Fall back to original if themed version doesn't exist
+        logger.warning(
+            f"Themed template not found for {variant_id}: {themed_path}. "
+            f"Using original: {template_path}"
+        )
+        return template_path
+
+    def load_template(self, template_path: str, variant_id: Optional[str] = None) -> str:
         """
         Load an HTML template from file.
 
         Args:
             template_path: Relative path to template (e.g., "matrix/matrix_2x2.html")
+            variant_id: Optional variant identifier for themed template selection (v1.2.2)
 
         Returns:
             Template HTML string with placeholders
@@ -42,10 +97,6 @@ class TemplateAssembler:
         Raises:
             FileNotFoundError: If template file doesn't exist
         """
-        # Check cache first
-        if template_path in self._template_cache:
-            return self._template_cache[template_path]
-
         # Normalize template_path (remove base directory if it's included)
         # This handles cases where variant specs include "app/templates/" in path
         template_path_str = str(template_path)
@@ -55,8 +106,15 @@ class TemplateAssembler:
         elif template_path_str.startswith("app/templates/"):
             template_path = template_path_str[len("app/templates/"):]
 
+        # Check for themed template (v1.2.2 CSS variable theming)
+        actual_template_path = self.get_themed_template_path(template_path, variant_id)
+
+        # Check cache first (using actual path for cache key)
+        if actual_template_path in self._template_cache:
+            return self._template_cache[actual_template_path]
+
         # Load from file
-        full_path = self.templates_dir / template_path
+        full_path = self.templates_dir / actual_template_path
 
         if not full_path.exists():
             raise FileNotFoundError(f"Template not found: {full_path}")
@@ -65,14 +123,15 @@ class TemplateAssembler:
             template_html = f.read()
 
         # Cache for future use
-        self._template_cache[template_path] = template_html
+        self._template_cache[actual_template_path] = template_html
 
         return template_html
 
     def assemble_template(
         self,
         template_path: str,
-        content_map: Dict[str, str]
+        content_map: Dict[str, str],
+        variant_id: Optional[str] = None
     ) -> str:
         """
         Assemble template by replacing placeholders with content.
@@ -81,6 +140,7 @@ class TemplateAssembler:
             template_path: Relative path to template
             content_map: Dictionary mapping placeholder names to content values
                         e.g., {"box_1_title": "Innovation", "box_1_description": "..."}
+            variant_id: Optional variant identifier for themed template selection (v1.2.2)
 
         Returns:
             Assembled HTML with all placeholders replaced
@@ -88,8 +148,8 @@ class TemplateAssembler:
         Raises:
             ValueError: If required placeholders are missing
         """
-        # Load template
-        template_html = self.load_template(template_path)
+        # Load template (will use themed version if enabled for variant)
+        template_html = self.load_template(template_path, variant_id)
 
         # Find all placeholders in template
         # Match only valid placeholder names: letters, numbers, underscores
@@ -231,23 +291,26 @@ class TemplateAssembler:
         self,
         template_path: str,
         content_map: Dict[str, str],
-        theme_config: Optional[Any] = None
+        theme_config: Optional[Any] = None,
+        variant_id: Optional[str] = None
     ) -> str:
         """
-        Assemble template and apply theme overrides in one step (v1.2.1).
+        Assemble template and apply theme overrides in one step (v1.2.1, v1.2.2).
 
         Convenience method that combines assemble_template and apply_theme_overrides.
+        v1.2.2: Added variant_id support for CSS variable themed templates.
 
         Args:
             template_path: Relative path to template
             content_map: Dictionary mapping placeholder names to content values
             theme_config: ThemeConfig object from request (optional)
+            variant_id: Optional variant identifier for themed template selection (v1.2.2)
 
         Returns:
             Assembled HTML with theme colors applied
         """
-        # First assemble the template
-        assembled_html = self.assemble_template(template_path, content_map)
+        # First assemble the template (will use themed version if enabled)
+        assembled_html = self.assemble_template(template_path, content_map, variant_id)
 
         # Then apply theme overrides if provided
         return self.apply_theme_overrides(assembled_html, theme_config)

@@ -59,6 +59,24 @@ class PresentationSpecification(BaseModel):
     )
 
 
+class ThemeSettings(BaseModel):
+    """
+    Theme settings passed from Director for CSS variable theming (v1.2.2).
+
+    This enables light/dark mode switching when USE_CSS_VARIABLES=true.
+    The theme_mode value is passed to the Layout Service for CSS variable resolution.
+    """
+
+    theme_id: str = Field(
+        default="corporate-blue",
+        description="Theme identifier (e.g., 'corporate-blue', 'elegant-emerald')"
+    )
+    theme_mode: str = Field(
+        default="light",
+        description="Theme mode: 'light' or 'dark'"
+    )
+
+
 class V1_2_GenerationRequest(BaseModel):
     """Request model for v1.2 element-based content generation."""
 
@@ -90,6 +108,10 @@ class V1_2_GenerationRequest(BaseModel):
     validate_character_counts: bool = Field(
         default=True,
         description="Whether to validate generated content against character count requirements"
+    )
+    theme_settings: Optional[ThemeSettings] = Field(
+        None,
+        description="Optional theme settings for CSS variable theming (v1.2.2)"
     )
 
 
