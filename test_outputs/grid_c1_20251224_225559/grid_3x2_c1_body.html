@@ -1,0 +1,208 @@
+<!--
+  Themed Template: grid_3x2_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+-->
+<div style="display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 18px;
+            padding: 20px 40px 0 0;
+            height: 100%;
+            background: transparent;
+            align-items: stretch;
+            overflow: hidden;">
+
+  <!-- Box 1 -->
+  <div style="padding: 33px;
+              border-radius: 12px;
+              background: var(--box-1-bg, linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%));
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 64px; margin: 0 0 14px 0; line-height: 1;">µS</div>
+
+    <h3 style="font-size: 28px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 10px 0;
+               line-height: 1.2;">
+      Microservices Architecture
+    </h3>
+
+    <p style="font-size: 20px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Decoupled services enable independent deployment, scaling, and technology choices, fostering agility and resilience. This modular approach enhances maintainability and accelerates development cycles across teams.
+    </p>
+
+  </div>
+
+  <!-- Box 2 -->
+  <div style="padding: 33px;
+              border-radius: 12px;
+              background: var(--box-2-bg, linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%));
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 64px; margin: 0 0 14px 0; line-height: 1;">☁️</div>
+
+    <h3 style="font-size: 28px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 10px 0;
+               line-height: 1.2;">
+      Cloud-Native Platforms
+    </h3>
+
+    <p style="font-size: 20px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Leveraging public or private cloud infrastructure for scalable, resilient, and cost-effective operations. This includes containerization, orchestration, and serverless computing for optimal resource utilization.
+    </p>
+
+  </div>
+
+  <!-- Box 3 -->
+  <div style="padding: 33px;
+              border-radius: 12px;
+              background: var(--box-3-bg, linear-gradient(135deg, #fef3c7 0%, #fde68a 100%));
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 64px; margin: 0 0 14px 0; line-height: 1;">📊</div>
+
+    <h3 style="font-size: 28px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 10px 0;
+               line-height: 1.2;">
+      Real-time Data Processing
+    </h3>
+
+    <p style="font-size: 20px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Implementing technologies for continuous data ingestion and analysis, providing immediate insights for proactive decision-making. Essential for monitoring, personalization, and fraud detection systems.
+    </p>
+
+  </div>
+
+  <!-- Box 4 -->
+  <div style="padding: 33px;
+              border-radius: 12px;
+              background: var(--box-4-bg, linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%));
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 64px; margin: 0 0 14px 0; line-height: 1;">🔌</div>
+
+    <h3 style="font-size: 28px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 10px 0;
+               line-height: 1.2;">
+      API-First Integration
+    </h3>
+
+    <p style="font-size: 20px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Prioritizing robust, well-documented APIs as primary interfaces for internal and external systems. This promotes seamless interoperability, accelerates partner integrations, and supports diverse client applications.
+    </p>
+
+  </div>
+
+  <!-- Box 5 -->
+  <div style="padding: 33px;
+              border-radius: 12px;
+              background: var(--box-5-bg, linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%));
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 64px; margin: 0 0 14px 0; line-height: 1;">⚙️</div>
+
+    <h3 style="font-size: 28px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 10px 0;
+               line-height: 1.2;">
+      DevOps & CI/CD Pipelines
+    </h3>
+
+    <p style="font-size: 20px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Integrating development and operations to streamline software delivery through continuous integration, delivery, and deployment. This reduces manual effort, improves quality, and speeds up time-to-market significantly.
+    </p>
+
+  </div>
+
+  <!-- Box 6 -->
+  <div style="padding: 33px;
+              border-radius: 12px;
+              background: var(--box-6-bg, linear-gradient(135deg, #fed7aa 0%, #fdba74 100%));
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 64px; margin: 0 0 14px 0; line-height: 1;">🔒</div>
+
+    <h3 style="font-size: 28px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 10px 0;
+               line-height: 1.2;">
+      Robust Security & Monitoring
+    </h3>
+
+    <p style="font-size: 20px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Embedding security practices throughout the development lifecycle and implementing comprehensive monitoring for performance and health. Proactive threat detection and rapid incident response are critical for business continuity.
+    </p>
+
+  </div>
+
+</div>

@@ -1,214 +1,188 @@
-"""
-Test I-Series Content Variants
+#!/usr/bin/env python3
+"""Test I-series variants - 3 from I1, 4 from I3."""
 
-Tests 3 random I-series content variants with the new content_variant parameter.
-Each variant uses reduced character counts appropriate for image+content layouts.
-
-Usage:
-    python tests/test_iseries_variants.py
-"""
-
-import asyncio
-import httpx
+import requests
 import json
-import random
-import time
-from datetime import datetime
 
-# Service URLs
-TEXT_SERVICE_URL = "https://web-production-5daf.up.railway.app"
+TEXT_SERVICE = "https://web-production-5daf.up.railway.app"
+LAYOUT_SERVICE = "https://web-production-f0d13.up.railway.app"
 
-# All available I-series variants
-ISERIES_VARIANTS = [
-    # Single Column variants
-    {"variant_id": "single_column_3section_i1", "layout_type": "I1", "description": "3 sections, 4 bullets, wide image"},
-    {"variant_id": "single_column_3section_i3", "layout_type": "I3", "description": "3 sections, 4 bullets, narrow image"},
-    {"variant_id": "single_column_4section_i1", "layout_type": "I1", "description": "4 sections, 3 bullets, wide image"},
-    {"variant_id": "single_column_4section_i3", "layout_type": "I3", "description": "4 sections, 3 bullets, narrow image"},
-    {"variant_id": "single_column_5section_i1", "layout_type": "I1", "description": "5 sections, 2 bullets, wide image"},
-    {"variant_id": "single_column_5section_i3", "layout_type": "I3", "description": "5 sections, 2 bullets, narrow image"},
-    # Comparison variants
-    {"variant_id": "comparison_2col_i1", "layout_type": "I1", "description": "2 columns comparison, wide image"},
-    {"variant_id": "comparison_2col_i3", "layout_type": "I3", "description": "2 columns comparison, narrow image"},
-    {"variant_id": "comparison_3col_i1", "layout_type": "I2", "description": "3 columns comparison, wide image"},
-    {"variant_id": "comparison_3col_i3", "layout_type": "I4", "description": "3 columns comparison, narrow image"},
-    # Sequential variants
-    {"variant_id": "sequential_2col_i1", "layout_type": "I1", "description": "2 steps sequential, wide image"},
-    {"variant_id": "sequential_2col_i3", "layout_type": "I3", "description": "2 steps sequential, narrow image"},
-    {"variant_id": "sequential_3col_i1", "layout_type": "I2", "description": "3 steps sequential, wide image"},
-    {"variant_id": "sequential_3col_i3", "layout_type": "I4", "description": "3 steps sequential, narrow image"},
-]
-
-# Sample narratives for testing
-SAMPLE_NARRATIVES = [
+# Test configurations - 3 from I1, 4 from I3
+TEST_CONFIGS = [
+    # I1 variants (3)
     {
-        "title": "Digital Transformation Strategy",
-        "narrative": "Modern enterprises must embrace digital transformation to stay competitive. Key areas include cloud migration, AI integration, and process automation.",
-        "topics": ["Cloud Infrastructure", "AI/ML Adoption", "Process Automation", "Data Analytics", "Security"]
+        "variant_id": "single_column_3section_i1",
+        "layout_name": "I1-image-left",
+        "title": "Strategic Vision",
+        "subtitle": "Three Pillars of Success",
+        "narrative": "Our company strategy focuses on innovation, customer excellence, and sustainable growth",
+        "topics": ["Innovation Leadership", "Customer Excellence", "Sustainable Growth"],
+        "image_prompt_hint": "futuristic city skyline with green technology"
     },
     {
-        "title": "Sustainable Business Practices",
-        "narrative": "Implementing sustainable practices drives long-term value through reduced costs, improved brand reputation, and regulatory compliance.",
-        "topics": ["Carbon Footprint Reduction", "Renewable Energy", "Circular Economy", "ESG Reporting", "Green Supply Chain"]
+        "variant_id": "sequential_2col_i1",
+        "layout_name": "I1-image-left",
+        "title": "Implementation Roadmap",
+        "subtitle": "Phase 1 to Phase 2",
+        "narrative": "Our two-phase implementation approach ensures smooth transition and measurable results",
+        "topics": ["Phase 1: Foundation", "Phase 2: Scale"],
+        "image_prompt_hint": "roadmap journey path with milestones"
     },
     {
-        "title": "Customer Experience Excellence",
-        "narrative": "Exceptional customer experience differentiates leading brands. Focus on personalization, omnichannel engagement, and proactive service.",
-        "topics": ["Personalization", "Omnichannel Strategy", "Self-Service", "Feedback Loops", "Loyalty Programs"]
+        "variant_id": "comparison_2col_i1",
+        "layout_name": "I1-image-left",
+        "title": "Before vs After",
+        "subtitle": "Transformation Results",
+        "narrative": "Compare the dramatic improvements achieved through our digital transformation initiative",
+        "topics": ["Before Implementation", "After Implementation"],
+        "image_prompt_hint": "transformation butterfly metamorphosis"
+    },
+    # I3 variants (4)
+    {
+        "variant_id": "single_column_4section_i3",
+        "layout_name": "I3-image-left-narrow",
+        "title": "Core Competencies",
+        "subtitle": "Four Key Strengths",
+        "narrative": "Our four core competencies drive competitive advantage in the market",
+        "topics": ["Technical Excellence", "Customer Focus", "Innovation", "Agility"],
+        "image_prompt_hint": "professional team brainstorming in modern office"
+    },
+    {
+        "variant_id": "single_column_5section_i3",
+        "layout_name": "I3-image-left-narrow",
+        "title": "Five-Year Plan",
+        "subtitle": "Strategic Milestones",
+        "narrative": "Our comprehensive five-year strategic plan outlines key milestones for growth",
+        "topics": ["Year 1: Foundation", "Year 2: Growth", "Year 3: Expansion", "Year 4: Scale", "Year 5: Leadership"],
+        "image_prompt_hint": "mountain climbing reaching summit achievement"
+    },
+    {
+        "variant_id": "sequential_3col_i3",
+        "layout_name": "I3-image-left-narrow",
+        "title": "Development Process",
+        "subtitle": "Three-Stage Workflow",
+        "narrative": "Our streamlined development process ensures quality delivery in three stages",
+        "topics": ["Design", "Develop", "Deploy"],
+        "image_prompt_hint": "software development workflow diagram abstract"
+    },
+    {
+        "variant_id": "comparison_3col_i3",
+        "layout_name": "I3-image-left-narrow",
+        "title": "Product Tiers",
+        "subtitle": "Choose Your Plan",
+        "narrative": "Compare our three product tiers to find the perfect fit for your needs",
+        "topics": ["Basic", "Professional", "Enterprise"],
+        "image_prompt_hint": "product tiers pricing comparison abstract"
     }
 ]
 
 
-async def test_variant(client: httpx.AsyncClient, variant: dict, narrative: dict, slide_num: int) -> dict:
-    """
-    Test a single I-series variant.
+def generate_variant_slide(config: dict, slide_number: int) -> dict:
+    """Generate I-series slide with specific variant."""
+    print(f"\n  Generating {config['variant_id']}...")
 
-    Args:
-        client: HTTP client
-        variant: Variant config with variant_id and layout_type
-        narrative: Test narrative with title, narrative, topics
-        slide_num: Slide number for the request
+    layout_type = "I1" if "_i1" in config["variant_id"] else "I3"
 
-    Returns:
-        Test result dict
-    """
-    print(f"\n{'='*60}")
-    print(f"Testing: {variant['variant_id']}")
-    print(f"Layout: {variant['layout_type']} - {variant['description']}")
-    print(f"{'='*60}")
-
-    request_payload = {
-        "slide_number": slide_num,
-        "layout_type": variant["layout_type"],
-        "title": narrative["title"],
-        "narrative": narrative["narrative"],
-        "topics": narrative["topics"][:4],  # Limit topics
+    payload = {
+        "slide_number": slide_number,
+        "layout_type": layout_type,
+        "title": config["title"],
+        "subtitle": config["subtitle"],
+        "narrative": config["narrative"],
+        "topics": config["topics"],
         "visual_style": "illustrated",
+        "image_prompt_hint": config["image_prompt_hint"],
         "content_style": "bullets",
-        "content_variant": variant["variant_id"]  # NEW: Using content_variant
+        "variant_id": config["variant_id"]
     }
 
-    print(f"\nRequest payload:")
-    print(json.dumps(request_payload, indent=2))
+    resp = requests.post(
+        f"{TEXT_SERVICE}/v1.2/iseries/{layout_type}",
+        json=payload,
+        timeout=120
+    )
 
-    start_time = time.time()
+    if resp.status_code != 200:
+        print(f"    ERROR: {resp.status_code} - {resp.text[:200]}")
+        return None
 
-    try:
-        response = await client.post(
-            f"{TEXT_SERVICE_URL}/v1.2/iseries/generate",
-            json=request_payload,
-            timeout=120.0
-        )
+    data = resp.json()
+    print(f"    Got image: {data.get('image_url', 'MISSING')[:50]}...")
+    print(f"    Got body: {len(data.get('body', ''))} chars")
 
-        elapsed_ms = int((time.time() - start_time) * 1000)
-
-        if response.status_code == 200:
-            result = response.json()
-
-            print(f"\n[SUCCESS] Generated in {elapsed_ms}ms")
-            print(f"  - Image URL: {result.get('image_url', 'None (fallback)')[:80]}...")
-            print(f"  - Image fallback: {result.get('image_fallback', False)}")
-            print(f"  - Background: {result.get('background_color', '#ffffff')}")
-
-            # Show metadata
-            metadata = result.get("metadata", {})
-            print(f"\n  Metadata:")
-            print(f"    - Layout type: {metadata.get('layout_type')}")
-            print(f"    - Generation mode: {metadata.get('generation_mode', 'unknown')}")
-            print(f"    - Generation time: {metadata.get('generation_time_ms', 0)}ms")
-
-            # Check for variant spec in metadata
-            variant_spec = metadata.get("variant_spec", {})
-            if variant_spec:
-                print(f"    - Variant ID: {variant_spec.get('variant_id')}")
-                print(f"    - I-Series layout: {variant_spec.get('iseries_layout')}")
-                print(f"    - Slide type: {variant_spec.get('slide_type')}")
-
-            # Show content preview
-            content_html = result.get("content_html", "")
-            content_preview = content_html[:300].replace("\n", " ")
-            print(f"\n  Content preview (first 300 chars):")
-            print(f"    {content_preview}...")
-
-            return {
-                "variant_id": variant["variant_id"],
-                "success": True,
-                "elapsed_ms": elapsed_ms,
-                "image_fallback": result.get("image_fallback", False),
-                "metadata": metadata
-            }
-        else:
-            print(f"\n[FAILED] Status {response.status_code}: {response.text[:200]}")
-            return {
-                "variant_id": variant["variant_id"],
-                "success": False,
-                "elapsed_ms": elapsed_ms,
-                "error": f"Status {response.status_code}"
-            }
-
-    except Exception as e:
-        elapsed_ms = int((time.time() - start_time) * 1000)
-        print(f"\n[ERROR] {str(e)}")
-        return {
-            "variant_id": variant["variant_id"],
-            "success": False,
-            "elapsed_ms": elapsed_ms,
-            "error": str(e)
+    return {
+        "layout": config["layout_name"],
+        "content": {
+            "slide_title": data.get("slide_title", config["title"]),
+            "subtitle": data.get("subtitle", config["subtitle"]),
+            "image_url": data.get("image_url", ""),
+            "body": data.get("body", ""),
+            "presentation_name": "I-Series Variants Test"
         }
+    }
 
 
-async def main():
-    """Run tests for 3 random I-series variants."""
+def create_presentation(slides: list) -> str:
+    """Create presentation in Layout Service."""
+    print("\n  Creating presentation...")
+
+    resp = requests.post(
+        f"{LAYOUT_SERVICE}/api/presentations",
+        json={"title": "I-Series Variants Test", "slides": slides},
+        timeout=30
+    )
+
+    if resp.status_code in [200, 201]:
+        pres_id = resp.json().get("id")
+        return f"{LAYOUT_SERVICE}/p/{pres_id}"
+    else:
+        print(f"    ERROR: {resp.status_code} - {resp.text[:200]}")
+        return None
+
+
+def main():
     print("\n" + "="*70)
-    print("I-SERIES CONTENT VARIANT TEST")
-    print(f"Testing 3 random variants from {len(ISERIES_VARIANTS)} available")
-    print(f"Timestamp: {datetime.now().isoformat()}")
+    print("  I-SERIES VARIANTS TEST")
+    print("  3 from I1 + 4 from I3 = 7 slides")
     print("="*70)
 
-    # Pick 3 random variants (one from each category if possible)
-    single_col = [v for v in ISERIES_VARIANTS if v["variant_id"].startswith("single_column")]
-    comparison = [v for v in ISERIES_VARIANTS if v["variant_id"].startswith("comparison")]
-    sequential = [v for v in ISERIES_VARIANTS if v["variant_id"].startswith("sequential")]
+    slides = []
 
-    selected_variants = [
-        random.choice(single_col),
-        random.choice(comparison),
-        random.choice(sequential)
-    ]
+    for i, config in enumerate(TEST_CONFIGS, 1):
+        print(f"\n{'='*60}")
+        print(f"Slide {i}: {config['variant_id']}")
+        print(f"Layout: {config['layout_name']}")
+        print('='*60)
 
-    print(f"\nSelected variants:")
-    for i, v in enumerate(selected_variants, 1):
-        print(f"  {i}. {v['variant_id']} ({v['layout_type']})")
+        slide = generate_variant_slide(config, i)
+        if slide:
+            slides.append(slide)
+        else:
+            print(f"  FAILED")
 
-    results = []
+    if not slides:
+        print("\n  ERROR: No slides generated!")
+        return None
 
-    async with httpx.AsyncClient() as client:
-        for i, variant in enumerate(selected_variants):
-            narrative = SAMPLE_NARRATIVES[i % len(SAMPLE_NARRATIVES)]
-            result = await test_variant(client, variant, narrative, slide_num=i+1)
-            results.append(result)
+    print(f"\n{'='*60}")
+    print(f"Creating presentation with {len(slides)} slides")
+    print('='*60)
 
-    # Summary
-    print("\n" + "="*70)
-    print("TEST SUMMARY")
-    print("="*70)
+    url = create_presentation(slides)
 
-    successful = sum(1 for r in results if r["success"])
-    total_time = sum(r["elapsed_ms"] for r in results)
+    if url:
+        print("\n" + "="*70)
+        print("  SUCCESS!")
+        print("="*70)
+        print(f"\n  URL: {url}")
+        return url
 
-    print(f"\nResults: {successful}/{len(results)} successful")
-    print(f"Total time: {total_time}ms")
-    print(f"Average time: {total_time // len(results)}ms per variant")
-
-    print("\nDetailed results:")
-    for r in results:
-        status = "[OK]" if r["success"] else "[FAIL]"
-        print(f"  {status} {r['variant_id']}: {r['elapsed_ms']}ms")
-        if not r["success"]:
-            print(f"       Error: {r.get('error', 'Unknown')}")
-
-    return results
+    return None
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    url = main()
+    if url:
+        print(f"\n  Opening browser...")
+        import subprocess
+        subprocess.run(["open", url])

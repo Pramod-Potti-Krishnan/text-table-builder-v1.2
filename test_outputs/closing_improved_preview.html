@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improved Closing Slide Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .slide-container {
+            width: 1920px;
+            height: 1080px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        .slide-label {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(102, 110, 234, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-label">
+            Split Layout ✓ | Fast Model
+        </div>
+        <div style="display: flex; width: 100%; height: 100%; background: #0b0f19; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+
+  <!-- LEFT COLUMN: Text Content -->
+  <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 8% 6%; color: #ffffff;">
+
+    <!-- Eyebrow with decorative line -->
+    <div style="position: relative; display: inline-block; margin-bottom: 24px;">
+      <div style="position: absolute; left: 0; top: 50%; transform: translateY(-50%); width: 50px; height: 3px; background: #00d9ff; margin-right: 15px;"></div>
+      <span style="padding-left: 65px; font-size: clamp(0.8rem, 1vw, 1rem); font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: #00d9ff;">
+        NEXT STEPS
+      </span>
+    </div>
+
+    <!-- Main Title -->
+    <h1 style="font-size: clamp(2.5rem, 4vw, 4.5rem); font-weight: 700; line-height: 1.1; margin: 0 0 28px 0; color: #ffffff; max-width: 90%;">
+      Ready to Transform Your Healthcare?
+    </h1>
+
+    <!-- Description -->
+    <p style="font-size: clamp(1rem, 1.4vw, 1.5rem); font-weight: 300; line-height: 1.6; color: rgba(255,255,255,0.8); margin: 0 0 48px 0; max-width: 85%;">
+      Leverage AI-powered precision to revolutionize diagnostic accuracy, enhance patient care, and significantly reduce costs. Connect with us to innovate for a healthier future.
+    </p>
+
+    <!-- Contact Box -->
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+      <!-- Email -->
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(0,217,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <i class="fa-solid fa-envelope" style="color: #00d9ff; font-size: 18px;"></i>
+        </div>
+        <span style="font-size: clamp(0.9rem, 1.1vw, 1.2rem); font-weight: 400; color: rgba(255,255,255,0.9);">
+          contact@synapsehealth.com
+        </span>
+      </div>
+
+      <!-- LinkedIn -->
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="width: 44px; height: 44px; border-radius: 50%; background: rgba(0,217,255,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <i class="fa-brands fa-linkedin" style="color: #00d9ff; font-size: 18px;"></i>
+        </div>
+        <span style="font-size: clamp(0.9rem, 1.1vw, 1.2rem); font-weight: 400; color: rgba(255,255,255,0.9);">
+          linkedin.com/company/synapsehealth
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT COLUMN: Image with Gradient Overlay -->
+  <div style="flex: 1.1; position: relative; overflow: hidden;">
+    <!-- Placeholder for background image (will be injected) -->
+    <div style="position: absolute; inset: 0; background-image: url('https://eshvntffcestlfuofwhv.supabase.co/storage/v1/object/public/generated-images/generated/3ab09b50-6d10-451e-843f-59e5dd8dfe3c_original.png?'); background-size: cover; background-position: center;"></div>
+
+    <!-- Gradient overlay for smooth transition from left -->
+    <div style="position: absolute; inset: 0; background: linear-gradient(90deg, #0b0f19 0%, rgba(11,15,25,0.3) 20%, transparent 40%);"></div>
+  </div>
+
+</div>
+
+<!-- Font Awesome (required for icons) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </div>
+</body>
+</html>

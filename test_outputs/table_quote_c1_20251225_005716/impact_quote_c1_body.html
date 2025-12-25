@@ -1,0 +1,77 @@
+<!--
+  Themed Template: impact_quote_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+-->
+<div style="display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 120px 0 120px;
+            height: 100%;
+            background: transparent;">
+
+  <!-- Blue Border Box with Corner Quotes -->
+  <div style="position: relative;
+              border: 3px solid var(--border-accent, #667eea);
+              border-radius: 16px;
+              padding: 60px;
+              background: transparent;
+              max-width: 100%;">
+
+    <!-- Opening Quote Mark (Top Left) -->
+    <div style="position: absolute;
+                top: 20px;
+                left: 20px;
+                font-size: 56px;
+                color: var(--border-accent, #667eea);
+                font-weight: 700;
+                line-height: 1;">
+      "
+    </div>
+
+    <!-- Quote Text (NO border, NO background, NO outline) -->
+    <div style="font-size: 32px;
+                color: var(--text-primary, #1f2937);
+                font-weight: 400;
+                line-height: 1.6;
+                margin: 0 0 32px 0;
+                padding: 0;
+                font-style: normal;
+                border: none !important;
+                outline: none !important;
+                box-shadow: none !important;
+                background: transparent !important;">
+      Our partnership has been transformative, accelerating our digital initiatives and delivering a measurable 30% increase in operational efficiency. This isn't just a vendor relationship; it's a strategic alliance driving real business impact.
+    </div>
+
+    <!-- Separator Line -->
+    <div style="border-top: 2px solid var(--border-light, #e5e7eb);
+                margin: 0 0 24px 0;">
+    </div>
+
+    <!-- Attribution -->
+    <cite style="font-size: 24px;
+                 color: var(--text-secondary, #374151);
+                 font-weight: 600;
+                 font-style: normal;
+                 display: block;
+                 line-height: 1.5;
+                 margin: 0;">
+      Sarah Chen, Chief Operations Officer, Nexus Corp.
+    </cite>
+
+    <!-- Closing Quote Mark (Bottom Right) -->
+    <div style="position: absolute;
+                bottom: 20px;
+                right: 20px;
+                font-size: 56px;
+                color: var(--border-accent, #667eea);
+                font-weight: 700;
+                line-height: 1;">
+      "
+    </div>
+
+  </div>
+
+</div>

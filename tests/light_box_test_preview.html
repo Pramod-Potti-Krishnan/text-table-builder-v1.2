@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Light Box Fix Test - Phase 2.5</title>
+    <style>
+        :root {
+            --text-primary: #1f2937;
+            --text-secondary: #374151;
+            --text-muted: #6b7280;
+            --text-on-dark: white;
+            --border-light: #e5e7eb;
+            --border-default: #d1d5db;
+            --box-1-bg: #dbeafe;
+            --box-2-bg: #d1fae5;
+            --box-3-bg: #fef3c7;
+            --box-4-bg: #fce7f3;
+        }
+
+        .theme-dark {
+            --text-primary: white;
+            --text-secondary: rgba(255,255,255,0.9);
+            --text-muted: rgba(255,255,255,0.7);
+            --border-light: rgba(255,255,255,0.2);
+            --border-default: rgba(255,255,255,0.3);
+            --box-1-bg: rgba(219, 234, 254, 0.4);
+            --box-2-bg: rgba(209, 250, 229, 0.4);
+            --box-3-bg: rgba(254, 243, 199, 0.4);
+            --box-4-bg: rgba(252, 231, 243, 0.4);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f3f4f6;
+        }
+
+        .theme-dark body, body.theme-dark {
+            background: #1f2937;
+        }
+
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .controls button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .controls button.light { background: #f3f4f6; color: #1f2937; }
+        .controls button.dark { background: #1f2937; color: white; }
+
+        .slide-container {
+            width: 960px;
+            height: 540px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .theme-dark .slide-container {
+            background: #111827;
+        }
+
+        .slide-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            z-index: 10;
+        }
+
+        .slide-content {
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        h2 {
+            margin: 40px 0 20px 0;
+            color: #1f2937;
+        }
+
+        .theme-dark h2 {
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <strong>Theme Mode:</strong><br>
+        <button class="light" onclick="setTheme('light')">1: Light</button>
+        <button class="dark" onclick="setTheme('dark')">2: Dark</button>
+    </div>
+
+    <h2>Phase 2.5: Light Box Fix Verification</h2>
+    <p style="color: #6b7280;">Press 1 for Light mode, 2 for Dark mode. In dark mode, ALL text should be WHITE.</p>
+
+    <div class="slide-container">
+        <div class="slide-label">hybrid_left_2x2_c1 - Fix A: Hybrid with hardcoded colors</div>
+        <div class="slide-content">
+            <!--
+  Themed Template: hybrid_left_2x2_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+-->
+<div style="display: flex;
+            gap: 24px;
+            padding: 20px 40px 0 0;
+            background: transparent;
+            height: 100%;">
+
+  <!-- Left: 2x2 Grid (75% width) -->
+  <div style="display: grid;
+              grid-template-columns: 1fr 1fr;
+              grid-template-rows: 1fr 1fr;
+              gap: 24px;
+              flex: 3;">
+
+    <!-- Box 1: Top-Left (Light Blue) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-1-bg, #dbeafe);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #1e3a8a);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        CSS Variable Impact
+      </h4>
+
+      <p style="font-size: 20px;
+                line-height: 1.6;
+                color: var(--text-primary, #1e40af);
+                margin: 0;">
+        This box demonstrates how CSS variables dynamically control color values for text elements. It's crucial for theme switching.
+      </p>
+
+    </div>
+
+    <!-- Box 2: Top-Right (Light Green) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-2-bg, #d1fae5);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #065f46);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Dark Mode Activation
+      </h4>
+
+      <p style="font-size: 20px;
+                line-height: 1.6;
+                color: var(--text-primary, #047857);
+                margin: 0;">
+        Observe the text color change when the dark mode toggle is engaged. This verifies global theme application.
+      </p>
+
+    </div>
+
+    <!-- Box 3: Bottom-Left (Light Yellow) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-3-bg, #fef3c7);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #78350f);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Text Readability Check
+      </h4>
+
+      <p style="font-size: 20px;
+                line-height: 1.6;
+                color: var(--text-primary, #92400e);
+                margin: 0;">
+        Ensure sufficient contrast and readability of white text against a dark background in all display modes.
+      </p>
+
+    </div>
+
+    <!-- Box 4: Bottom-Right (Light Pink) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-4-bg, #fce7f3);
+                display: flex;
+                flex-direction: column;
+                justify-content: center;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #831843);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Global Theme Consistency
+      </h4>
+
+      <p style="font-size: 20px;
+                line-height: 1.6;
+                color: var(--text-primary, #9f1239);
+                margin: 0;">
+        Confirm that all text instances across the component inherit the correct dark mode styling without exceptions.
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- Right: Text Box (25% width) - 7 Bullets -->
+  <div style="flex: 1;
+              padding: 32px 28px;
+              border: 3px solid var(--border-default, #d1d5db);
+              border-radius: 12px;
+              background: transparent;
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;">
+
+    <ul style="margin: 0;
+               padding: 0;
+               list-style-position: outside;
+               padding-left: 24px;">
+      <li style="font-size: 19px;
+                 line-height: 1.6;
+                 color: var(--text-secondary, #374151);
+                 margin: 0 0 12px 0;">
+        Verify `var(--text-color)` updates correctly.
+      </li>
+      <li style="font-size: 19px;
+                 line-height: 1.6;
+                 color: var(--text-secondary, #374151);
+                 margin: 0 0 12px 0;">
+        Confirm dark mode media query application.
+      </li>
+      <li style="font-size: 19px;
+                 line-height: 1.6;
+                 color: var(--text-secondary, #374151);
+                 margin: 0 0 12px 0;">
+        Check all standard text elements render white.
+      </li>
+      <li style="font-size: 19px;
+                 line-height: 1.6;
+                 color: var(--text-secondary, #374151);
+                 margin: 0 0 12px 0;">
+        Inspect nested component text for theme.
+      </li>
+      <li style="font-size: 19px;
+                 line-height: 1.6;
+                 color: var(--text-secondary, #374151);
+                 margin: 0 0 12px 0;">
+        Ensure dynamic content also respects theming.
+      </li>
+      <li style="font-size: 19px;
+                 line-height: 1.6;
+                 color: var(--text-secondary, #374151);
+                 margin: 0 0 12px 0;">
+        Test browser compatibility for CSS variables.
+      </li>
+      <li style="font-size: 19px;
+                 line-height: 1.6;
+                 color: var(--text-secondary, #374151);
+                 margin: 0;">
+        Document any inconsistencies found in testing.
+      </li>
+    </ul>
+
+  </div>
+
+</div>
+
+        </div>
+    </div>
+
+    <div class="slide-container">
+        <div class="slide-label">grid_2x3_c1 - Fix B: Grid with --text-muted</div>
+        <div class="slide-content">
+            <!--
+  Themed Template: grid_2x3_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+-->
+<div style="display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 40px;
+            padding: 20px 40px 0 0;
+            height: 100%;
+            background: transparent;
+            align-items: stretch;
+            overflow: hidden;">
+
+  <!-- Box 1 -->
+  <div style="padding: 20px 40px 0 40px;
+              border-radius: 12px;
+              background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 56px; margin: 0 0 16px 0; line-height: 1;">💡</div>
+
+    <h3 style="font-size: 24px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 12px 0;
+               line-height: 1.2;">
+      CSS Variables Basics
+    </h3>
+
+    <p style="font-size: 18px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Understand the fundamental syntax and declaration of CSS custom properties for dynamic styling.
+    </p>
+
+  </div>
+
+  <!-- Box 2 -->
+  <div style="padding: 20px 40px 0 40px;
+              border-radius: 12px;
+              background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 56px; margin: 0 0 16px 0; line-height: 1;">⚙️</div>
+
+    <h3 style="font-size: 24px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 12px 0;
+               line-height: 1.2;">
+      Dark Mode Switch Logic
+    </h3>
+
+    <p style="font-size: 18px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Explore the JavaScript or media query mechanisms used to toggle between light and dark themes.
+    </p>
+
+  </div>
+
+  <!-- Box 3 -->
+  <div style="padding: 20px 40px 0 40px;
+              border-radius: 12px;
+              background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 56px; margin: 0 0 16px 0; line-height: 1;">🎨</div>
+
+    <h3 style="font-size: 24px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 12px 0;
+               line-height: 1.2;">
+      Color Palette Mapping
+    </h3>
+
+    <p style="font-size: 18px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Detail how specific color variables are defined and mapped for both light and dark modes.
+    </p>
+
+  </div>
+
+  <!-- Box 4 -->
+  <div style="padding: 20px 40px 0 40px;
+              border-radius: 12px;
+              background: linear-gradient(135deg, #ede9fe 0%, #ddd6fe 100%);
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 56px; margin: 0 0 16px 0; line-height: 1;">✍️</div>
+
+    <h3 style="font-size: 24px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 12px 0;
+               line-height: 1.2;">
+      Ensuring Text Readability
+    </h3>
+
+    <p style="font-size: 18px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Verify that all textual elements correctly inherit or switch to a white color in dark mode.
+    </p>
+
+  </div>
+
+  <!-- Box 5 -->
+  <div style="padding: 20px 40px 0 40px;
+              border-radius: 12px;
+              background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%);
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 56px; margin: 0 0 16px 0; line-height: 1;">✅</div>
+
+    <h3 style="font-size: 24px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 12px 0;
+               line-height: 1.2;">
+      Comprehensive Test Scenarios
+    </h3>
+
+    <p style="font-size: 18px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Outline various test cases to validate the dark mode implementation across different components.
+    </p>
+
+  </div>
+
+  <!-- Box 6 -->
+  <div style="padding: 20px 40px 0 40px;
+              border-radius: 12px;
+              background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 56px; margin: 0 0 16px 0; line-height: 1;">🛠️</div>
+
+    <h3 style="font-size: 24px;
+               font-weight: 700;
+               color: var(--text-primary, #1f2937);
+               margin: 0 0 12px 0;
+               line-height: 1.2;">
+      Debugging Variable Issues
+    </h3>
+
+    <p style="font-size: 18px;
+              font-weight: 400;
+              color: var(--text-primary, #6b7280);
+              line-height: 1.6;
+              margin: 0;">
+      Leverage browser developer tools to inspect and troubleshoot CSS variable application in real-time.
+    </p>
+
+  </div>
+
+</div>
+
+        </div>
+    </div>
+
+    <div class="slide-container">
+        <div class="slide-label">sequential_4col_c1 - Fix B: Sequential with --text-muted</div>
+        <div class="slide-content">
+            <!--
+  Themed Template: sequential_4col_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+-->
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 48px; padding: 20px 40px 0 0; height: 100%; background: transparent; align-items: start; position: relative;">
+
+  <!-- Step 1: Purple -->
+  <div style="text-align: center; position: relative; z-index: 1;">
+    <div style="width: 120px;
+                height: 120px;
+                margin: 0 auto 24px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);">
+      <span style="font-size: 62px; font-weight: 900; color: var(--text-on-dark, white);">1</span>
+    </div>
+    <h3 style="font-size: 29px; color: var(--text-primary, #1f2937); margin: 0 0 16px 0; font-weight: 700;">Define Base Variables</h3>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      Establish CSS custom properties for primary text colors.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      Set the default background color to a light shade, like white.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      These variables will serve as the foundation for our theme.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0; text-align: center;">
+      Ensure all components reference these base CSS variables.
+    </p>
+  </div>
+
+  <!-- Step 2: Pink -->
+  <div style="text-align: center; position: relative; z-index: 1;">
+    <div style="width: 120px;
+                height: 120px;
+                margin: 0 auto 24px;
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 8px 24px rgba(240, 147, 251, 0.3);">
+      <span style="font-size: 62px; font-weight: 900; color: var(--text-on-dark, white);">2</span>
+    </div>
+    <h3 style="font-size: 29px; color: var(--text-primary, #1f2937); margin: 0 0 16px 0; font-weight: 700;">Create Dark Mode Override</h3>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      Use a `prefers-color-scheme: dark` CSS media query.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      Redefine the color variables within this media query block.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      The primary text color variable should be set to white.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0; text-align: center;">
+      The background color variable is switched to a dark gray.
+    </p>
+  </div>
+
+  <!-- Step 3: Blue -->
+  <div style="text-align: center; position: relative; z-index: 1;">
+    <div style="width: 120px;
+                height: 120px;
+                margin: 0 auto 24px;
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 8px 24px rgba(79, 172, 254, 0.3);">
+      <span style="font-size: 62px; font-weight: 900; color: var(--text-on-dark, white);">3</span>
+    </div>
+    <h3 style="font-size: 29px; color: var(--text-primary, #1f2937); margin: 0 0 16px 0; font-weight: 700;">Apply to Text Elements</h3>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      Assign the text color variable to all relevant elements.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      This includes headings, paragraphs, links, and list items.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      Avoid using inline styles or direct color values on text.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0; text-align: center;">
+      This ensures global theme changes are applied correctly.
+    </p>
+  </div>
+
+  <!-- Step 4: Green -->
+  <div style="text-align: center; position: relative; z-index: 1;">
+    <div style="width: 120px;
+                height: 120px;
+                margin: 0 auto 24px;
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 8px 24px rgba(17, 153, 142, 0.3);">
+      <span style="font-size: 62px; font-weight: 900; color: var(--text-on-dark, white);">4</span>
+    </div>
+    <h3 style="font-size: 29px; color: var(--text-primary, #1f2937); margin: 0 0 16px 0; font-weight: 700;">Verify Color Inversion</h3>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      Toggle the system's appearance between light and dark modes.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      Confirm all text elements correctly switch to pure white.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0 0 10px 0; text-align: center;">
+      Inspect any elements that fail to update their color value.
+    </p>
+    <p style="font-size: 20px; color: var(--text-primary, #6b7280); line-height: 1.6; margin: 0; text-align: center;">
+      The browser's developer tools are essential for this check.
+    </p>
+  </div>
+
+</div>
+
+        </div>
+    </div>
+
+    <div class="slide-container">
+        <div class="slide-label">asymmetric_8_4_4section_c1 - Fix A: Asymmetric sidebar</div>
+        <div class="slide-content">
+            <!--
+  Themed Template: asymmetric_8_4_4section_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+-->
+<div style="display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            padding: 20px 0 0 0;
+            height: 100%;
+            background: transparent;
+            align-items: stretch;">
+
+  <!-- Main Column (Left - 2fr) -->
+  <div style="padding: 0; margin: 0;">
+
+    <!-- Section 1: Discovery Phase -->
+    <div style="margin-bottom: 19px;">
+      <h3 style="font-size: 28px;
+                 font-weight: 700;
+                 color: #2563eb;
+                 margin: 0 0 10px 0;
+                 line-height: 1.2;">
+        CSS Variable Setup
+      </h3>
+      <hr style="height: 3px;
+                 background: linear-gradient(90deg, #2563eb 0%, transparent 100%);
+                 border: none;
+                 margin: 0 0 13px 0;">
+      <ul style="font-size: 21px;
+                 line-height: 1.28;
+                 color: var(--text-secondary, #374151);
+                 margin: 0;
+                 padding-left: 24px;
+                 list-style-type: disc;">
+        <li style="margin-bottom: 10px;">
+          Defined global CSS variables for core text and background colors.
+        </li>
+        <li style="margin-bottom: 10px;">
+          Utilized the `:root` selector to ensure broad theme accessibility.
+        </li>
+        <li style="margin-bottom: 0;">
+          Implemented robust fallbacks for older browser compatibility scenarios.
+        </li>
+      </ul>
+    </div>
+
+    <!-- Section 2: Design Phase -->
+    <div style="margin-bottom: 19px;">
+      <h3 style="font-size: 28px;
+                 font-weight: 700;
+                 color: #dc2626;
+                 margin: 0 0 10px 0;
+                 line-height: 1.2;">
+        Dark Mode Activation
+      </h3>
+      <hr style="height: 3px;
+                 background: linear-gradient(90deg, #dc2626 0%, transparent 100%);
+                 border: none;
+                 margin: 0 0 13px 0;">
+      <ul style="font-size: 21px;
+                 line-height: 1.28;
+                 color: var(--text-secondary, #374151);
+                 margin: 0;
+                 padding-left: 24px;
+                 list-style-type: disc;">
+        <li style="margin-bottom: 10px;">
+          Integrated media query `(prefers-color-scheme: dark)` for auto-theming.
+        </li>
+        <li style="margin-bottom: 10px;">
+          Developed a JavaScript toggle for user-initiated theme switching.
+        </li>
+        <li style="margin-bottom: 0;">
+          Persisted user theme preference using local storage API calls.
+        </li>
+      </ul>
+    </div>
+
+    <!-- Section 3: Implementation Phase -->
+    <div style="margin-bottom: 19px;">
+      <h3 style="font-size: 28px;
+                 font-weight: 700;
+                 color: #10b981;
+                 margin: 0 0 10px 0;
+                 line-height: 1.2;">
+        Text Color Validation
+      </h3>
+      <hr style="height: 3px;
+                 background: linear-gradient(90deg, #10b981 0%, transparent 100%);
+                 border: none;
+                 margin: 0 0 13px 0;">
+      <ul style="font-size: 21px;
+                 line-height: 1.28;
+                 color: var(--text-secondary, #374151);
+                 margin: 0;
+                 padding-left: 24px;
+                 list-style-type: disc;">
+        <li style="margin-bottom: 10px;">
+          Confirmed all primary text elements successfully transition to white.
+        </li>
+        <li style="margin-bottom: 10px;">
+          Verified secondary and tertiary text maintain sufficient contrast ratios.
+        </li>
+        <li style="margin-bottom: 0;">
+          Evaluated link, button, and dynamic text states in dark mode context.
+        </li>
+      </ul>
+    </div>
+
+    <!-- Section 4: Optimization Phase -->
+    <div style="margin-bottom: 0;">
+      <h3 style="font-size: 28px;
+                 font-weight: 700;
+                 color: #f59e0b;
+                 margin: 0 0 10px 0;
+                 line-height: 1.2;">
+        Component Theming
+      </h3>
+      <hr style="height: 3px;
+                 background: linear-gradient(90deg, #f59e0b 0%, transparent 100%);
+                 border: none;
+                 margin: 0 0 13px 0;">
+      <ul style="font-size: 21px;
+                 line-height: 1.28;
+                 color: var(--text-secondary, #374151);
+                 margin: 0;
+                 padding-left: 24px;
+                 list-style-type: disc;">
+        <li style="margin-bottom: 10px;">
+          Assessed card, modal, and banner components for theme adherence.
+        </li>
+        <li style="margin-bottom: 10px;">
+          Reviewed form input fields, labels, and placeholder text styling.
+        </li>
+        <li style="margin-bottom: 0;">
+          Examined SVG icons and image overlays for optimal visibility.
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Sidebar (Right - 1fr) -->
+  <div style="padding: 32px;
+              border-radius: 12px;
+              background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+              border-left: 4px solid #1a73e8;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+    <h4 style="font-size: 26px;
+               color: var(--text-primary, #1a73e8);
+               margin: 0 0 20px 0;
+               font-weight: 700;">
+      Testing Checklist
+    </h4>
+    <ul style="list-style: none;
+               padding: 0;
+               margin: 0;
+               font-size: 20px;
+               line-height: 1.6;
+               color: var(--text-primary, #374151);">
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: #1a73e8; font-size: 24px;">•</span>
+        Verify all text elements
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: #1a73e8; font-size: 24px;">•</span>
+        Check contrast ratios (WCAG)
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: #1a73e8; font-size: 24px;">•</span>
+        Test interactive components
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: #1a73e8; font-size: 24px;">•</span>
+        Evaluate brand color palette
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: #1a73e8; font-size: 24px;">•</span>
+        Cross-browser compatibility
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: #1a73e8; font-size: 24px;">•</span>
+        Performance impact assessment
+      </li>
+      <li style="margin-bottom: 0; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: #1a73e8; font-size: 24px;">•</span>
+        Document any identified bugs
+      </li>
+    </ul>
+  </div>
+</div>
+
+        </div>
+    </div>
+
+    <script>
+        function setTheme(mode) {
+            if (mode === 'dark') {
+                document.documentElement.classList.add('theme-dark');
+                document.body.classList.add('theme-dark');
+            } else {
+                document.documentElement.classList.remove('theme-dark');
+                document.body.classList.remove('theme-dark');
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '1') setTheme('light');
+            if (e.key === '2') setTheme('dark');
+        });
+    </script>
+</body>
+</html>

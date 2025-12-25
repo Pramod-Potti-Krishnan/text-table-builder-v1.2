@@ -1,0 +1,163 @@
+<!--
+  Themed Template: table_2col_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+-->
+<div style="padding: 20px 0 0 0;
+            background: transparent;
+            height: 100%;
+            overflow: hidden;">
+
+  <table style="width: 90%;
+                height: 85%;
+                border-collapse: collapse;
+                margin: 0;
+                font-size: 20px;
+                table-layout: fixed;">
+
+    <!-- Header Row -->
+    <thead>
+      <tr>
+        <th style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+                   color: var(--text-on-dark, white);
+                   padding: 22px 20px;
+                   text-align: left;
+                   font-weight: 700;
+                   font-size: 28px;
+                   border-bottom: 3px solid #7c3aed;
+                   border-right: 1px solid #e5e7eb;
+                   width: 25%;">
+          Feature Area
+        </th>
+        <th style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                   color: var(--text-on-dark, white);
+                   padding: 22px 20px;
+                   text-align: left;
+                   font-weight: 700;
+                   font-size: 28px;
+                   border-bottom: 3px solid #2563eb;
+                   width: 75%;">
+          Project Alpha Capabilities
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      <!-- Row 1 -->
+      <tr style="background: transparent;">
+        <td style="padding: 20px;
+                   font-weight: 700;
+                   color: var(--text-primary, #1f2937);
+                   border-right: 1px solid #e5e7eb;
+                   border-bottom: 1px solid #e5e7eb;
+                   vertical-align: middle;">
+          Data Integration
+        </td>
+        <td style="padding: 20px;
+                   color: var(--text-secondary, #374151);
+                   border-bottom: 1px solid #e5e7eb;
+                   line-height: 1.6;
+                   vertical-align: middle;">
+          Seamlessly connects with over 50 native data sources, including Salesforce, SAP, and Snowflake. Features real-time data synchronization and automated schema detection for rapid setup.
+        </td>
+      </tr>
+
+      <!-- Row 2 -->
+      <tr style="background: var(--table-row-alt, #f9fafb);">
+        <td style="padding: 20px;
+                   font-weight: 700;
+                   color: var(--text-primary, #1f2937);
+                   border-right: 1px solid #e5e7eb;
+                   border-bottom: 1px solid #e5e7eb;
+                   vertical-align: middle;">
+          Reporting & Analytics
+        </td>
+        <td style="padding: 20px;
+                   color: var(--text-secondary, #374151);
+                   border-bottom: 1px solid #e5e7eb;
+                   line-height: 1.6;
+                   vertical-align: middle;">
+          Offers a drag-and-drop report builder with 20+ visualization types. Includes predictive analytics modules and a natural language query function for ad-hoc analysis.
+        </td>
+      </tr>
+
+      <!-- Row 3 -->
+      <tr style="background: transparent;">
+        <td style="padding: 20px;
+                   font-weight: 700;
+                   color: var(--text-primary, #1f2937);
+                   border-right: 1px solid #e5e7eb;
+                   border-bottom: 1px solid #e5e7eb;
+                   vertical-align: middle;">
+          User Collaboration
+        </td>
+        <td style="padding: 20px;
+                   color: var(--text-secondary, #374151);
+                   border-bottom: 1px solid #e5e7eb;
+                   line-height: 1.6;
+                   vertical-align: middle;">
+          Enables real-time collaboration on dashboards with in-line commenting, user tagging, and version control. Shareable links have granular permission settings for secure access.
+        </td>
+      </tr>
+
+      <!-- Row 4 -->
+      <tr style="background: var(--table-row-alt, #f9fafb);">
+        <td style="padding: 20px;
+                   font-weight: 700;
+                   color: var(--text-primary, #1f2937);
+                   border-right: 1px solid #e5e7eb;
+                   border-bottom: 1px solid #e5e7eb;
+                   vertical-align: middle;">
+          Security & Compliance
+        </td>
+        <td style="padding: 20px;
+                   color: var(--text-secondary, #374151);
+                   border-bottom: 1px solid #e5e7eb;
+                   line-height: 1.6;
+                   vertical-align: middle;">
+          SOC 2 Type II and GDPR compliant. Features end-to-end encryption, robust role-based access control (RBAC), and a comprehensive audit log for all user activities.
+        </td>
+      </tr>
+
+      <!-- Row 5 -->
+      <tr style="background: transparent;">
+        <td style="padding: 20px;
+                   font-weight: 700;
+                   color: var(--text-primary, #1f2937);
+                   border-right: 1px solid #e5e7eb;
+                   border-bottom: 1px solid #e5e7eb;
+                   vertical-align: middle;">
+          Scalability
+        </td>
+        <td style="padding: 20px;
+                   color: var(--text-secondary, #374151);
+                   border-bottom: 1px solid #e5e7eb;
+                   line-height: 1.6;
+                   vertical-align: middle;">
+          Built on a cloud-native, microservices architecture. Auto-scales resources to handle fluctuating query loads, supporting from 10 to over 10,000 concurrent users seamlessly.
+        </td>
+      </tr>
+
+      <!-- Row 6 -->
+      <tr style="background: var(--table-row-alt, #f9fafb);">
+        <td style="padding: 20px;
+                   font-weight: 700;
+                   color: var(--text-primary, #1f2937);
+                   border-right: 1px solid #e5e7eb;
+                   vertical-align: middle;">
+          Customization & API
+        </td>
+        <td style="padding: 20px;
+                   color: var(--text-secondary, #374151);
+                   line-height: 1.6;
+                   vertical-align: middle;">
+          Provides a full suite of APIs (REST, GraphQL) for custom integrations and extensive white-labeling options. The UI can be fully customized with themes and branding.
+        </td>
+      </tr>
+
+    </tbody>
+
+  </table>
+
+</div>

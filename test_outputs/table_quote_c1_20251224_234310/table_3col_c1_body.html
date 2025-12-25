@@ -1,0 +1,85 @@
+<!--
+  Themed Template: table_3col_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+-->
+<div style="padding: 20px 0 0 0;
+            background: transparent;
+            height: 100%;
+            overflow: hidden;">
+
+  <table style="width: 90%;
+                height: 85%;
+                border-collapse: collapse;
+                margin: 0;
+                font-size: 19px;
+                table-layout: fixed;">
+
+    <thead>
+      <tr>
+        <th style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+                   color: var(--text-on-dark, white);
+                   padding: 22px 20px;
+                   text-align: left;
+                   font-weight: 700;
+                   font-size: 23px;
+                   border-bottom: 3px solid #7c3aed;
+                   border-right: 1px solid var(--border-light, #e5e7eb);
+                   width: 25%;">
+          Feature Breakdown
+        </th>
+        <th style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                   color: var(--text-on-dark, white);
+                   padding: 22px 20px;
+                   text-align: left;
+                   font-weight: 700;
+                   font-size: 23px;
+                   border-bottom: 3px solid #2563eb;
+                   border-right: 1px solid var(--border-light, #e5e7eb);
+                   width: 37.5%;">
+          Pro Plan Features
+        </th>
+        <th style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+                   color: var(--text-on-dark, white);
+                   padding: 22px 20px;
+                   text-align: left;
+                   font-weight: 700;
+                   font-size: 23px;
+                   border-bottom: 3px solid #059669;
+                   width: 37.5%;">
+          Enterprise Plan Features
+        </th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr style="background: transparent;">
+        <td style="padding: 20px; font-weight: 700; color: var(--text-primary, #1f2937); border-right: 1px solid var(--border-light, #e5e7eb); border-bottom: 1px solid var(--border-light, #e5e7eb); vertical-align: top;">User Accounts</td>
+        <td style="padding: 20px; color: var(--text-secondary, #374151); border-right: 1px solid var(--border-light, #e5e7eb); border-bottom: 1px solid var(--border-light, #e5e7eb); line-height: 1.6; vertical-align: top;">Up to 50 user accounts with standard access controls.</td>
+        <td style="padding: 20px; color: var(--text-secondary, #374151); border-bottom: 1px solid var(--border-light, #e5e7eb); line-height: 1.6; vertical-align: top;">Unlimited user accounts with advanced role-based permissions.</td>
+      </tr>
+      <tr style="background: var(--table-row-alt, #f9fafb);">
+        <td style="padding: 20px; font-weight: 700; color: var(--text-primary, #1f2937); border-right: 1px solid var(--border-light, #e5e7eb); border-bottom: 1px solid var(--border-light, #e5e7eb); vertical-align: top;">Data Storage</td>
+        <td style="padding: 20px; color: var(--text-secondary, #374151); border-right: 1px solid var(--border-light, #e5e7eb); border-bottom: 1px solid var(--border-light, #e5e7eb); line-height: 1.6; vertical-align: top;">1 TB of secure cloud storage per organization.</td>
+        <td style="padding: 20px; color: var(--text-secondary, #374151); border-bottom: 1px solid var(--border-light, #e5e7eb); line-height: 1.6; vertical-align: top;">Unlimited secure cloud storage with data residency options.</td>
+      </tr>
+      <tr style="background: transparent;">
+        <td style="padding: 20px; font-weight: 700; color: var(--text-primary, #1f2937); border-right: 1px solid var(--border-light, #e5e7eb); border-bottom: 1px solid var(--border-light, #e5e7eb); vertical-align: top;">Support Level</td>
+        <td style="padding: 20px; color: var(--text-secondary, #374151); border-right: 1px solid var(--border-light, #e5e7eb); border-bottom: 1px solid var(--border-light, #e5e7eb); line-height: 1.6; vertical-align: top;">Email and chat support during standard business hours.</td>
+        <td style="padding: 20px; color: var(--text-secondary, #374151); border-bottom: 1px solid var(--border-light, #e5e7eb); line-height: 1.6; vertical-align: top;">24/7 dedicated support with a named account manager.</td>
+      </tr>
+      <tr style="background: var(--table-row-alt, #f9fafb);">
+        <td style="padding: 20px; font-weight: 700; color: var(--text-primary, #1f2937); border-right: 1px solid var(--border-light, #e5e7eb); border-bottom: 1px solid var(--border-light, #e5e7eb); vertical-align: top;">API & Integrations</td>
+        <td style="padding: 20px; color: var(--text-secondary, #374151); border-right: 1px solid var(--border-light, #e5e7eb); border-bottom: 1px solid var(--border-light, #e5e7eb); line-height: 1.6; vertical-align: top;">Access to standard API and pre-built integrations.</td>
+        <td style="padding: 20px; color: var(--text-secondary, #374151); border-bottom: 1px solid var(--border-light, #e5e7eb); line-height: 1.6; vertical-align: top;">Full API access, custom integrations, and developer support.</td>
+      </tr>
+      <tr style="background: transparent;">
+        <td style="padding: 20px; font-weight: 700; color: var(--text-primary, #1f2937); border-right: 1px solid var(--border-light, #e5e7eb); vertical-align: top;">Reporting & Analytics</td>
+        <td style="padding: 20px; color: var(--text-secondary, #374151); border-right: 1px solid var(--border-light, #e5e7eb); line-height: 1.6; vertical-align: top;">Standard reporting dashboard with weekly performance summaries.</td>
+        <td style="padding: 20px; color: var(--text-secondary, #374151); line-height: 1.6; vertical-align: top;">Advanced analytics, custom dashboards, and real-time reporting.</td>
+      </tr>
+    </tbody>
+
+  </table>
+
+</div>

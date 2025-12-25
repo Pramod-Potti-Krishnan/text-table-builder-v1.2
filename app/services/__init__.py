@@ -3,6 +3,7 @@ LLM Services for v1.2
 
 Provides LLM client and service wrappers for element-based content generation.
 Includes connection pool for concurrency control and rate limiting.
+Also includes Theme Service client for typography tokens.
 """
 
 from .llm_client import (
@@ -29,6 +30,20 @@ from .llm_pool import (
     QueueFullError,
     PoolStatus
 )
+from .theme_service_client import (
+    ThemeServiceClient,
+    get_client as get_theme_client,
+    get_typography,
+    get_default_typography,
+    get_typography_token,
+    TypographyTheme,
+    TypographyToken,
+    ListStyleTokens,
+    TextBoxDefaults,
+    DEFAULT_TYPOGRAPHY_TOKENS,
+    SLIDE_TEXT_TYPE_TO_LEVEL,
+    FONT_CHAR_WIDTH_RATIOS
+)
 
 __all__ = [
     # LLM Client
@@ -52,4 +67,17 @@ __all__ = [
     "LLMPoolConfig",
     "QueueFullError",
     "PoolStatus",
+    # Theme Service
+    "ThemeServiceClient",
+    "get_theme_client",
+    "get_typography",
+    "get_default_typography",
+    "get_typography_token",
+    "TypographyTheme",
+    "TypographyToken",
+    "ListStyleTokens",
+    "TextBoxDefaults",
+    "DEFAULT_TYPOGRAPHY_TOKENS",
+    "SLIDE_TEXT_TYPE_TO_LEVEL",
+    "FONT_CHAR_WIDTH_RATIOS",
 ]

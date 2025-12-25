@@ -4,10 +4,20 @@ Layout Service API Routes for Text & Table Builder v1.2
 Provides endpoints for the Layout Service integration enabling
 grid-based text and table generation with constraint-aware HTML+CSS output.
 
+Grid System: 32×18 grid (1920×1080px HD slides, 60×60px cells)
+
 Text Endpoints:
 - POST /api/ai/text/generate - Generate new text content from prompt
 - POST /api/ai/text/transform - Transform existing text (expand, condense, etc.)
 - POST /api/ai/text/autofit - Fit text to element dimensions
+
+Slide-Specific Endpoints (32×18 grid):
+- POST /api/ai/slide/title - Generate slide title (h2)
+- POST /api/ai/slide/subtitle - Generate slide subtitle
+- POST /api/ai/slide/title-slide - Generate complete title slide content
+- POST /api/ai/slide/section - Generate section divider content
+- POST /api/ai/slide/closing - Generate closing slide content
+- POST /api/ai/element/text - Generate generic text element
 
 Table Endpoints:
 - POST /api/ai/table/generate - Generate structured table from prompt
@@ -18,7 +28,7 @@ Architecture:
 - Each endpoint uses a specialized generator class
 - All generators use async LLM service for FastAPI compatibility
 - Output is HTML with inline CSS for reveal.js integration
-- Grid constraints (12x8) determine content size limits
+- Grid constraints (32×18) determine content size limits
 """
 
 from fastapi import APIRouter, Depends
@@ -32,7 +42,13 @@ from app.core.layout import (
     TextAutofitGenerator,
     TableGenerateGenerator,
     TableTransformGenerator,
-    TableAnalyzeGenerator
+    TableAnalyzeGenerator,
+    # New slide text generators
+    SlideTextGenerator,
+    TitleSlideGenerator,
+    SectionSlideGenerator,
+    ClosingSlideGenerator,
+    GenericTextElementGenerator
 )
 from app.models.layout_models import (
     # Text models
@@ -42,6 +58,17 @@ from app.models.layout_models import (
     TextTransformResponse,
     TextAutofitRequest,
     TextAutofitResponse,
+    # Slide-specific text models (32×18 grid)
+    SlideTextRequest,
+    SlideTextResponse,
+    TitleSlideRequest,
+    TitleSlideResponse,
+    SectionSlideRequest,
+    SectionSlideResponse,
+    ClosingSlideRequest,
+    ClosingSlideResponse,
+    GenericTextElementRequest,
+    SlideTextType,
     # Table models
     TableGenerateRequest,
     TableGenerateResponse,
@@ -53,6 +80,7 @@ from app.models.layout_models import (
     ErrorDetails
 )
 from app.services import create_llm_callable_async
+from app.services.theme_service_client import ThemeServiceClient
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +147,58 @@ def get_table_analyze_generator(
 ) -> TableAnalyzeGenerator:
     """Create TableAnalyzeGenerator instance."""
     return TableAnalyzeGenerator(llm_service)
+
+
+# Slide text generator dependencies (32×18 grid)
+_theme_client: ThemeServiceClient = None
+
+
+def get_theme_client() -> ThemeServiceClient:
+    """Get or create singleton ThemeServiceClient."""
+    global _theme_client
+    if _theme_client is None:
+        _theme_client = ThemeServiceClient()
+    return _theme_client
+
+
+def get_slide_text_generator(
+    llm_service: Callable = Depends(get_async_llm_service),
+    theme_client: ThemeServiceClient = Depends(get_theme_client)
+) -> SlideTextGenerator:
+    """Create SlideTextGenerator instance with theme support."""
+    return SlideTextGenerator(llm_service, theme_client)
+
+
+def get_title_slide_generator(
+    llm_service: Callable = Depends(get_async_llm_service),
+    theme_client: ThemeServiceClient = Depends(get_theme_client)
+) -> TitleSlideGenerator:
+    """Create TitleSlideGenerator instance with theme support."""
+    return TitleSlideGenerator(llm_service, theme_client)
+
+
+def get_section_slide_generator(
+    llm_service: Callable = Depends(get_async_llm_service),
+    theme_client: ThemeServiceClient = Depends(get_theme_client)
+) -> SectionSlideGenerator:
+    """Create SectionSlideGenerator instance with theme support."""
+    return SectionSlideGenerator(llm_service, theme_client)
+
+
+def get_closing_slide_generator(
+    llm_service: Callable = Depends(get_async_llm_service),
+    theme_client: ThemeServiceClient = Depends(get_theme_client)
+) -> ClosingSlideGenerator:
+    """Create ClosingSlideGenerator instance with theme support."""
+    return ClosingSlideGenerator(llm_service, theme_client)
+
+
+def get_generic_text_generator(
+    llm_service: Callable = Depends(get_async_llm_service),
+    theme_client: ThemeServiceClient = Depends(get_theme_client)
+) -> GenericTextElementGenerator:
+    """Create GenericTextElementGenerator instance with theme support."""
+    return GenericTextElementGenerator(llm_service, theme_client)
 
 
 # =============================================================================
@@ -359,6 +439,378 @@ async def autofit_text(
             success=False,
             error=ErrorDetails(
                 code="AUTOFIT_FAILED",
+                message=str(e),
+                retryable=True
+            )
+        )
+
+
+# =============================================================================
+# Slide-Specific Text Endpoints (32×18 Grid System)
+# =============================================================================
+
+@router.post("/slide/title", response_model=SlideTextResponse)
+async def generate_slide_title(
+    request: SlideTextRequest,
+    generator: SlideTextGenerator = Depends(get_slide_text_generator)
+) -> SlideTextResponse:
+    """
+    Generate slide title text with precise character constraints.
+
+    Uses the 32×18 grid system (1920×1080px HD slides) with font-aware
+    character calculations for accurate content sizing.
+
+    **Grid System**:
+    - 32 columns × 18 rows
+    - Each cell: 60×60 pixels
+    - Default outer padding: 10px (grid edge to element)
+    - Default inner padding: 16px (element border to text)
+
+    **Request Body**:
+    - textType: Type of text (slide_title, slide_subtitle, etc.)
+    - prompt: Content prompt or text to generate
+    - context: Optional slide context
+    - constraints: Grid constraints (gridWidth 1-32, gridHeight 1-18, padding)
+    - typography: Optional typography overrides
+    - themeId: Optional theme ID for styling
+
+    **Response**:
+    - success: Whether generation succeeded
+    - data: Generated content with dimension/constraint metadata
+      - content: Generated text
+      - dimensions: Element and content dimensions in pixels
+      - constraintsUsed: Character/line limits calculated
+      - typographyApplied: Typography settings used
+      - fits: Whether content fits within constraints
+
+    **Example Request**:
+    ```json
+    {
+        "textType": "slide_title",
+        "prompt": "Create a title about AI transformation in healthcare",
+        "constraints": {
+            "gridWidth": 28,
+            "gridHeight": 2,
+            "outerPadding": 10,
+            "innerPadding": 16
+        },
+        "themeId": "corporate-blue"
+    }
+    ```
+    """
+    try:
+        # Ensure correct text type for slide title
+        if request.textType not in [SlideTextType.SLIDE_TITLE, SlideTextType.SLIDE_SUBTITLE]:
+            request.textType = SlideTextType.SLIDE_TITLE
+
+        logger.info(
+            f"Generating slide title (grid: {request.constraints.gridWidth}×{request.constraints.gridHeight})"
+        )
+        result = await generator.generate(request)
+        logger.info(f"Slide title generation successful")
+        return result
+
+    except Exception as e:
+        logger.error(f"Slide title generation failed: {e}")
+        return SlideTextResponse(
+            success=False,
+            error=ErrorDetails(
+                code="GENERATION_FAILED",
+                message=str(e),
+                retryable=True
+            )
+        )
+
+
+@router.post("/slide/subtitle", response_model=SlideTextResponse)
+async def generate_slide_subtitle(
+    request: SlideTextRequest,
+    generator: SlideTextGenerator = Depends(get_slide_text_generator)
+) -> SlideTextResponse:
+    """
+    Generate slide subtitle text with precise character constraints.
+
+    Similar to /slide/title but optimized for subtitle typography (smaller font,
+    lighter weight, secondary color).
+
+    **Example Request**:
+    ```json
+    {
+        "textType": "slide_subtitle",
+        "prompt": "Supporting text for healthcare AI presentation",
+        "constraints": {
+            "gridWidth": 20,
+            "gridHeight": 2
+        },
+        "themeId": "corporate-blue"
+    }
+    ```
+    """
+    try:
+        # Ensure correct text type for slide subtitle
+        request.textType = SlideTextType.SLIDE_SUBTITLE
+
+        logger.info(
+            f"Generating slide subtitle (grid: {request.constraints.gridWidth}×{request.constraints.gridHeight})"
+        )
+        result = await generator.generate(request)
+        logger.info(f"Slide subtitle generation successful")
+        return result
+
+    except Exception as e:
+        logger.error(f"Slide subtitle generation failed: {e}")
+        return SlideTextResponse(
+            success=False,
+            error=ErrorDetails(
+                code="GENERATION_FAILED",
+                message=str(e),
+                retryable=True
+            )
+        )
+
+
+@router.post("/slide/title-slide", response_model=TitleSlideResponse)
+async def generate_title_slide(
+    request: TitleSlideRequest,
+    generator: TitleSlideGenerator = Depends(get_title_slide_generator)
+) -> TitleSlideResponse:
+    """
+    Generate complete title slide content (title + subtitle + optional content).
+
+    Generates all text elements for a title slide in one call, with each
+    element sized appropriately based on its constraints.
+
+    **Request Body**:
+    - prompt: Content prompt for title slide theme
+    - context: Optional presentation context
+    - titleConstraints: Grid constraints for the title (required)
+    - subtitleConstraints: Grid constraints for subtitle (optional)
+    - contentConstraints: Grid constraints for additional content (optional)
+    - typography: Optional typography overrides
+    - themeId: Optional theme ID
+
+    **Response**:
+    - success: Whether generation succeeded
+    - data: Generated content for each element
+      - title: Title text with constraints
+      - subtitle: Subtitle text with constraints (if requested)
+      - content: Additional content (if requested)
+
+    **Example Request**:
+    ```json
+    {
+        "prompt": "Annual strategy presentation for tech company focused on AI innovation",
+        "titleConstraints": {
+            "gridWidth": 24,
+            "gridHeight": 3
+        },
+        "subtitleConstraints": {
+            "gridWidth": 20,
+            "gridHeight": 2
+        },
+        "themeId": "corporate-blue"
+    }
+    ```
+    """
+    try:
+        logger.info(
+            f"Generating title slide (title grid: {request.titleConstraints.gridWidth}×{request.titleConstraints.gridHeight})"
+        )
+        result = await generator.generate(request)
+        logger.info(f"Title slide generation successful")
+        return result
+
+    except Exception as e:
+        logger.error(f"Title slide generation failed: {e}")
+        return TitleSlideResponse(
+            success=False,
+            error=ErrorDetails(
+                code="GENERATION_FAILED",
+                message=str(e),
+                retryable=True
+            )
+        )
+
+
+@router.post("/slide/section", response_model=SectionSlideResponse)
+async def generate_section_slide(
+    request: SectionSlideRequest,
+    generator: SectionSlideGenerator = Depends(get_section_slide_generator)
+) -> SectionSlideResponse:
+    """
+    Generate section divider slide content (title + optional subtitle).
+
+    Creates text for section divider slides that separate presentation sections.
+
+    **Request Body**:
+    - prompt: Section theme or topic
+    - context: Optional presentation context
+    - titleConstraints: Grid constraints for section title (required)
+    - subtitleConstraints: Grid constraints for subtitle (optional)
+    - typography: Optional typography overrides
+    - themeId: Optional theme ID
+
+    **Example Request**:
+    ```json
+    {
+        "prompt": "Section about market analysis and competitive landscape",
+        "titleConstraints": {
+            "gridWidth": 24,
+            "gridHeight": 3
+        },
+        "subtitleConstraints": {
+            "gridWidth": 20,
+            "gridHeight": 2
+        },
+        "themeId": "corporate-blue"
+    }
+    ```
+    """
+    try:
+        logger.info(
+            f"Generating section slide (title grid: {request.titleConstraints.gridWidth}×{request.titleConstraints.gridHeight})"
+        )
+        result = await generator.generate(request)
+        logger.info(f"Section slide generation successful")
+        return result
+
+    except Exception as e:
+        logger.error(f"Section slide generation failed: {e}")
+        return SectionSlideResponse(
+            success=False,
+            error=ErrorDetails(
+                code="GENERATION_FAILED",
+                message=str(e),
+                retryable=True
+            )
+        )
+
+
+@router.post("/slide/closing", response_model=ClosingSlideResponse)
+async def generate_closing_slide(
+    request: ClosingSlideRequest,
+    generator: ClosingSlideGenerator = Depends(get_closing_slide_generator)
+) -> ClosingSlideResponse:
+    """
+    Generate closing slide content (title + subtitle + CTA content).
+
+    Creates text for closing slides with call-to-action or contact information.
+
+    **Request Body**:
+    - prompt: Closing slide theme (thank you, next steps, contact info, etc.)
+    - context: Optional presentation context
+    - titleConstraints: Grid constraints for closing title (required)
+    - subtitleConstraints: Grid constraints for subtitle (optional)
+    - contentConstraints: Grid constraints for CTA content (optional)
+    - typography: Optional typography overrides
+    - themeId: Optional theme ID
+
+    **Example Request**:
+    ```json
+    {
+        "prompt": "Thank you slide with contact info and next steps",
+        "titleConstraints": {
+            "gridWidth": 24,
+            "gridHeight": 3
+        },
+        "subtitleConstraints": {
+            "gridWidth": 20,
+            "gridHeight": 2
+        },
+        "contentConstraints": {
+            "gridWidth": 16,
+            "gridHeight": 4
+        },
+        "themeId": "corporate-blue"
+    }
+    ```
+    """
+    try:
+        logger.info(
+            f"Generating closing slide (title grid: {request.titleConstraints.gridWidth}×{request.titleConstraints.gridHeight})"
+        )
+        result = await generator.generate(request)
+        logger.info(f"Closing slide generation successful")
+        return result
+
+    except Exception as e:
+        logger.error(f"Closing slide generation failed: {e}")
+        return ClosingSlideResponse(
+            success=False,
+            error=ErrorDetails(
+                code="GENERATION_FAILED",
+                message=str(e),
+                retryable=True
+            )
+        )
+
+
+@router.post("/element/text", response_model=SlideTextResponse)
+async def generate_text_element(
+    request: GenericTextElementRequest,
+    generator: GenericTextElementGenerator = Depends(get_generic_text_generator)
+) -> SlideTextResponse:
+    """
+    Generate generic text element with full styling control.
+
+    The most flexible text generation endpoint, suitable for any text element
+    with custom typography levels and styling.
+
+    **Request Body**:
+    - prompt: Content prompt or text to generate
+    - context: Optional slide context
+    - constraints: Grid constraints (1-32 columns, 1-18 rows)
+    - typographyLevel: Typography level (h1, h2, h3, h4, body, subtitle, caption)
+    - typography: Optional typography overrides
+    - style: Optional text box styling (background, border, shadow, etc.)
+    - listStyle: Optional list/bullet styling
+    - themeId: Optional theme ID
+
+    **Typography Levels**:
+    - h1: 72px, weight 700, line-height 1.2 (title slide title)
+    - h2: 48px, weight 600, line-height 1.3 (slide title)
+    - h3: 32px, weight 600, line-height 1.4 (subsection)
+    - h4: 24px, weight 600, line-height 1.4 (card title)
+    - body: 20px, weight 400, line-height 1.6 (regular text)
+    - subtitle: 28px, weight 400, line-height 1.5 (subtitle)
+    - caption: 16px, weight 400, line-height 1.4 (small text)
+
+    **Example Request**:
+    ```json
+    {
+        "prompt": "Write 3 bullet points about sustainability initiatives",
+        "constraints": {
+            "gridWidth": 15,
+            "gridHeight": 8
+        },
+        "typographyLevel": "body",
+        "style": {
+            "background": "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+            "borderWidth": "1px",
+            "borderColor": "#0ea5e9",
+            "borderRadius": "12px"
+        },
+        "options": {
+            "format": "bullets"
+        }
+    }
+    ```
+    """
+    try:
+        logger.info(
+            f"Generating text element (grid: {request.constraints.gridWidth}×{request.constraints.gridHeight}, "
+            f"level: {request.typographyLevel})"
+        )
+        result = await generator.generate_from_request(request)
+        logger.info(f"Text element generation successful")
+        return result
+
+    except Exception as e:
+        logger.error(f"Text element generation failed: {e}")
+        return SlideTextResponse(
+            success=False,
+            error=ErrorDetails(
+                code="GENERATION_FAILED",
                 message=str(e),
                 retryable=True
             )
@@ -616,15 +1068,28 @@ async def layout_health_check():
     Health check endpoint for Layout Service integration.
 
     Returns status and capability information for all Layout Service endpoints.
+    Updated for 32×18 grid system (1920×1080px HD slides).
     """
+    # Get grid info from calculator for accuracy
+    grid_info = GridCalculator.get_grid_info()
+
     return {
         "status": "healthy",
         "service": "Text & Table Builder v1.2 - Layout Service Integration",
+        "version": "2.0",
         "endpoints": {
             "text": {
                 "generate": "/api/ai/text/generate",
                 "transform": "/api/ai/text/transform",
                 "autofit": "/api/ai/text/autofit"
+            },
+            "slide_text": {
+                "title": "/api/ai/slide/title",
+                "subtitle": "/api/ai/slide/subtitle",
+                "title_slide": "/api/ai/slide/title-slide",
+                "section": "/api/ai/slide/section",
+                "closing": "/api/ai/slide/closing",
+                "element": "/api/ai/element/text"
             },
             "table": {
                 "generate": "/api/ai/table/generate",
@@ -633,14 +1098,26 @@ async def layout_health_check():
             }
         },
         "grid_system": {
-            "columns": 12,
-            "rows": 8,
-            "description": "12-column x 8-row grid system for element sizing"
+            "columns": GridCalculator.GRID_COLUMNS,  # 32
+            "rows": GridCalculator.GRID_ROWS,  # 18
+            "slide_width": GridCalculator.SLIDE_WIDTH,  # 1920px
+            "slide_height": GridCalculator.SLIDE_HEIGHT,  # 1080px
+            "cell_width": GridCalculator.CELL_WIDTH,  # 60px
+            "cell_height": GridCalculator.CELL_HEIGHT,  # 60px
+            "description": "32×18 grid system for HD slides (1920×1080px, 60px cells)"
         },
+        "default_padding": {
+            "outer": GridCalculator.DEFAULT_OUTER_PADDING,  # 10px
+            "inner": GridCalculator.DEFAULT_INNER_PADDING,  # 16px
+            "description": "Outer = grid edge to element border, Inner = element border to text"
+        },
+        "typography_defaults": grid_info.get("typography_defaults", {}),
         "capabilities": {
             "text_tones": ["professional", "conversational", "academic", "persuasive", "casual", "technical"],
             "text_formats": ["paragraph", "bullets", "numbered", "headline", "quote", "mixed"],
             "text_transformations": ["expand", "condense", "simplify", "formalize", "casualize", "bulletize", "paragraphize", "rephrase", "proofread", "translate"],
+            "slide_text_types": ["slide_title", "slide_subtitle", "title_slide_title", "title_slide_subtitle", "section_title", "closing_title", "closing_subtitle"],
+            "typography_levels": ["h1", "h2", "h3", "h4", "body", "subtitle", "caption"],
             "table_styles": ["minimal", "bordered", "striped", "modern", "professional", "colorful"],
             "table_transformations": ["add_column", "add_row", "remove_column", "remove_row", "sort", "summarize", "transpose", "expand", "merge_cells", "split_column"]
         }
@@ -653,19 +1130,27 @@ async def get_grid_constraints(grid_width: int, grid_height: int):
     Get content guidelines for specific grid dimensions.
 
     Useful for the Layout Service to understand content limits before
-    calling generation endpoints.
+    calling generation endpoints. Updated for 32×18 grid system.
 
     **Path Parameters**:
-    - grid_width: Grid width (1-12)
-    - grid_height: Grid height (1-8)
+    - grid_width: Grid columns (1-32)
+    - grid_height: Grid rows (1-18)
+
+    **Grid System**:
+    - 32 columns × 18 rows (1920×1080px HD slides)
+    - Each cell: 60×60 pixels
+    - Default outer padding: 10px
+    - Default inner padding: 16px
 
     **Response**:
     - Grid validation result
-    - Character limits (min, max, target)
+    - Character limits (min, max, target) based on typography
     - Word limits
     - Layout info (lines, chars per line)
     - Format recommendations
     - Table dimensions (for table elements)
+
+    **Example**: /constraints/24/3 returns constraints for a 24-column × 3-row element
     """
     # Validate grid
     validation = GridCalculator.validate_grid_constraints(grid_width, grid_height)

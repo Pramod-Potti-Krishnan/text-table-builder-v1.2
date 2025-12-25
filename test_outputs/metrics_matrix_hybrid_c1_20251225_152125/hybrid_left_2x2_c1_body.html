@@ -1,0 +1,202 @@
+<!--
+  Themed Template: hybrid_left_2x2_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+  2x2 grid on left with 3 bullets per box, asymmetric blue insights box on right.
+-->
+<div style="display: flex;
+            gap: 24px;
+            padding: 20px 40px 0 0;
+            background: transparent;
+            height: 100%;">
+
+  <!-- Left: 2x2 Grid (75% width) -->
+  <div style="display: grid;
+              grid-template-columns: 1fr 1fr;
+              grid-template-rows: 1fr 1fr;
+              gap: 24px;
+              flex: 3;">
+
+    <!-- Box 1: Top-Left (Light Blue) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-1-bg, #dbeafe);
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #1e3a8a);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Enhanced Core Functionality
+      </h4>
+
+      <ul style="font-size: 20px;
+                 font-weight: 400;
+                 color: var(--text-primary, #1e40af);
+                 line-height: 1.6;
+                 margin: 0;
+                 padding-left: 0;
+                 list-style-position: inside;
+                 list-style-type: none;">
+        <li style="margin-bottom: 12px;">Streamlined data input and processing workflows for efficiency.</li>
+        <li style="margin-bottom: 12px;">Improved user interface for intuitive navigation and accessibility.</li>
+        <li style="margin-bottom: 0;">Real-time analytics dashboard provides immediate performance insights.</li>
+      </ul>
+
+    </div>
+
+    <!-- Box 2: Top-Right (Light Green) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-2-bg, #d1fae5);
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #065f46);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Robust Scalability & Performance
+      </h4>
+
+      <ul style="font-size: 20px;
+                 font-weight: 400;
+                 color: var(--text-primary, #047857);
+                 line-height: 1.6;
+                 margin: 0;
+                 padding-left: 0;
+                 list-style-position: inside;
+                 list-style-type: none;">
+        <li style="margin-bottom: 12px;">Cloud-native architecture supports rapid expansion and growth.</li>
+        <li style="margin-bottom: 12px;">Optimized algorithms ensure fast data retrieval and processing speeds.</li>
+        <li style="margin-bottom: 0;">High availability infrastructure guarantees continuous service uptime.</li>
+      </ul>
+
+    </div>
+
+    <!-- Box 3: Bottom-Left (Light Yellow) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-3-bg, #fef3c7);
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #78350f);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Advanced Security & Compliance
+      </h4>
+
+      <ul style="font-size: 20px;
+                 font-weight: 400;
+                 color: var(--text-primary, #92400e);
+                 line-height: 1.6;
+                 margin: 0;
+                 padding-left: 0;
+                 list-style-position: inside;
+                 list-style-type: none;">
+        <li style="margin-bottom: 12px;">End-to-end encryption protects sensitive data both in transit and at rest.</li>
+        <li style="margin-bottom: 12px;">Multi-factor authentication strengthens user access control mechanisms.</li>
+        <li style="margin-bottom: 0;">Automated compliance checks ensure adherence to industry regulations.</li>
+      </ul>
+
+    </div>
+
+    <!-- Box 4: Bottom-Right (Light Pink) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-4-bg, #fce7f3);
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #831843);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Seamless Integration Capabilities
+      </h4>
+
+      <ul style="font-size: 20px;
+                 font-weight: 400;
+                 color: var(--text-primary, #9f1239);
+                 line-height: 1.6;
+                 margin: 0;
+                 padding-left: 0;
+                 list-style-position: inside;
+                 list-style-type: none;">
+        <li style="margin-bottom: 12px;">Open API framework allows easy connection with existing enterprise systems.</li>
+        <li style="margin-bottom: 12px;">Pre-built connectors expedite data exchange with popular third-party tools.</li>
+        <li style="margin-bottom: 0;">Customizable webhooks enable flexible event-driven process automation.</li>
+      </ul>
+
+    </div>
+
+  </div>
+
+  <!-- Right: Key Insights Box (25% width) - Asymmetric Blue Box Style -->
+  <div style="flex: 1;
+              padding: 32px;
+              border-radius: 12px;
+              background: var(--sidebar-bg, linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%));
+              border-left: 4px solid var(--accent-blue, #1a73e8);
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;">
+
+    <h4 style="font-size: 26px;
+               color: var(--text-primary, #1a73e8);
+               margin: 0 0 20px 0;
+               font-weight: 700;">
+      Strategic Value Proposition
+    </h4>
+
+    <ul style="list-style: none;
+               padding: 0;
+               margin: 0;
+               font-size: 20px;
+               line-height: 1.6;
+               color: var(--text-primary, #374151);">
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Positions us as a leader in innovative technology solutions.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Drives significant operational efficiencies across all departments.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Enhances data-driven decision-making with superior insights.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Mitigates security risks, ensuring robust data protection standards.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Fosters ecosystem growth through extensive integration possibilities.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Supports future product evolution and long-term competitive advantage.
+      </li>
+      <li style="margin-bottom: 0; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Delivers a superior user experience, boosting adoption and satisfaction.
+      </li>
+    </ul>
+
+  </div>
+
+</div>

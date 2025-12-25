@@ -1,0 +1,188 @@
+<!--
+  Themed Template: grid_2x2_numbered_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+-->
+<div style="display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 40px;
+            padding: 20px 40px 0 0;
+            height: 100%;
+            background: transparent;
+            align-items: stretch;
+            overflow: hidden;">
+
+  <!-- Box 1 -->
+  <div style="padding: 20px 40px 0 40px;
+              border-radius: 12px;
+              background: var(--box-1-bg, linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%));
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: row;
+              align-items: flex-start;
+              text-align: left;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 80px;
+                font-weight: 800;
+                color: #0369a1;
+                line-height: 1;
+                margin-right: 28px;
+                flex-shrink: 0;
+                font-family: system-ui, -apple-system, sans-serif;">1</div>
+
+    <div style="flex: 1;">
+      <h3 style="font-size: 28px;
+                 font-weight: 700;
+                 color: var(--text-primary, #1f2937);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Strategic Planning & Scope
+      </h3>
+
+      <ul style="font-size: 18px;
+                 font-weight: 400;
+                 color: var(--text-primary, #6b7280);
+                 line-height: 1.5;
+                 margin: 0;
+                 padding-left: 20px;
+                 list-style-type: disc;">
+        <li style="margin-bottom: 6px;">Define clear project objectives and scope to ensure alignment with organizational goals.</li>
+        <li style="margin-bottom: 6px;">Identify all key stakeholders and establish effective communication channels for collaboration.</li>
+        <li style="margin-bottom: 6px;">Conduct thorough resource assessment, allocating necessary personnel and tools effectively.</li>
+        <li style="margin-bottom: 0;">Develop a detailed project roadmap, outlining timelines, milestones, and critical dependencies.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Box 2 -->
+  <div style="padding: 20px 40px 0 40px;
+              border-radius: 12px;
+              background: var(--box-2-bg, linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%));
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: row;
+              align-items: flex-start;
+              text-align: left;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 80px;
+                font-weight: 800;
+                color: #15803d;
+                line-height: 1;
+                margin-right: 28px;
+                flex-shrink: 0;
+                font-family: system-ui, -apple-system, sans-serif;">2</div>
+
+    <div style="flex: 1;">
+      <h3 style="font-size: 28px;
+                 font-weight: 700;
+                 color: var(--text-primary, #1f2937);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Solution Build & Integration
+      </h3>
+
+      <ul style="font-size: 18px;
+                 font-weight: 400;
+                 color: var(--text-primary, #6b7280);
+                 line-height: 1.5;
+                 margin: 0;
+                 padding-left: 20px;
+                 list-style-type: disc;">
+        <li style="margin-bottom: 6px;">Design and develop core system functionalities based on approved architectural specifications.</li>
+        <li style="margin-bottom: 6px;">Configure the platform to meet specific business process requirements and user needs.</li>
+        <li style="margin-bottom: 6px;">Integrate new components with existing systems, ensuring seamless data flow and interoperability.</li>
+        <li style="margin-bottom: 0;">Implement security protocols and data privacy measures throughout the development lifecycle.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Box 3 -->
+  <div style="padding: 20px 40px 0 40px;
+              border-radius: 12px;
+              background: var(--box-3-bg, linear-gradient(135deg, #fef3c7 0%, #fde68a 100%));
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: row;
+              align-items: flex-start;
+              text-align: left;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 80px;
+                font-weight: 800;
+                color: #a16207;
+                line-height: 1;
+                margin-right: 28px;
+                flex-shrink: 0;
+                font-family: system-ui, -apple-system, sans-serif;">3</div>
+
+    <div style="flex: 1;">
+      <h3 style="font-size: 28px;
+                 font-weight: 700;
+                 color: var(--text-primary, #1f2937);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Quality Assurance & Testing
+      </h3>
+
+      <ul style="font-size: 18px;
+                 font-weight: 400;
+                 color: var(--text-primary, #6b7280);
+                 line-height: 1.5;
+                 margin: 0;
+                 padding-left: 20px;
+                 list-style-type: disc;">
+        <li style="margin-bottom: 6px;">Execute comprehensive unit, integration, and system tests to identify and resolve defects early.</li>
+        <li style="margin-bottom: 6px;">Facilitate user acceptance testing (UAT) with key stakeholders to validate solution functionality.</li>
+        <li style="margin-bottom: 6px;">Conduct performance and stress testing to ensure the system can handle anticipated workloads.</li>
+        <li style="margin-bottom: 0;">Document all test results and obtain formal sign-off before proceeding to the deployment stage.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Box 4 -->
+  <div style="padding: 20px 40px 0 40px;
+              border-radius: 12px;
+              background: var(--box-4-bg, linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%));
+              border: 2px solid var(--border-light, #e5e7eb);
+              display: flex;
+              flex-direction: row;
+              align-items: flex-start;
+              text-align: left;
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+
+    <div style="font-size: 80px;
+                font-weight: 800;
+                color: #be185d;
+                line-height: 1;
+                margin-right: 28px;
+                flex-shrink: 0;
+                font-family: system-ui, -apple-system, sans-serif;">4</div>
+
+    <div style="flex: 1;">
+      <h3 style="font-size: 28px;
+                 font-weight: 700;
+                 color: var(--text-primary, #1f2937);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Go-Live & Post-Launch
+      </h3>
+
+      <ul style="font-size: 18px;
+                 font-weight: 400;
+                 color: var(--text-primary, #6b7280);
+                 line-height: 1.5;
+                 margin: 0;
+                 padding-left: 20px;
+                 list-style-type: disc;">
+        <li style="margin-bottom: 6px;">Prepare for production rollout with a detailed deployment plan and rollback strategy.</li>
+        <li style="margin-bottom: 6px;">Execute the go-live process, carefully monitoring system performance and user adoption.</li>
+        <li style="margin-bottom: 6px;">Provide immediate post-launch support, addressing any critical issues and user inquiries promptly.</li>
+        <li style="margin-bottom: 0;">Establish a continuous improvement framework for ongoing optimization and future enhancements.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>

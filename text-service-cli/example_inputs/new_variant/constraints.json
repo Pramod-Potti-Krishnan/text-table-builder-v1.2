@@ -1,0 +1,38 @@
+{
+  "box_1": {
+    "title": {"baseline": 25, "min": 20, "max": 30},
+    "description": {"baseline": 100, "min": 80, "max": 120}
+  },
+  "box_2": {
+    "title": {"baseline": 25, "min": 20, "max": 30},
+    "description": {"baseline": 100, "min": 80, "max": 120}
+  },
+  "box_3": {
+    "title": {"baseline": 25, "min": 20, "max": 30},
+    "description": {"baseline": 100, "min": 80, "max": 120}
+  },
+  "box_4": {
+    "title": {"baseline": 25, "min": 20, "max": 30},
+    "description": {"baseline": 100, "min": 80, "max": 120}
+  },
+  "box_5": {
+    "title": {"baseline": 25, "min": 20, "max": 30},
+    "description": {"baseline": 100, "min": 80, "max": 120}
+  },
+  "box_6": {
+    "title": {"baseline": 25, "min": 20, "max": 30},
+    "description": {"baseline": 100, "min": 80, "max": 120}
+  },
+  "box_7": {
+    "title": {"baseline": 25, "min": 20, "max": 30},
+    "description": {"baseline": 100, "min": 80, "max": 120}
+  },
+  "box_8": {
+    "title": {"baseline": 25, "min": 20, "max": 30},
+    "description": {"baseline": 100, "min": 80, "max": 120}
+  },
+  "box_9": {
+    "title": {"baseline": 25, "min": 20, "max": 30},
+    "description": {"baseline": 100, "min": 80, "max": 120}
+  }
+}

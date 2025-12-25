@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Improved Title Slide Preview</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+        }
+        .slide-container {
+            width: 1920px;
+            height: 1080px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            background-color: #000;
+            background-image: url('https://eshvntffcestlfuofwhv.supabase.co/storage/v1/object/public/generated-images/generated/036d8d03-828d-436f-965b-8dbcb2b64353_original.png?');
+            background-size: cover;
+            background-position: center;
+        }
+        .slide-label {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(102, 110, 234, 0.9);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 1000;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="slide-label">
+            AI Background ✓
+        </div>
+        <div style="position: relative; width: 100%; height: 100%; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;">
+
+  <!-- Dark gradient overlay -->
+  <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+              background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0) 100%);
+              z-index: 1;"></div>
+
+  <!-- Content -->
+  <div style="position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column;
+              justify-content: center; padding-left: 6%; padding-right: 50%; color: #ffffff;">
+
+    <h1 style="font-size: clamp(3rem, 5.5vw, 6rem); font-weight: 800; line-height: 1.05;
+               letter-spacing: -0.04em; margin: 0 0 28px 0; color: #ffffff;
+               text-shadow: 0 4px 12px rgba(0,0,0,0.4); max-width: 100%;">
+      AI in Healthcare: Transforming <span style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                                    -webkit-background-clip: text;
+                                    -webkit-text-fill-color: transparent;
+                                    background-clip: text;">Diagnostics</span>
+    </h1>
+
+    <p style="font-size: clamp(1rem, 1.6vw, 1.7rem); font-weight: 300; line-height: 1.5;
+              color: rgba(255,255,255,0.92); margin: 0; max-width: 90%;
+              text-shadow: 0 2px 8px rgba(0,0,0,0.3);">
+      Unlocking unprecedented accuracy and improving patient outcomes through intelligent systems.
+    </p>
+  </div>
+
+  <!-- Footer -->
+  <div style="position: absolute; bottom: 8%; left: 6%; z-index: 2; display: flex; align-items: center;
+              font-size: clamp(0.75rem, 1vw, 1rem); letter-spacing: 0.05em; text-transform: uppercase;
+              color: rgba(255,255,255,0.75); text-shadow: 0 2px 4px rgba(0,0,0,0.3);">
+    <span>Dr. Anya Sharma</span>
+    <div style="margin: 0 15px; height: 15px; width: 1px; background-color: rgba(255,255,255,0.4);"></div>
+    <span>Synapse Health</span>
+    <div style="margin: 0 15px; height: 15px; width: 1px; background-color: rgba(255,255,255,0.4);"></div>
+    <span>Nov 15, 2023</span>
+  </div>
+
+</div>
+    </div>
+</body>
+</html>

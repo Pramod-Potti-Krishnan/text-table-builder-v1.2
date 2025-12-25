@@ -16,7 +16,7 @@
       "character_requirements": {
         "number": {"baseline": 6, "min": 2, "max": 8},
         "label": {"baseline": 18, "min": 8, "max": 25},
-        "description": {"baseline": 60, "min": 35, "max": 85}
+        "description": {"baseline": 72, "min": 60, "max": 85}
       }
     },
     {
@@ -31,7 +31,7 @@
       "character_requirements": {
         "number": {"baseline": 6, "min": 2, "max": 8},
         "label": {"baseline": 18, "min": 8, "max": 25},
-        "description": {"baseline": 60, "min": 35, "max": 85}
+        "description": {"baseline": 72, "min": 60, "max": 85}
       }
     },
     {
@@ -46,7 +46,7 @@
       "character_requirements": {
         "number": {"baseline": 6, "min": 2, "max": 8},
         "label": {"baseline": 18, "min": 8, "max": 25},
-        "description": {"baseline": 60, "min": 35, "max": 85}
+        "description": {"baseline": 72, "min": 60, "max": 85}
       }
     },
     {
@@ -61,7 +61,7 @@
       "character_requirements": {
         "number": {"baseline": 6, "min": 2, "max": 8},
         "label": {"baseline": 18, "min": 8, "max": 25},
-        "description": {"baseline": 60, "min": 35, "max": 85}
+        "description": {"baseline": 72, "min": 60, "max": 85}
       }
     },
     {
@@ -76,7 +76,7 @@
       "character_requirements": {
         "number": {"baseline": 6, "min": 2, "max": 8},
         "label": {"baseline": 18, "min": 8, "max": 25},
-        "description": {"baseline": 60, "min": 35, "max": 85}
+        "description": {"baseline": 72, "min": 60, "max": 85}
       }
     },
     {
@@ -91,7 +91,7 @@
       "character_requirements": {
         "number": {"baseline": 6, "min": 2, "max": 8},
         "label": {"baseline": 18, "min": 8, "max": 25},
-        "description": {"baseline": 60, "min": 35, "max": 85}
+        "description": {"baseline": 72, "min": 60, "max": 85}
       }
     }
   ],

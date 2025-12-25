@@ -1,0 +1,58 @@
+{
+  "variant_id": "matrix_3x3",
+  "slide_type": "matrix",
+  "display_name": "3x3 Matrix Layout",
+  "description": "A 3x3 grid layout with 9 boxes, each containing a title and description. Perfect for comprehensive overviews or detailed breakdowns.",
+  "elements": [
+    {
+      "element_id": "box_1",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"]
+    },
+    {
+      "element_id": "box_2",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"]
+    },
+    {
+      "element_id": "box_3",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"]
+    },
+    {
+      "element_id": "box_4",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"]
+    },
+    {
+      "element_id": "box_5",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"]
+    },
+    {
+      "element_id": "box_6",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"]
+    },
+    {
+      "element_id": "box_7",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"]
+    },
+    {
+      "element_id": "box_8",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"]
+    },
+    {
+      "element_id": "box_9",
+      "element_type": "text_box",
+      "required_fields": ["title", "description"]
+    }
+  ],
+  "layout": {
+    "columns": 3,
+    "rows": 3,
+    "total_boxes": 9
+  }
+}

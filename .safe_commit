@@ -1,0 +1,7 @@
+# Safe commit reference - use this to revert if needed
+# Created: 2025-12-23
+
+SAFE_COMMIT=d1fc27b
+DESCRIPTION="Revert commit - known working state before C1 comparison templates"
+
+# To revert: git reset --hard d1fc27b && git push --force origin main
