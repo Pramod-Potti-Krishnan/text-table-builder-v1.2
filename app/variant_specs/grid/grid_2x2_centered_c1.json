@@ -25,9 +25,9 @@
           "max": 40
         },
         "description": {
-          "baseline": 80,
-          "min": 50,
-          "max": 120
+          "baseline": 120,
+          "min": 75,
+          "max": 180
         }
       }
     },
@@ -52,9 +52,9 @@
           "max": 40
         },
         "description": {
-          "baseline": 80,
-          "min": 50,
-          "max": 120
+          "baseline": 120,
+          "min": 75,
+          "max": 180
         }
       }
     },
@@ -79,9 +79,9 @@
           "max": 40
         },
         "description": {
-          "baseline": 80,
-          "min": 50,
-          "max": 120
+          "baseline": 120,
+          "min": 75,
+          "max": 180
         }
       }
     },
@@ -106,9 +106,9 @@
           "max": 40
         },
         "description": {
-          "baseline": 80,
-          "min": 50,
-          "max": 120
+          "baseline": 120,
+          "min": 75,
+          "max": 180
         }
       }
     }

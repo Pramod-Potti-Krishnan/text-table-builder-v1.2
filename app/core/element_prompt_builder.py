@@ -266,9 +266,28 @@ Example format:
             ),
             "numbered_card": (
                 "- Title should be concise and descriptive\n"
+                "- DO NOT include numbers in the title (numbers are displayed separately by the template)\n"
                 "- Description should explain the concept clearly\n"
                 "- Use professional, business-appropriate language\n"
                 "- Content should flow logically with the numbered sequence"
+            ),
+            "grid_numbered_explicit": (
+                "- Title should be concise and descriptive\n"
+                "- DO NOT include numbers in the title - the number is already displayed in the template\n"
+                "- Description should explain the concept clearly\n"
+                "- Use professional, business-appropriate language"
+            ),
+            "grid_numbered_bullets": (
+                "- Title should be concise and descriptive\n"
+                "- DO NOT include numbers in the title - the number is already displayed in the template\n"
+                "- Each bullet should be a single actionable point\n"
+                "- Bullets should be self-contained and informative"
+            ),
+            "grid_box_bullets": (
+                "- Title should be concise and descriptive\n"
+                "- Each bullet should be a single actionable point\n"
+                "- Bullets should be self-contained and informative\n"
+                "- Use professional, business-appropriate language"
             )
         }
 
