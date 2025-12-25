@@ -14,9 +14,9 @@
         "description": "metric_1_description"
       },
       "character_requirements": {
-        "number": {"baseline": 8, "min": 2, "max": 12},
+        "number": {"baseline": 6, "min": 2, "max": 8},
         "label": {"baseline": 18, "min": 8, "max": 25},
-        "description": {"baseline": 65, "min": 40, "max": 90}
+        "description": {"baseline": 60, "min": 35, "max": 85}
       }
     },
     {
@@ -29,9 +29,9 @@
         "description": "metric_2_description"
       },
       "character_requirements": {
-        "number": {"baseline": 8, "min": 2, "max": 12},
+        "number": {"baseline": 6, "min": 2, "max": 8},
         "label": {"baseline": 18, "min": 8, "max": 25},
-        "description": {"baseline": 65, "min": 40, "max": 90}
+        "description": {"baseline": 60, "min": 35, "max": 85}
       }
     },
     {
@@ -44,9 +44,9 @@
         "description": "metric_3_description"
       },
       "character_requirements": {
-        "number": {"baseline": 8, "min": 2, "max": 12},
+        "number": {"baseline": 6, "min": 2, "max": 8},
         "label": {"baseline": 18, "min": 8, "max": 25},
-        "description": {"baseline": 65, "min": 40, "max": 90}
+        "description": {"baseline": 60, "min": 35, "max": 85}
       }
     },
     {
@@ -59,9 +59,9 @@
         "description": "metric_4_description"
       },
       "character_requirements": {
-        "number": {"baseline": 8, "min": 2, "max": 12},
+        "number": {"baseline": 6, "min": 2, "max": 8},
         "label": {"baseline": 18, "min": 8, "max": 25},
-        "description": {"baseline": 65, "min": 40, "max": 90}
+        "description": {"baseline": 60, "min": 35, "max": 85}
       }
     },
     {

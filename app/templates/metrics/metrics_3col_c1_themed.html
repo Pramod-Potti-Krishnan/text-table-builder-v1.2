@@ -8,12 +8,12 @@
   <!-- Metrics Grid -->
   <div style="display: grid;
               grid-template-columns: repeat(3, 1fr);
-              gap: 32px;
+              gap: 24px;
               padding: 0 40px 20px 0;
               align-items: stretch;">
 
     <!-- Card 1: Purple Gradient -->
-    <div style="padding: 48px;
+    <div style="padding: 36px;
                 border-radius: 16px;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
@@ -21,9 +21,11 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                align-items: center;">
+                align-items: center;
+                min-height: 280px;
+                max-height: 320px;">
 
-      <div style="font-size: 104px;
+      <div style="font-size: 77px;
                   font-weight: 900;
                   color: var(--text-on-dark, white);
                   line-height: 1;
@@ -41,9 +43,9 @@
         {metric_1_label}
       </h3>
 
-      <p style="font-size: 20px;
+      <p style="font-size: 18px;
                 font-weight: 400;
-                color: var(--text-on-dark, rgba(255,255,255,0.95));
+                color: rgba(255,255,255,0.95);
                 line-height: 1.6;
                 margin: 0;">
         {metric_1_description}
@@ -52,7 +54,7 @@
     </div>
 
     <!-- Card 2: Pink Gradient -->
-    <div style="padding: 48px;
+    <div style="padding: 36px;
                 border-radius: 16px;
                 background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
                 box-shadow: 0 12px 32px rgba(240, 147, 251, 0.2);
@@ -60,9 +62,11 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                align-items: center;">
+                align-items: center;
+                min-height: 280px;
+                max-height: 320px;">
 
-      <div style="font-size: 104px;
+      <div style="font-size: 77px;
                   font-weight: 900;
                   color: var(--text-on-dark, white);
                   line-height: 1;
@@ -80,9 +84,9 @@
         {metric_2_label}
       </h3>
 
-      <p style="font-size: 20px;
+      <p style="font-size: 18px;
                 font-weight: 400;
-                color: var(--text-on-dark, rgba(255,255,255,0.95));
+                color: rgba(255,255,255,0.95);
                 line-height: 1.6;
                 margin: 0;">
         {metric_2_description}
@@ -91,7 +95,7 @@
     </div>
 
     <!-- Card 3: Blue Gradient -->
-    <div style="padding: 48px;
+    <div style="padding: 36px;
                 border-radius: 16px;
                 background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
                 box-shadow: 0 12px 32px rgba(79, 172, 254, 0.2);
@@ -99,9 +103,11 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                align-items: center;">
+                align-items: center;
+                min-height: 280px;
+                max-height: 320px;">
 
-      <div style="font-size: 104px;
+      <div style="font-size: 77px;
                   font-weight: 900;
                   color: var(--text-on-dark, white);
                   line-height: 1;
@@ -119,9 +125,9 @@
         {metric_3_label}
       </h3>
 
-      <p style="font-size: 20px;
+      <p style="font-size: 18px;
                 font-weight: 400;
-                color: var(--text-on-dark, rgba(255,255,255,0.95));
+                color: rgba(255,255,255,0.95);
                 line-height: 1.6;
                 margin: 0;">
         {metric_3_description}
@@ -169,17 +175,9 @@
         <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
         {insight_4}
       </li>
-      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
-        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
-        {insight_5}
-      </li>
-      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
-        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
-        {insight_6}
-      </li>
       <li style="margin-bottom: 0; padding-left: 28px; position: relative;">
         <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
-        {insight_7}
+        {insight_5}
       </li>
     </ul>
 
