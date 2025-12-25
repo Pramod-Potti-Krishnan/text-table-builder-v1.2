@@ -17,36 +17,12 @@
         "sentence_4": "step_1_sentence_4"
       },
       "character_requirements": {
-        "number": {
-          "baseline": 1,
-          "min": 1,
-          "max": 2
-        },
-        "title": {
-          "baseline": 20,
-          "min": 10,
-          "max": 30
-        },
-        "sentence_1": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        },
-        "sentence_2": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        },
-        "sentence_3": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        },
-        "sentence_4": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        }
+        "number": {"baseline": 1, "min": 1, "max": 2},
+        "title": {"baseline": 20, "min": 10, "max": 30},
+        "sentence_1": {"baseline": 90, "min": 53, "max": 58},
+        "sentence_2": {"baseline": 90, "min": 53, "max": 58},
+        "sentence_3": {"baseline": 90, "min": 53, "max": 58},
+        "sentence_4": {"baseline": 90, "min": 53, "max": 58}
       }
     },
     {
@@ -62,36 +38,12 @@
         "sentence_4": "step_2_sentence_4"
       },
       "character_requirements": {
-        "number": {
-          "baseline": 1,
-          "min": 1,
-          "max": 2
-        },
-        "title": {
-          "baseline": 20,
-          "min": 10,
-          "max": 30
-        },
-        "sentence_1": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        },
-        "sentence_2": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        },
-        "sentence_3": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        },
-        "sentence_4": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        }
+        "number": {"baseline": 1, "min": 1, "max": 2},
+        "title": {"baseline": 20, "min": 10, "max": 30},
+        "sentence_1": {"baseline": 90, "min": 53, "max": 58},
+        "sentence_2": {"baseline": 90, "min": 53, "max": 58},
+        "sentence_3": {"baseline": 90, "min": 53, "max": 58},
+        "sentence_4": {"baseline": 90, "min": 53, "max": 58}
       }
     },
     {
@@ -107,36 +59,12 @@
         "sentence_4": "step_3_sentence_4"
       },
       "character_requirements": {
-        "number": {
-          "baseline": 1,
-          "min": 1,
-          "max": 2
-        },
-        "title": {
-          "baseline": 20,
-          "min": 10,
-          "max": 30
-        },
-        "sentence_1": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        },
-        "sentence_2": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        },
-        "sentence_3": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        },
-        "sentence_4": {
-          "baseline": 60,
-          "min": 35,
-          "max": 85
-        }
+        "number": {"baseline": 1, "min": 1, "max": 2},
+        "title": {"baseline": 20, "min": 10, "max": 30},
+        "sentence_1": {"baseline": 90, "min": 53, "max": 58},
+        "sentence_2": {"baseline": 90, "min": 53, "max": 58},
+        "sentence_3": {"baseline": 90, "min": 53, "max": 58},
+        "sentence_4": {"baseline": 90, "min": 53, "max": 58}
       }
     }
   ],
