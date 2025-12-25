@@ -19,10 +19,10 @@
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
         "title": {"baseline": 15, "min": 6, "max": 22},
-        "sentence_1": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_2": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_3": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_4": {"baseline": 58, "min": 29, "max": 81}
+        "sentence_1": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_2": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_3": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_4": {"baseline": 64, "min": 32, "max": 89}
       }
     },
     {
@@ -40,10 +40,10 @@
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
         "title": {"baseline": 15, "min": 6, "max": 22},
-        "sentence_1": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_2": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_3": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_4": {"baseline": 58, "min": 29, "max": 81}
+        "sentence_1": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_2": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_3": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_4": {"baseline": 64, "min": 32, "max": 89}
       }
     },
     {
@@ -61,10 +61,10 @@
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
         "title": {"baseline": 15, "min": 6, "max": 22},
-        "sentence_1": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_2": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_3": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_4": {"baseline": 58, "min": 29, "max": 81}
+        "sentence_1": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_2": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_3": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_4": {"baseline": 64, "min": 32, "max": 89}
       }
     },
     {
@@ -82,10 +82,10 @@
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
         "title": {"baseline": 15, "min": 6, "max": 22},
-        "sentence_1": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_2": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_3": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_4": {"baseline": 58, "min": 29, "max": 81}
+        "sentence_1": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_2": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_3": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_4": {"baseline": 64, "min": 32, "max": 89}
       }
     },
     {
@@ -103,10 +103,10 @@
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
         "title": {"baseline": 15, "min": 6, "max": 22},
-        "sentence_1": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_2": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_3": {"baseline": 58, "min": 29, "max": 81},
-        "sentence_4": {"baseline": 58, "min": 29, "max": 81}
+        "sentence_1": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_2": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_3": {"baseline": 64, "min": 32, "max": 89},
+        "sentence_4": {"baseline": 64, "min": 32, "max": 89}
       }
     }
   ],

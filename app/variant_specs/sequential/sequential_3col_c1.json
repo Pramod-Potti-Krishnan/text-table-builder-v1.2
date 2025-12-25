@@ -19,10 +19,10 @@
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
         "title": {"baseline": 20, "min": 10, "max": 30},
-        "sentence_1": {"baseline": 90, "min": 53, "max": 58},
-        "sentence_2": {"baseline": 90, "min": 53, "max": 58},
-        "sentence_3": {"baseline": 90, "min": 53, "max": 58},
-        "sentence_4": {"baseline": 90, "min": 53, "max": 58}
+        "sentence_1": {"baseline": 180, "min": 106, "max": 116},
+        "sentence_2": {"baseline": 180, "min": 106, "max": 116},
+        "sentence_3": {"baseline": 180, "min": 106, "max": 116},
+        "sentence_4": {"baseline": 180, "min": 106, "max": 116}
       }
     },
     {
@@ -40,10 +40,10 @@
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
         "title": {"baseline": 20, "min": 10, "max": 30},
-        "sentence_1": {"baseline": 90, "min": 53, "max": 58},
-        "sentence_2": {"baseline": 90, "min": 53, "max": 58},
-        "sentence_3": {"baseline": 90, "min": 53, "max": 58},
-        "sentence_4": {"baseline": 90, "min": 53, "max": 58}
+        "sentence_1": {"baseline": 180, "min": 106, "max": 116},
+        "sentence_2": {"baseline": 180, "min": 106, "max": 116},
+        "sentence_3": {"baseline": 180, "min": 106, "max": 116},
+        "sentence_4": {"baseline": 180, "min": 106, "max": 116}
       }
     },
     {
@@ -61,10 +61,10 @@
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
         "title": {"baseline": 20, "min": 10, "max": 30},
-        "sentence_1": {"baseline": 90, "min": 53, "max": 58},
-        "sentence_2": {"baseline": 90, "min": 53, "max": 58},
-        "sentence_3": {"baseline": 90, "min": 53, "max": 58},
-        "sentence_4": {"baseline": 90, "min": 53, "max": 58}
+        "sentence_1": {"baseline": 180, "min": 106, "max": 116},
+        "sentence_2": {"baseline": 180, "min": 106, "max": 116},
+        "sentence_3": {"baseline": 180, "min": 106, "max": 116},
+        "sentence_4": {"baseline": 180, "min": 106, "max": 116}
       }
     }
   ],
