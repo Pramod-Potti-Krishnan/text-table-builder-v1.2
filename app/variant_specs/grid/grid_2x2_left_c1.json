@@ -1,7 +1,7 @@
 {
   "variant_id": "grid_2x2_left_c1",
   "slide_type": "grid",
-  "template_path": "app/templates/grid/grid_2x2_left_c1.html",
+  "template_path": "app/templates/grid/grid_2x2_left_c1_themed.html",
   "description": "2x2 grid left-aligned (4 boxes) with explicit icon, title, description (C1 layout)",
   "elements": [
     {"element_id": "box_1", "element_type": "grid_box_explicit", "required_fields": ["icon", "title", "description"], "placeholders": {"icon": "box_1_icon", "title": "box_1_title", "description": "box_1_description"}, "character_requirements": {"icon": {"baseline": 2, "min": 1, "max": 4}, "title": {"baseline": 25, "min": 12, "max": 38}, "description": {"baseline": 85, "min": 50, "max": 120}}},

@@ -1,7 +1,7 @@
 {
   "variant_id": "matrix_2x3_c1",
   "slide_type": "matrix",
-  "template_path": "app/templates/matrix/matrix_2x3_c1.html",
+  "template_path": "app/templates/matrix/matrix_2x3_c1_themed.html",
   "description": "2x3 matrix (6 boxes) with explicit title and description placeholders (C1 layout)",
   "elements": [
     {"element_id": "box_1", "element_type": "matrix_box_explicit", "required_fields": ["title", "description"], "placeholders": {"title": "box_1_title", "description": "box_1_description"}, "character_requirements": {"title": {"baseline": 22, "min": 10, "max": 32}, "description": {"baseline": 90, "min": 50, "max": 130}}},

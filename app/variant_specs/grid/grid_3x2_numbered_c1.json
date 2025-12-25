@@ -1,7 +1,7 @@
 {
   "variant_id": "grid_3x2_numbered_c1",
   "slide_type": "grid",
-  "template_path": "app/templates/grid/grid_3x2_numbered_c1.html",
+  "template_path": "app/templates/grid/grid_3x2_numbered_c1_themed.html",
   "description": "3x2 grid numbered (6 boxes) with explicit title and description (C1 layout)",
   "elements": [
     {"element_id": "box_1", "element_type": "grid_numbered_explicit", "required_fields": ["title", "description"], "placeholders": {"title": "box_1_title", "description": "box_1_description"}, "character_requirements": {"title": {"baseline": 20, "min": 8, "max": 28}, "description": {"baseline": 65, "min": 35, "max": 90}}},

@@ -1,7 +1,7 @@
 {
   "variant_id": "metrics_4col_c1",
   "slide_type": "metrics",
-  "template_path": "app/templates/metrics/metrics_4col_c1.html",
+  "template_path": "app/templates/metrics/metrics_4col_c1_themed.html",
   "description": "4-column metrics layout with explicit placeholders for each metric card plus insights section (C1 layout)",
   "elements": [
     {

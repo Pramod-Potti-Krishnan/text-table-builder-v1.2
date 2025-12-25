@@ -22,7 +22,7 @@ THEME_PRESETS: Dict[str, Dict[str, Any]] = {
         "theme_id": "professional",
         "version": "1.0.0",
         "typography": {
-            "t1": {"size": 32, "weight": 700, "color": "#1f2937", "line_height": 1.2},
+            "t1": {"size": 40, "weight": 700, "color": "#1f2937", "line_height": 1.2},
             "t2": {"size": 24, "weight": 600, "color": "#374151", "line_height": 1.3},
             "t3": {"size": 20, "weight": 500, "color": "#4b5563", "line_height": 1.4},
             "t4": {"size": 16, "weight": 400, "color": "#6b7280", "line_height": 1.5},

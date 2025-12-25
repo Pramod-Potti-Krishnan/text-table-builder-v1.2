@@ -1,7 +1,7 @@
 {
   "variant_id": "sequential_3col_c1",
   "slide_type": "sequential",
-  "template_path": "app/templates/sequential/sequential_3col_c1.html",
+  "template_path": "app/templates/sequential/sequential_3col_c1_themed.html",
   "description": "3-step sequential layout with explicit placeholders for each step number, title, and 4 sentences (C1 layout)",
   "elements": [
     {

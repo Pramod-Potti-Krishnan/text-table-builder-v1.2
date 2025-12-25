@@ -1,7 +1,7 @@
 {
   "variant_id": "grid_2x2_centered_c1",
   "slide_type": "grid",
-  "template_path": "app/templates/grid/grid_2x2_centered_c1.html",
+  "template_path": "app/templates/grid/grid_2x2_centered_c1_themed.html",
   "description": "2x2 grid layout with 4 centered boxes, each with explicit icon, title, and description placeholders (C1 layout)",
   "elements": [
     {

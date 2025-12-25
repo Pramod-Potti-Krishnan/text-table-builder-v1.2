@@ -1,7 +1,7 @@
 {
   "variant_id": "metrics_3x2_grid_c1",
   "slide_type": "metrics",
-  "template_path": "app/templates/metrics/metrics_3x2_grid_c1.html",
+  "template_path": "app/templates/metrics/metrics_3x2_grid_c1_themed.html",
   "description": "3x2 metrics grid with 6 metric cards (C1 layout)",
   "elements": [
     {

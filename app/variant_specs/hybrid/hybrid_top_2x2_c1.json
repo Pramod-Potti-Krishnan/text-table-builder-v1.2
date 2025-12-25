@@ -1,7 +1,7 @@
 {
   "variant_id": "hybrid_top_2x2_c1",
   "slide_type": "hybrid",
-  "template_path": "app/templates/hybrid/hybrid_top_2x2_c1.html",
+  "template_path": "app/templates/hybrid/hybrid_top_2x2_c1_themed.html",
   "description": "Hybrid layout with 2x2 grid on top and text box below (C1 layout)",
   "elements": [
     {"element_id": "box_1", "element_type": "hybrid_box", "required_fields": ["heading", "description"], "placeholders": {"heading": "box_1_heading", "description": "box_1_description"}, "character_requirements": {"heading": {"baseline": 25, "min": 12, "max": 38}, "description": {"baseline": 75, "min": 40, "max": 110}}},

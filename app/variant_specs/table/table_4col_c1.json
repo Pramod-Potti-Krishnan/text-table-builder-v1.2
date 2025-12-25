@@ -1,7 +1,7 @@
 {
   "variant_id": "table_4col_c1",
   "slide_type": "table",
-  "template_path": "app/templates/table/table_4col_c1.html",
+  "template_path": "app/templates/table/table_4col_c1_themed.html",
   "description": "Table with 4 columns (category + 3 data columns) and 5 rows (C1 layout)",
   "elements": [
     {"element_id": "headers", "element_type": "table_headers", "required_fields": ["header_category", "header_col_1", "header_col_2", "header_col_3"], "placeholders": {"header_category": "header_category", "header_col_1": "header_col_1", "header_col_2": "header_col_2", "header_col_3": "header_col_3"}, "character_requirements": {"header_category": {"baseline": 15, "min": 8, "max": 22}, "header_col_1": {"baseline": 18, "min": 10, "max": 28}, "header_col_2": {"baseline": 18, "min": 10, "max": 28}, "header_col_3": {"baseline": 18, "min": 10, "max": 28}}},

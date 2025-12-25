@@ -1,7 +1,7 @@
 {
   "variant_id": "comparison_2col_c1",
   "slide_type": "comparison",
-  "template_path": "app/templates/multilateral_comparison/comparison_2col_c1.html",
+  "template_path": "app/templates/multilateral_comparison/comparison_2col_c1_themed.html",
   "description": "2-column comparison layout with 7 explicit items per column (C1 layout, no bullets)",
   "elements": [
     {
