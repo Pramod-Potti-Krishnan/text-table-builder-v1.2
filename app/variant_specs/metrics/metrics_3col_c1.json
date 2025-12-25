@@ -52,20 +52,26 @@
     {
       "element_id": "insights",
       "element_type": "insights_section_explicit",
-      "required_fields": ["heading", "insight_1", "insight_2", "insight_3", "insight_4"],
+      "required_fields": ["heading", "insight_1", "insight_2", "insight_3", "insight_4", "insight_5", "insight_6", "insight_7"],
       "placeholders": {
         "heading": "insights_heading",
         "insight_1": "insight_1",
         "insight_2": "insight_2",
         "insight_3": "insight_3",
-        "insight_4": "insight_4"
+        "insight_4": "insight_4",
+        "insight_5": "insight_5",
+        "insight_6": "insight_6",
+        "insight_7": "insight_7"
       },
       "character_requirements": {
         "heading": {"baseline": 20, "min": 10, "max": 35},
         "insight_1": {"baseline": 85, "min": 55, "max": 120},
         "insight_2": {"baseline": 85, "min": 55, "max": 120},
         "insight_3": {"baseline": 85, "min": 55, "max": 120},
-        "insight_4": {"baseline": 85, "min": 55, "max": 120}
+        "insight_4": {"baseline": 85, "min": 55, "max": 120},
+        "insight_5": {"baseline": 85, "min": 55, "max": 120},
+        "insight_6": {"baseline": 85, "min": 55, "max": 120},
+        "insight_7": {"baseline": 85, "min": 55, "max": 120}
       }
     }
   ],
@@ -73,6 +79,6 @@
     "columns": 3,
     "layout_type": "metrics_with_insights",
     "metrics_count": 3,
-    "insights_count": 4
+    "insights_count": 7
   }
 }

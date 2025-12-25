@@ -81,14 +81,14 @@
       },
       "character_requirements": {
         "heading": {"baseline": 18, "min": 8, "max": 28},
-        "insight_1": {"baseline": 55, "min": 30, "max": 80},
-        "insight_2": {"baseline": 55, "min": 30, "max": 80},
-        "insight_3": {"baseline": 55, "min": 30, "max": 80},
-        "insight_4": {"baseline": 55, "min": 30, "max": 80},
-        "insight_5": {"baseline": 55, "min": 30, "max": 80},
-        "insight_6": {"baseline": 55, "min": 30, "max": 80},
-        "insight_7": {"baseline": 55, "min": 30, "max": 80},
-        "insight_8": {"baseline": 55, "min": 30, "max": 80}
+        "insight_1": {"baseline": 41, "min": 23, "max": 60},
+        "insight_2": {"baseline": 41, "min": 23, "max": 60},
+        "insight_3": {"baseline": 41, "min": 23, "max": 60},
+        "insight_4": {"baseline": 41, "min": 23, "max": 60},
+        "insight_5": {"baseline": 41, "min": 23, "max": 60},
+        "insight_6": {"baseline": 41, "min": 23, "max": 60},
+        "insight_7": {"baseline": 41, "min": 23, "max": 60},
+        "insight_8": {"baseline": 41, "min": 23, "max": 60}
       }
     }
   ],

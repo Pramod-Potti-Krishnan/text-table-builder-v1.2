@@ -15,9 +15,9 @@
       },
       "character_requirements": {
         "number": {
-          "baseline": 8,
+          "baseline": 5,
           "min": 2,
-          "max": 12
+          "max": 6
         },
         "label": {
           "baseline": 18,
@@ -42,9 +42,9 @@
       },
       "character_requirements": {
         "number": {
-          "baseline": 8,
+          "baseline": 5,
           "min": 2,
-          "max": 12
+          "max": 6
         },
         "label": {
           "baseline": 18,
@@ -69,9 +69,9 @@
       },
       "character_requirements": {
         "number": {
-          "baseline": 8,
+          "baseline": 5,
           "min": 2,
-          "max": 12
+          "max": 6
         },
         "label": {
           "baseline": 18,
@@ -96,9 +96,9 @@
       },
       "character_requirements": {
         "number": {
-          "baseline": 8,
+          "baseline": 5,
           "min": 2,
-          "max": 12
+          "max": 6
         },
         "label": {
           "baseline": 18,
@@ -115,13 +115,14 @@
     {
       "element_id": "insights",
       "element_type": "insights_section_explicit",
-      "required_fields": ["heading", "insight_1", "insight_2", "insight_3", "insight_4"],
+      "required_fields": ["heading", "insight_1", "insight_2", "insight_3", "insight_4", "insight_5"],
       "placeholders": {
         "heading": "insights_heading",
         "insight_1": "insight_1",
         "insight_2": "insight_2",
         "insight_3": "insight_3",
-        "insight_4": "insight_4"
+        "insight_4": "insight_4",
+        "insight_5": "insight_5"
       },
       "character_requirements": {
         "heading": {
@@ -148,6 +149,11 @@
           "baseline": 80,
           "min": 50,
           "max": 120
+        },
+        "insight_5": {
+          "baseline": 80,
+          "min": 50,
+          "max": 120
         }
       }
     }
@@ -156,6 +162,6 @@
     "columns": 4,
     "layout_type": "metrics_with_insights",
     "metrics_count": 4,
-    "insights_count": 4
+    "insights_count": 5
   }
 }
