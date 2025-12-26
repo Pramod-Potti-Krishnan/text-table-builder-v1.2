@@ -1,0 +1,202 @@
+<!--
+  Themed Template: hybrid_left_2x2_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+  2x2 grid on left with 3 bullets per box, asymmetric blue insights box on right.
+-->
+<div style="display: flex;
+            gap: 24px;
+            padding: 20px 40px 0 0;
+            background: transparent;
+            height: 100%;">
+
+  <!-- Left: 2x2 Grid (75% width) -->
+  <div style="display: grid;
+              grid-template-columns: 1fr 1fr;
+              grid-template-rows: 1fr 1fr;
+              gap: 24px;
+              flex: 3;">
+
+    <!-- Box 1: Top-Left (Light Blue) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-1-bg, #dbeafe);
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #1e3a8a);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Enhanced Data Analytics
+      </h4>
+
+      <ul style="font-size: 20px;
+                 font-weight: 400;
+                 color: var(--text-primary, #1e40af);
+                 line-height: 1.6;
+                 margin: 0;
+                 padding-left: 0;
+                 list-style-position: inside;
+                 list-style-type: none;">
+        <li style="margin-bottom: 12px;">Real-time processing of large datasets for immediate insights.</li>
+        <li style="margin-bottom: 12px;">Customizable dashboards provide tailored views for diverse roles.</li>
+        <li style="margin-bottom: 0;">Predictive modeling identifies emerging trends and potential risks.</li>
+      </ul>
+
+    </div>
+
+    <!-- Box 2: Top-Right (Light Green) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-2-bg, #d1fae5);
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #065f46);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Intuitive User Interface
+      </h4>
+
+      <ul style="font-size: 20px;
+                 font-weight: 400;
+                 color: var(--text-primary, #047857);
+                 line-height: 1.6;
+                 margin: 0;
+                 padding-left: 0;
+                 list-style-position: inside;
+                 list-style-type: none;">
+        <li style="margin-bottom: 12px;">Streamlined navigation reduces learning curves and boosts productivity.</li>
+        <li style="margin-bottom: 12px;">Responsive design ensures seamless access across all device types.</li>
+        <li style="margin-bottom: 0;">Personalized user settings enhance individual workflow efficiency.</li>
+      </ul>
+
+    </div>
+
+    <!-- Box 3: Bottom-Left (Light Yellow) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-3-bg, #fef3c7);
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #78350f);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Robust Security Measures
+      </h4>
+
+      <ul style="font-size: 20px;
+                 font-weight: 400;
+                 color: var(--text-primary, #92400e);
+                 line-height: 1.6;
+                 margin: 0;
+                 padding-left: 0;
+                 list-style-position: inside;
+                 list-style-type: none;">
+        <li style="margin-bottom: 12px;">End-to-end encryption protects sensitive information at all stages.</li>
+        <li style="margin-bottom: 12px;">Multi-factor authentication strengthens access control protocols.</li>
+        <li style="margin-bottom: 0;">Regular compliance audits ensure adherence to industry standards.</li>
+      </ul>
+
+    </div>
+
+    <!-- Box 4: Bottom-Right (Light Pink) -->
+    <div style="padding: 32px;
+                border-radius: 12px;
+                background: var(--box-4-bg, #fce7f3);
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;">
+
+      <h4 style="font-size: 26px;
+                 font-weight: 700;
+                 color: var(--text-primary, #831843);
+                 margin: 0 0 16px 0;
+                 line-height: 1.2;">
+        Seamless System Integration
+      </h4>
+
+      <ul style="font-size: 20px;
+                 font-weight: 400;
+                 color: var(--text-primary, #9f1239);
+                 line-height: 1.6;
+                 margin: 0;
+                 padding-left: 0;
+                 list-style-position: inside;
+                 list-style-type: none;">
+        <li style="margin-bottom: 12px;">Open API architecture allows effortless connection with existing systems.</li>
+        <li style="margin-bottom: 12px;">Cloud-native design supports dynamic scaling to meet demand spikes.</li>
+        <li style="margin-bottom: 0;">Modular components enable future expansion without system overhaul.</li>
+      </ul>
+
+    </div>
+
+  </div>
+
+  <!-- Right: Key Insights Box (25% width) - Asymmetric Blue Box Style -->
+  <div style="flex: 1;
+              padding: 32px;
+              border-radius: 12px;
+              background: var(--sidebar-bg, linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%));
+              border-left: 4px solid var(--accent-blue, #1a73e8);
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+              display: flex;
+              flex-direction: column;
+              justify-content: flex-start;">
+
+    <h4 style="font-size: 26px;
+               color: var(--text-primary, #1a73e8);
+               margin: 0 0 20px 0;
+               font-weight: 700;">
+      Strategic Value Proposition
+    </h4>
+
+    <ul style="list-style: none;
+               padding: 0;
+               margin: 0;
+               font-size: 20px;
+               line-height: 1.6;
+               color: var(--text-primary, #374151);">
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Accelerates decision-making with timely and accurate data insights.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Significantly improves operational efficiency across key departments.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Enhances user satisfaction, fostering greater adoption and engagement.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Mitigates security risks by implementing advanced protective measures.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Ensures future readiness through flexible and scalable architecture.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Drives innovation by providing a solid foundation for new capabilities.
+      </li>
+      <li style="margin-bottom: 0; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Positions the organization as a leader in leveraging modern technology.
+      </li>
+    </ul>
+
+  </div>
+
+</div>

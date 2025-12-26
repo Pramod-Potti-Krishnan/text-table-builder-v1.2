@@ -1,5 +1,5 @@
 <!--
-  Themed Template: metrics_3col_c1
+  Themed Template: metrics_4col_c1
   Uses CSS variables for dark/light mode support.
   Requires: theme-variables.css loaded in parent document.
 -->
@@ -7,9 +7,9 @@
 
   <!-- Metrics Grid -->
   <div style="display: grid;
-              grid-template-columns: repeat(3, 1fr);
+              grid-template-columns: repeat(4, 1fr);
               gap: 24px;
-              padding: 20px 40px 20px 0;
+              padding: 0 40px 0 0;
               align-items: stretch;">
 
     <!-- Card 1: Purple Gradient -->
@@ -21,8 +21,7 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                align-items: center;
-                min-height: 340px;">
+                align-items: center;">
 
       <div style="font-size: 77px;
                   font-weight: 900;
@@ -30,7 +29,7 @@
                   line-height: 1;
                   margin: 0 0 16px 0;
                   text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-        {metric_1_number}
+        +25%
       </div>
 
       <h3 style="font-size: 29px;
@@ -39,7 +38,7 @@
                  margin: 0 0 20px 0;
                  text-transform: uppercase;
                  letter-spacing: 1px;">
-        {metric_1_label}
+        Revenue Growth
       </h3>
 
       <p style="font-size: 18px;
@@ -47,7 +46,7 @@
                 color: rgba(255,255,255,0.95);
                 line-height: 1.6;
                 margin: 0;">
-        {metric_1_description}
+        Achieved significant year-over-year revenue growth, surpassing market expectations by 5%.
       </p>
 
     </div>
@@ -61,8 +60,7 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                align-items: center;
-                min-height: 340px;">
+                align-items: center;">
 
       <div style="font-size: 77px;
                   font-weight: 900;
@@ -70,7 +68,7 @@
                   line-height: 1;
                   margin: 0 0 16px 0;
                   text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-        {metric_2_number}
+        1.2M+
       </div>
 
       <h3 style="font-size: 29px;
@@ -79,7 +77,7 @@
                  margin: 0 0 20px 0;
                  text-transform: uppercase;
                  letter-spacing: 1px;">
-        {metric_2_label}
+        New Customers
       </h3>
 
       <p style="font-size: 18px;
@@ -87,7 +85,7 @@
                 color: rgba(255,255,255,0.95);
                 line-height: 1.6;
                 margin: 0;">
-        {metric_2_description}
+        Successfully acquired over 1.2 million new customers, expanding our market reach substantially.
       </p>
 
     </div>
@@ -101,8 +99,7 @@
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
-                align-items: center;
-                min-height: 340px;">
+                align-items: center;">
 
       <div style="font-size: 77px;
                   font-weight: 900;
@@ -110,7 +107,7 @@
                   line-height: 1;
                   margin: 0 0 16px 0;
                   text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
-        {metric_3_number}
+        +30%
       </div>
 
       <h3 style="font-size: 29px;
@@ -119,7 +116,7 @@
                  margin: 0 0 20px 0;
                  text-transform: uppercase;
                  letter-spacing: 1px;">
-        {metric_3_label}
+        Market Share
       </h3>
 
       <p style="font-size: 18px;
@@ -127,27 +124,66 @@
                 color: rgba(255,255,255,0.95);
                 line-height: 1.6;
                 margin: 0;">
-        {metric_3_description}
+        Increased our overall market share by 30% year-over-year, solidifying our competitive position.
+      </p>
+
+    </div>
+
+    <!-- Card 4: Green Gradient -->
+    <div style="padding: 36px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                box-shadow: 0 12px 32px rgba(17, 153, 142, 0.2);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;">
+
+      <div style="font-size: 77px;
+                  font-weight: 900;
+                  color: var(--text-on-dark, white);
+                  line-height: 1;
+                  margin: 0 0 16px 0;
+                  text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        +18%
+      </div>
+
+      <h3 style="font-size: 29px;
+                 font-weight: 700;
+                 color: var(--text-on-dark, white);
+                 margin: 0 0 20px 0;
+                 text-transform: uppercase;
+                 letter-spacing: 1px;">
+        Product Adoption
+      </h3>
+
+      <p style="font-size: 18px;
+                font-weight: 400;
+                color: rgba(255,255,255,0.95);
+                line-height: 1.6;
+                margin: 0;">
+        Saw an 18% rise in key product adoption rates, reflecting enhanced user engagement.
       </p>
 
     </div>
 
   </div>
 
-  <!-- Key Insights Box - Asymmetric Blue Box Style, Left Aligned, +50% Height -->
-  <div style="margin: 20px 40px 40px 0;
+  <!-- Key Insights Box - Asymmetric Blue Box Style, Left Aligned, +20% Height -->
+  <div style="margin: 40px 40px 40px 0;
               padding: 36px 32px;
               border-radius: 12px;
               background: var(--sidebar-bg, linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%));
               border-left: 4px solid var(--accent-blue, #1a73e8);
               box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-              min-height: 180px;">
+              min-height: 144px;">
 
     <h4 style="font-size: 26px;
                color: var(--text-primary, #1a73e8);
                margin: 0 0 20px 0;
                font-weight: 700;">
-      {insights_heading}
+      Key Strategic Insights
     </h4>
 
     <ul style="list-style: none;
@@ -158,23 +194,23 @@
                color: var(--text-primary, #374151);">
       <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
         <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
-        {insight_1}
+        Strong revenue growth validates our strategic investments in new product development and market expansion efforts.
       </li>
       <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
         <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
-        {insight_2}
+        Record customer acquisition numbers highlight the effectiveness of our targeted marketing campaigns and improved onboarding.
       </li>
       <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
         <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
-        {insight_3}
+        Significant market share increase indicates successful competitive positioning and differentiated value propositions.
       </li>
       <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
         <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
-        {insight_4}
+        Enhanced product adoption is directly linked to recent UI/UX improvements and responsive customer support feedback loops.
       </li>
       <li style="margin-bottom: 0; padding-left: 28px; position: relative;">
         <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
-        {insight_5}
+        These positive trends underscore our potential for sustained growth and inform future resource allocation decisions.
       </li>
     </ul>
 
