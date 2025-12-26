@@ -123,6 +123,7 @@ for item in "${TESTS[@]}"; do
       \"subtitle\": \"$variant\",
       \"image_url\": \"$IMAGE_ESCAPED\",
       \"body\": $BODY_ESCAPED,
+      \"logo\": \" \",
       \"presentation_name\": \"I-Series Phase 1\"
     }
   }"
