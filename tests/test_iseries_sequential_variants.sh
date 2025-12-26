@@ -43,15 +43,15 @@ declare -a TESTS=(
   "I1|sequential_3col_i1|I1-image-left|Three-Phase Transformation|Our transformation journey follows three sequential phases for maximum impact|Assessment & Planning,Implementation & Training,Optimization & Growth|transformation journey phases stages"
 
   # I2: Wide Image Right - ONLY 3-col (no 4-col for wide layouts)
-  "I2|sequential_3col_i1|I2-image-right|Innovation Process|Our proven three-stage innovation process drives breakthrough solutions|Ideate,Prototype,Launch|innovation lightbulb creative process"
+  "I2|sequential_3col_i2|I2-image-right|Innovation Process|Our proven three-stage innovation process drives breakthrough solutions|Ideate,Prototype,Launch|innovation lightbulb creative process"
 
   # I3: Narrow Image Left - both 3-col and 4-col available
   "I3|sequential_3col_i3|I3-image-left-narrow|Agile Sprint Cycle|Our three-phase sprint cycle delivers consistent value|Plan,Build,Review|agile sprint cycle kanban board"
   "I3|sequential_4col_i3|I3-image-left-narrow|Data Analytics Pipeline|Four stages transform raw data into actionable insights|Collect,Process,Analyze,Visualize|data analytics pipeline charts"
 
   # I4: Narrow Image Right - both 3-col and 4-col available
-  "I4|sequential_3col_i3|I4-image-right-narrow|Design Thinking Process|Three stages of human-centered design methodology|Empathize & Define,Ideate & Prototype,Test & Iterate|design thinking creative workshop"
-  "I4|sequential_4col_i3|I4-image-right-narrow|Product Launch Sequence|Four-phase approach to successful product launches|Pre-Launch,Soft Launch,Full Launch,Post-Launch|product launch rocket success"
+  "I4|sequential_3col_i4|I4-image-right-narrow|Design Thinking Process|Three stages of human-centered design methodology|Empathize & Define,Ideate & Prototype,Test & Iterate|design thinking creative workshop"
+  "I4|sequential_4col_i4|I4-image-right-narrow|Product Launch Sequence|Four-phase approach to successful product launches|Pre-Launch,Soft Launch,Full Launch,Post-Launch|product launch rocket success"
 )
 
 echo "=============================================="

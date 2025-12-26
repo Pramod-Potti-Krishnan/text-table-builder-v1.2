@@ -1,9 +1,9 @@
 {
-  "variant_id": "sequential_3col_i3",
+  "variant_id": "sequential_3col_i2",
   "slide_type": "sequential",
   "template_path": "app/templates/sequential/sequential_3col_c1_themed.html",
-  "description": "3-step sequential layout for I3/I4 layouts (6 bullets per step)",
-  "iseries_layout": "narrow",
+  "description": "3-step sequential layout for I2 layout (6 bullets per step)",
+  "iseries_layout": "wide",
   "elements": [
     {
       "element_id": "step_1",
@@ -21,13 +21,13 @@
       },
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
-        "title": {"baseline": 17, "min": 9, "max": 26},
-        "sentence_1": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_2": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_3": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_4": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_5": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_6": {"baseline": 65, "min": 50, "max": 75}
+        "title": {"baseline": 16, "min": 8, "max": 24},
+        "sentence_1": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_2": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_3": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_4": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_5": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_6": {"baseline": 60, "min": 45, "max": 70}
       }
     },
     {
@@ -46,13 +46,13 @@
       },
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
-        "title": {"baseline": 17, "min": 9, "max": 26},
-        "sentence_1": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_2": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_3": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_4": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_5": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_6": {"baseline": 65, "min": 50, "max": 75}
+        "title": {"baseline": 16, "min": 8, "max": 24},
+        "sentence_1": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_2": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_3": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_4": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_5": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_6": {"baseline": 60, "min": 45, "max": 70}
       }
     },
     {
@@ -71,13 +71,13 @@
       },
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
-        "title": {"baseline": 17, "min": 9, "max": 26},
-        "sentence_1": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_2": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_3": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_4": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_5": {"baseline": 65, "min": 50, "max": 75},
-        "sentence_6": {"baseline": 65, "min": 50, "max": 75}
+        "title": {"baseline": 16, "min": 8, "max": 24},
+        "sentence_1": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_2": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_3": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_4": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_5": {"baseline": 60, "min": 45, "max": 70},
+        "sentence_6": {"baseline": 60, "min": 45, "max": 70}
       }
     }
   ],

@@ -1,8 +1,8 @@
 {
-  "variant_id": "sequential_3col_i3",
+  "variant_id": "sequential_3col_i4",
   "slide_type": "sequential",
   "template_path": "app/templates/sequential/sequential_3col_c1_themed.html",
-  "description": "3-step sequential layout for I3/I4 layouts (6 bullets per step)",
+  "description": "3-step sequential layout for I4 layout (6 bullets per step)",
   "iseries_layout": "narrow",
   "elements": [
     {
