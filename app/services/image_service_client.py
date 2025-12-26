@@ -12,6 +12,8 @@ Features:
 - Retry logic with exponential backoff
 - Timeout handling (20 seconds max)
 - Graceful error handling
+
+Version: 1.1.0 - Added context-aware style params and improved negative prompts
 """
 
 import os
@@ -246,7 +248,8 @@ class ImageServiceClient:
         metadata: Optional[Dict[str, Any]] = None,
         model: Optional[str] = None,
         archetype: Optional[str] = None,
-        aspect_ratio: str = "9:16"
+        aspect_ratio: str = "9:16",
+        style_params: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
         Generate portrait-oriented image for I-series layouts.
@@ -257,6 +260,8 @@ class ImageServiceClient:
         - I3: 1:3 (360×1080) - very narrow
         - I4: 7:18 (420×1080) - narrow
 
+        v1.1.0: Uses context-aware style_params for improved image relevance.
+
         Args:
             prompt: Image description/prompt
             layout_type: I-series layout type (I1, I2, I3, I4)
@@ -265,6 +270,7 @@ class ImageServiceClient:
             model: Imagen model to use (default based on visual_style)
             archetype: Image style archetype (default based on visual_style)
             aspect_ratio: Target aspect ratio (default 9:16, can be custom)
+            style_params: Context-aware style parameters (style, color_scheme, lighting, domain)
 
         Returns:
             API response dict with image URLs and metadata
@@ -275,26 +281,38 @@ class ImageServiceClient:
         """
         self.total_requests += 1
 
+        # v1.1.0: Use style_params if provided, otherwise fall back to visual_style defaults
+        context_style = None
+        context_domain = None
+        if style_params:
+            context_style = style_params.get("style")
+            context_domain = style_params.get("domain")
+
         # Determine archetype from visual style if not provided
         if archetype is None:
-            archetype_map = {
-                "professional": "photorealistic",
-                "illustrated": "spot_illustration",
-                "kids": "spot_illustration"
-            }
-            archetype = archetype_map.get(visual_style, "spot_illustration")
+            # v1.1.0: Context-aware archetype selection
+            if context_style == "photo":
+                archetype = "photorealistic"
+            elif context_style == "minimal":
+                archetype = "minimalist_vector_art"
+            else:
+                archetype_map = {
+                    "professional": "photorealistic",
+                    "illustrated": "spot_illustration",
+                    "kids": "spot_illustration"
+                }
+                archetype = archetype_map.get(visual_style, "spot_illustration")
 
         # Determine model from visual style if not provided
         if model is None:
-            model_map = {
-                "professional": "imagen-3.0-generate-001",
-                "illustrated": "imagen-3.0-fast-generate-001",
-                "kids": "imagen-3.0-fast-generate-001"
-            }
-            model = model_map.get(visual_style, "imagen-3.0-fast-generate-001")
+            # v1.1.0: Use faster model for illustrations, standard for photo
+            if archetype == "photorealistic":
+                model = "imagen-3.0-generate-001"  # Standard quality for photos
+            else:
+                model = "imagen-3.0-fast-generate-001"  # Fast for illustrations
 
-        # Build negative prompt for I-series (portrait orientation)
-        negative_prompt = self._get_iseries_negative_prompt(layout_type)
+        # v1.1.0: Build context-aware negative prompt
+        negative_prompt = self._get_iseries_negative_prompt(layout_type, context_domain)
 
         # Build request payload with per-layout aspect ratio
         # v1.3.1: Use passed aspect_ratio instead of hardcoded 9:16
@@ -318,9 +336,14 @@ class ImageServiceClient:
         payload["metadata"]["visual_style"] = visual_style
         payload["metadata"]["aspect_ratio"] = aspect_ratio  # v1.3.1: Use actual per-layout ratio
 
+        # v1.1.0: Add context info to metadata
+        if style_params:
+            payload["metadata"]["context_style"] = context_style
+            payload["metadata"]["context_domain"] = context_domain
+
         logger.info(
             f"Generating I-series {layout_type} portrait image "
-            f"(style={visual_style}, archetype={archetype})"
+            f"(style={visual_style}, archetype={archetype}, domain={context_domain})"
         )
 
         # Attempt generation with retries
@@ -380,26 +403,73 @@ class ImageServiceClient:
         )
         raise last_error
 
-    def _get_iseries_negative_prompt(self, layout_type: str) -> str:
+    def _get_iseries_negative_prompt(
+        self,
+        layout_type: str,
+        domain: Optional[str] = None
+    ) -> str:
         """
-        Get negative prompt for I-series portrait images.
+        Get context-aware negative prompt for I-series portrait images.
+
+        v1.1.0: Domain-aware negative prompts to avoid irrelevant imagery.
 
         Args:
             layout_type: I-series layout type (I1, I2, I3, I4)
+            domain: Content domain (technology, business, healthcare, etc.)
 
         Returns:
             Negative prompt string optimized for portrait composition
         """
-        # Strong negative prompts - no text, no people, clean composition
-        common = (
+        # v1.1.0: Strong base negative prompts - no text, no people, clean composition
+        # FIXED: "characters" is ambiguous - explicitly say "human characters, anime characters"
+        base_negatives = (
             "text, words, letters, numbers, typography, labels, titles, captions, "
-            "watermarks, logos, brands, signatures, writing, characters, symbols, "
-            "people, faces, persons, humans, portraits, bodies, crowds, "
+            "watermarks, logos, brands, signatures, writing, symbols, "
+            "human faces, people, persons, humans, portraits, bodies, crowds, "
+            "anime characters, cartoon people, cartoon characters, illustrated people, "
             "low quality, blurry, pixelated, noisy, distorted, cluttered, busy, "
             "horizontal composition, landscape orientation"
         )
 
-        return common
+        # v1.1.0: Domain-specific negative prompts
+        domain_negatives = {
+            "technology": (
+                ", clipart, generic stock photo, smiling businesspeople, "
+                "office workers, meeting rooms with people, handshakes, "
+                "outdated technology, old computers"
+            ),
+            "business": (
+                ", anime style, cartoon style, childish imagery, "
+                "casual settings, unprofessional imagery, "
+                "generic clip art, outdated graphics"
+            ),
+            "healthcare": (
+                ", graphic surgery, blood, patients in distress, "
+                "scary medical imagery, needles close-up, "
+                "hospital beds with patients"
+            ),
+            "education": (
+                ", boring lecture halls, outdated classrooms, "
+                "generic school clipart, childish cartoons for adult education"
+            ),
+            "science": (
+                ", mad scientist tropes, dangerous experiments, "
+                "unrealistic sci-fi, generic science clipart"
+            ),
+            "nature": (
+                ", environmental damage, pollution, deforestation, "
+                "dying animals, climate disaster imagery"
+            ),
+            "creative": (
+                ", corporate sterility, generic stock photos, "
+                "boring office settings, uncreative imagery"
+            )
+        }
+
+        # Get domain-specific additions
+        domain_addition = domain_negatives.get(domain, "")
+
+        return base_negatives + domain_addition
 
     def _get_default_negative_prompt(self, slide_type: SlideType) -> str:
         """

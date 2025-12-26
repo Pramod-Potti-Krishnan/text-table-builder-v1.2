@@ -14,6 +14,7 @@ Pattern follows:
 Version: 1.3.0 - Added content_context support for audience-adapted text
 Version: 1.3.1 - Always use multi-step generation with hardcoded dimensions
 Version: 1.3.2 - Added content_variant support for I-series specific character constraints
+Version: 1.4.0 - Context-aware image generation using audience/purpose from ContentContext
 """
 
 import asyncio
@@ -62,6 +63,11 @@ from app.models.iseries_models import (
 from app.core.hero.style_config import (
     get_style_config,
     get_domain_theme
+)
+from app.core.iseries.context_style_mapper import (
+    get_image_style_params,
+    detect_domain_from_text,
+    build_context_aware_negative_prompt
 )
 
 logger = logging.getLogger(__name__)
@@ -200,14 +206,18 @@ class BaseISeriesGenerator(ABC):
             f"variant={request.content_variant if hasattr(request, 'content_variant') else 'default'})"
         )
 
-        # Build image prompt
-        image_prompt, archetype = self._build_image_prompt(request)
+        # v1.4.0: Build context-aware image prompt with style params
+        image_prompt, archetype, style_params = self._build_image_prompt(
+            request,
+            content_context=content_context
+        )
 
         # Parallel generation: image + multi-step content
         image_task = asyncio.create_task(
             self._generate_image(
                 image_prompt, archetype, request,
-                aspect_ratio=image_spec["aspect_ratio"]
+                aspect_ratio=image_spec["aspect_ratio"],
+                style_params=style_params  # v1.4.0: Pass style params
             )
         )
         content_task = asyncio.create_task(
@@ -280,26 +290,56 @@ class BaseISeriesGenerator(ABC):
 
     def _build_image_prompt(
         self,
-        request: ISeriesGenerationRequest
-    ) -> tuple[str, str]:
+        request: ISeriesGenerationRequest,
+        content_context: Optional[Dict[str, Any]] = None
+    ) -> tuple[str, str, Dict[str, Any]]:
         """
-        Build style-aware image generation prompt.
+        Build context-aware image generation prompt.
+
+        v1.4.0: Uses ContentContext (audience, purpose) to generate
+        contextually relevant images instead of generic illustrations.
 
         Args:
             request: Generation request with narrative and visual_style
+            content_context: Optional dict with audience/purpose info
 
         Returns:
-            Tuple of (image_prompt, archetype)
+            Tuple of (image_prompt, archetype, style_params)
+            - style_params contains: style, color_scheme, lighting, domain
         """
         narrative = request.narrative
         topics = request.topics
         visual_style = request.visual_style.value
 
-        # Get style configuration
+        # Get base style configuration
         style_config = get_style_config(visual_style)
 
         # Determine domain from narrative and topics
         combined_text = f"{narrative} {' '.join(topics) if topics else ''}".lower()
+
+        # v1.4.0: Extract audience and purpose from content_context
+        audience_type = None
+        purpose_type = None
+        if content_context:
+            audience_info = content_context.get("audience", {})
+            purpose_info = content_context.get("purpose", {})
+            audience_type = audience_info.get("audience_type")
+            purpose_type = purpose_info.get("purpose_type")
+
+        # v1.4.0: Get context-aware style parameters
+        style_params = get_image_style_params(
+            audience_type=audience_type,
+            purpose_type=purpose_type,
+            narrative_text=combined_text
+        )
+
+        # Determine domain and imagery elements
+        detected_domain = style_params.get("domain", "default")
+        positive_elements = style_params.get("elements", [])
+        avoid_elements = style_params.get("avoid", [])
+        prompt_hints = style_params.get("prompt_hints", [])
+
+        # Fallback to legacy domain detection for imagery description
         domain_imagery = get_domain_theme(style_config, combined_text)
 
         # Build topic focus
@@ -309,17 +349,52 @@ class BaseISeriesGenerator(ABC):
         if request.image_prompt_hint:
             topic_focus = request.image_prompt_hint
 
-        prompt = f"""High-quality {visual_style} portrait image for presentation slide.
+        # v1.4.0: Build context-aware prompt with domain-specific elements
+        elements_str = ', '.join(positive_elements[:3]) if positive_elements else domain_imagery
+        hints_str = ', '.join(prompt_hints) if prompt_hints else ""
 
-Style: {style_config.prompt_style}
+        # v1.4.0: Override visual style based on context for executives/technical
+        context_style = style_params.get("style", "illustration")
+        context_lighting = style_params.get("lighting", "professional")
+        context_color = style_params.get("color_scheme", "neutral")
+
+        # Build prompt with context awareness
+        prompt = f"""High-quality {context_style} portrait image for presentation slide.
+
+Style: {context_style}, {context_lighting} lighting, {context_color} color scheme
 Orientation: Tall portrait (9:16 aspect ratio)
-Subject: {domain_imagery}
+Subject: {elements_str}
 Focus: {topic_focus}
-Composition: Subject centered, vertical composition, clean background
+Mood: {style_params.get("mood", "professional")}
+Composition: Subject centered, vertical composition, clean background{f', {hints_str}' if hints_str else ''}
 
-CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind in the image."""
+CRITICAL REQUIREMENTS:
+- Absolutely NO text, words, letters, numbers, or typography
+- NO human faces, people, or characters
+- Abstract, conceptual imagery preferred
+- Clean, professional appearance"""
 
-        return prompt, style_config.archetype
+        # v1.4.0: Determine archetype based on context
+        # Executives/professional → photorealistic
+        # Technical → minimal/abstract
+        # Kids/students → spot_illustration
+        archetype = style_config.archetype  # Default from visual_style
+        if audience_type in ["executives", "professional"]:
+            archetype = "photorealistic"
+        elif audience_type in ["technical", "developers"]:
+            archetype = "minimalist_vector_art"
+        elif context_style == "minimal":
+            archetype = "minimalist_vector_art"
+
+        # v1.4.0: Include domain in style_params for negative prompt building
+        style_params["domain"] = detected_domain
+
+        logger.info(
+            f"Built context-aware image prompt (audience={audience_type}, "
+            f"purpose={purpose_type}, domain={detected_domain}, archetype={archetype})"
+        )
+
+        return prompt, archetype, style_params
 
     def _build_content_prompt(
         self,
@@ -438,7 +513,8 @@ Generate the content HTML now:"""
         prompt: str,
         archetype: str,
         request: ISeriesGenerationRequest,
-        aspect_ratio: str = "9:16"
+        aspect_ratio: str = "9:16",
+        style_params: Optional[Dict[str, Any]] = None
     ) -> Dict[str, Any]:
         """
         Generate portrait image via Image Service with correct aspect ratio.
@@ -449,11 +525,14 @@ Generate the content HTML now:"""
         - I3: 1:3 (360×1080, very narrow)
         - I4: 7:18 (420×1080, narrow)
 
+        v1.4.0: Uses context-aware style_params for Image Builder v2.0 API.
+
         Args:
             prompt: Image generation prompt
             archetype: Image style archetype
             request: Original request for metadata
             aspect_ratio: Target aspect ratio (e.g., "11:18", "2:3")
+            style_params: Context-aware style parameters (style, color_scheme, lighting, domain)
 
         Returns:
             Image API response dict
@@ -466,13 +545,19 @@ Generate the content HTML now:"""
             "aspect_ratio": aspect_ratio
         }
 
+        # v1.4.0: Add context info to metadata
+        if style_params:
+            metadata["context_style"] = style_params.get("style")
+            metadata["context_domain"] = style_params.get("domain")
+
         return await self.image_client.generate_iseries_image(
             prompt=prompt,
             layout_type=self.layout_type,
             visual_style=request.visual_style.value,
             metadata=metadata,
             archetype=archetype,
-            aspect_ratio=aspect_ratio
+            aspect_ratio=aspect_ratio,
+            style_params=style_params  # v1.4.0: Pass style params to image client
         )
 
     async def _generate_content(
