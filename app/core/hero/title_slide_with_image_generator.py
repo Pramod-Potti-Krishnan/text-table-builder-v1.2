@@ -445,6 +445,9 @@ Generate the professional title slide HTML NOW:"""
         - Professional → imagen-3.0-generate-001 (standard quality)
         - Illustrated/Kids → imagen-3.0-fast-generate-001 (fast/cheap)
 
+        v1.5.0: Director can override model via request.context["image_model"]
+        for presentation-level quality tier control.
+
         Args:
             prompt: Image generation prompt
             archetype: Image style archetype (photorealistic, spot_illustration)
@@ -470,8 +473,9 @@ Generate the professional title slide HTML NOW:"""
             "domain": domain
         }
 
-        # Get appropriate model based on slide type and visual style
-        model = get_image_model(request.slide_type, request.visual_style)
+        # v1.5.0: Director can override model via context for quality tier selection
+        context = request.context if hasattr(request, 'context') and request.context else {}
+        model = context.get("image_model") or get_image_model(request.slide_type, request.visual_style)
 
         return await self.image_client.generate_background_image(
             prompt=prompt,

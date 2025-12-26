@@ -17,8 +17,10 @@ Usage:
 Version: 1.0.0 - Initial context-aware image styling
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, Tuple
 from dataclasses import dataclass
+
+from app.models.iseries_models import SpotlightDepth
 
 
 @dataclass
@@ -551,3 +553,118 @@ def build_context_aware_negative_prompt(
     all_negatives.extend(quality_negatives)
 
     return ", ".join(all_negatives)
+
+
+# =============================================================================
+# Spotlight Depth Matrix (v1.5.0)
+# =============================================================================
+# Maps (audience_type, purpose_type) to SpotlightDepth for 2-step image generation.
+# Determines how rich/complex the visual concept should be.
+#
+# SpotlightDepth levels:
+# - MINIMAL: Single clear element, no metaphor (executives, technical)
+# - FOCUSED: Primary element + 1 supporting element (professional)
+# - RICH: Full visual concept with metaphor (educational, inspiring)
+# - LAYERED: Complex multi-element composition (creative, storytelling)
+
+SPOTLIGHT_DEPTH_MATRIX: Dict[Tuple[str, str], SpotlightDepth] = {
+    # Executives - prefer minimal, clean imagery
+    ("executives", "inform"): SpotlightDepth.MINIMAL,
+    ("executives", "persuade"): SpotlightDepth.FOCUSED,
+    ("executives", "inspire"): SpotlightDepth.FOCUSED,
+    ("executives", "educate"): SpotlightDepth.MINIMAL,
+    ("executives", "entertain"): SpotlightDepth.FOCUSED,
+
+    # Professional audience
+    ("professional", "inform"): SpotlightDepth.MINIMAL,
+    ("professional", "persuade"): SpotlightDepth.FOCUSED,
+    ("professional", "inspire"): SpotlightDepth.FOCUSED,
+    ("professional", "educate"): SpotlightDepth.FOCUSED,
+    ("professional", "entertain"): SpotlightDepth.RICH,
+
+    # Technical/Developer audience - prefer minimal, abstract
+    ("technical", "inform"): SpotlightDepth.MINIMAL,
+    ("technical", "persuade"): SpotlightDepth.MINIMAL,
+    ("technical", "inspire"): SpotlightDepth.FOCUSED,
+    ("technical", "educate"): SpotlightDepth.FOCUSED,
+    ("technical", "entertain"): SpotlightDepth.FOCUSED,
+
+    ("developers", "inform"): SpotlightDepth.MINIMAL,
+    ("developers", "persuade"): SpotlightDepth.MINIMAL,
+    ("developers", "inspire"): SpotlightDepth.FOCUSED,
+    ("developers", "educate"): SpotlightDepth.FOCUSED,
+    ("developers", "entertain"): SpotlightDepth.FOCUSED,
+
+    # General audience - balanced approach
+    ("general", "inform"): SpotlightDepth.FOCUSED,
+    ("general", "persuade"): SpotlightDepth.RICH,
+    ("general", "inspire"): SpotlightDepth.RICH,
+    ("general", "educate"): SpotlightDepth.RICH,
+    ("general", "entertain"): SpotlightDepth.LAYERED,
+
+    # Students - engaging, visual
+    ("students", "inform"): SpotlightDepth.FOCUSED,
+    ("students", "persuade"): SpotlightDepth.RICH,
+    ("students", "inspire"): SpotlightDepth.LAYERED,
+    ("students", "educate"): SpotlightDepth.RICH,
+    ("students", "entertain"): SpotlightDepth.LAYERED,
+
+    # Kids/Tweens - playful, layered visuals
+    ("kids_tween", "inform"): SpotlightDepth.RICH,
+    ("kids_tween", "persuade"): SpotlightDepth.RICH,
+    ("kids_tween", "inspire"): SpotlightDepth.LAYERED,
+    ("kids_tween", "educate"): SpotlightDepth.LAYERED,
+    ("kids_tween", "entertain"): SpotlightDepth.LAYERED,
+
+    # Kids/Teens - engaging but less childish
+    ("kids_teen", "inform"): SpotlightDepth.FOCUSED,
+    ("kids_teen", "persuade"): SpotlightDepth.RICH,
+    ("kids_teen", "inspire"): SpotlightDepth.LAYERED,
+    ("kids_teen", "educate"): SpotlightDepth.RICH,
+    ("kids_teen", "entertain"): SpotlightDepth.LAYERED,
+}
+
+
+def get_spotlight_depth(
+    audience_type: Optional[str] = None,
+    purpose_type: Optional[str] = None
+) -> SpotlightDepth:
+    """
+    Get appropriate spotlight depth based on audience and purpose.
+
+    The spotlight depth determines how rich/complex the visual concept
+    should be for 2-step intentional image generation.
+
+    Args:
+        audience_type: Target audience (executives, technical, kids_tween, etc.)
+        purpose_type: Presentation purpose (inform, persuade, inspire, etc.)
+
+    Returns:
+        SpotlightDepth enum value (MINIMAL, FOCUSED, RICH, or LAYERED)
+    """
+    # Normalize inputs
+    audience_key = (audience_type or "general").lower().replace(" ", "_")
+    purpose_key = (purpose_type or "inform").lower().replace(" ", "_")
+
+    # Try exact match first
+    key = (audience_key, purpose_key)
+    if key in SPOTLIGHT_DEPTH_MATRIX:
+        return SPOTLIGHT_DEPTH_MATRIX[key]
+
+    # Fallback logic based on audience only
+    audience_fallbacks = {
+        "executives": SpotlightDepth.MINIMAL,
+        "professional": SpotlightDepth.FOCUSED,
+        "technical": SpotlightDepth.MINIMAL,
+        "developers": SpotlightDepth.MINIMAL,
+        "general": SpotlightDepth.FOCUSED,
+        "students": SpotlightDepth.RICH,
+        "kids_tween": SpotlightDepth.LAYERED,
+        "kids_teen": SpotlightDepth.RICH,
+    }
+
+    if audience_key in audience_fallbacks:
+        return audience_fallbacks[audience_key]
+
+    # Default: FOCUSED (balanced middle ground)
+    return SpotlightDepth.FOCUSED

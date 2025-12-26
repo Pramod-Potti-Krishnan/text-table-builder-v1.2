@@ -38,6 +38,87 @@ class ISeriesContentStyle(str, Enum):
     MIXED = "mixed"           # Combination of both
 
 
+# =============================================================================
+# Spotlight Concept Models for 2-Step Image Generation (v1.5.0)
+# =============================================================================
+
+class AbstractionLevel(str, Enum):
+    """
+    How abstract vs literal the visual should be.
+
+    Used in SpotlightConcept to guide image generation style.
+    """
+    LITERAL = "literal"           # Direct representation (e.g., "cloud" for cloud computing)
+    METAPHORICAL = "metaphorical" # Visual metaphor (e.g., "ladder" for growth)
+    ABSTRACT = "abstract"         # Abstract patterns (e.g., geometric shapes for data)
+
+
+class SpotlightDepth(str, Enum):
+    """
+    Depth of visual complexity based on audience/purpose.
+
+    Determines how rich the visual concept should be:
+    - MINIMAL: Single clear element, no metaphor (executives, technical)
+    - FOCUSED: Primary element + 1 supporting element (professional)
+    - RICH: Full visual concept with metaphor (educational, inspiring)
+    - LAYERED: Complex multi-element composition (creative, storytelling)
+    """
+    MINIMAL = "minimal"     # Single element (executives)
+    FOCUSED = "focused"     # Primary + 1 supporting
+    RICH = "rich"           # Full concept with metaphor
+    LAYERED = "layered"     # Complex multi-element (creative)
+
+
+class SpotlightConcept(BaseModel):
+    """
+    Visual concept extracted from narrative for intentional image generation.
+
+    Step 1 output of 2-step image generation process:
+    Defines WHAT to show in the image (not HOW to show it).
+
+    v1.5.0: 2-Step Intentional Spotlight Image Generation
+    """
+    primary_subject: str = Field(
+        ...,
+        description="Main visual subject/element to focus on",
+        min_length=3,
+        max_length=150
+    )
+    visual_elements: List[str] = Field(
+        default_factory=list,
+        description="Supporting visual elements (max 3)",
+        max_length=3
+    )
+    composition_hint: str = Field(
+        default="centered",
+        description="Composition guidance: centered, environmental, left-weighted, right-weighted"
+    )
+    emotional_focus: str = Field(
+        default="professional",
+        description="Emotional quality: professional, inspiring, energetic, calm, serious, encouraging, uplifting"
+    )
+    abstraction_level: AbstractionLevel = Field(
+        default=AbstractionLevel.ABSTRACT,
+        description="How abstract vs literal the visual should be"
+    )
+    spotlight_rationale: Optional[str] = Field(
+        default=None,
+        description="Brief explanation of why this concept was chosen"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "primary_subject": "interconnected network nodes with glowing data streams",
+                "visual_elements": ["gradient backdrop", "subtle particle effects", "geometric patterns"],
+                "composition_hint": "centered",
+                "emotional_focus": "professional",
+                "abstraction_level": "abstract",
+                "spotlight_rationale": "Network imagery conveys connectivity for cloud infrastructure topic"
+            }
+        }
+
+
 class ISeriesGenerationRequest(BaseModel):
     """
     Request model for I-series layout generation.

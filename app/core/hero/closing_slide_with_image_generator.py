@@ -501,6 +501,9 @@ Generate the professional split-layout closing slide HTML NOW:"""
         Closing slides ALWAYS use fast model regardless of visual style
         to optimize cost for final slides.
 
+        v1.5.0: Director can override model via request.context["image_model"]
+        for presentation-level quality tier control.
+
         Args:
             prompt: Image generation prompt
             archetype: Image style archetype (photorealistic, spot_illustration)
@@ -526,8 +529,9 @@ Generate the professional split-layout closing slide HTML NOW:"""
             "domain": domain
         }
 
-        # Closing slides always use fast model (all styles)
-        model = get_image_model(request.slide_type, request.visual_style)
+        # v1.5.0: Director can override model via context for quality tier selection
+        context = request.context if hasattr(request, 'context') and request.context else {}
+        model = context.get("image_model") or get_image_model(request.slide_type, request.visual_style)
 
         return await self.image_client.generate_background_image(
             prompt=prompt,

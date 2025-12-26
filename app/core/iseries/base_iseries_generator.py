@@ -15,6 +15,10 @@ Version: 1.3.0 - Added content_context support for audience-adapted text
 Version: 1.3.1 - Always use multi-step generation with hardcoded dimensions
 Version: 1.3.2 - Added content_variant support for I-series specific character constraints
 Version: 1.4.0 - Context-aware image generation using audience/purpose from ContentContext
+Version: 1.5.0 - 2-Step Intentional Spotlight Image Generation
+              - Step 1: Extract visual concept (WHAT to show)
+              - Step 2: Build prompt from concept (HOW to show it)
+              - Hybrid extraction (LLM for complex, rules for simple)
 """
 
 import asyncio
@@ -67,8 +71,11 @@ from app.core.hero.style_config import (
 from app.core.iseries.context_style_mapper import (
     get_image_style_params,
     detect_domain_from_text,
-    build_context_aware_negative_prompt
+    build_context_aware_negative_prompt,
+    get_spotlight_depth
 )
+from app.core.iseries.spotlight_concept_extractor import SpotlightConceptExtractor
+from app.models.iseries_models import SpotlightConcept, SpotlightDepth, AbstractionLevel
 
 logger = logging.getLogger(__name__)
 
@@ -178,6 +185,8 @@ class BaseISeriesGenerator(ABC):
         theme_config = context.get("theme_config")
         content_context = context.get("content_context")
         styling_mode = context.get("styling_mode", "inline_styles")
+        # v1.5.0: Extract image_model from Director for quality tier selection
+        image_model = context.get("image_model")
 
         # v1.3.2: Load variant spec if content_variant is specified
         # v1.3.3: Also check context["variant_spec"] from slides_routes auto-selection
@@ -206,8 +215,10 @@ class BaseISeriesGenerator(ABC):
             f"variant={request.content_variant if hasattr(request, 'content_variant') else 'default'})"
         )
 
-        # v1.4.0: Build context-aware image prompt with style params
-        image_prompt, archetype, style_params = self._build_image_prompt(
+        # v1.5.0: 2-step intentional spotlight image generation
+        # Step 1: Extract visual concept (WHAT to show)
+        # Step 2: Build prompt from concept (HOW to show it)
+        image_prompt, archetype, style_params = await self._build_image_prompt_2step(
             request,
             content_context=content_context
         )
@@ -217,7 +228,8 @@ class BaseISeriesGenerator(ABC):
             self._generate_image(
                 image_prompt, archetype, request,
                 aspect_ratio=image_spec["aspect_ratio"],
-                style_params=style_params  # v1.4.0: Pass style params
+                style_params=style_params,  # v1.4.0: Pass style params
+                image_model=image_model  # v1.5.0: Pass model for quality tier
             )
         )
         content_task = asyncio.create_task(
@@ -288,16 +300,18 @@ class BaseISeriesGenerator(ABC):
 
         return response
 
-    def _build_image_prompt(
+    def _build_image_prompt_legacy(
         self,
         request: ISeriesGenerationRequest,
         content_context: Optional[Dict[str, Any]] = None
     ) -> tuple[str, str, Dict[str, Any]]:
         """
-        Build context-aware image generation prompt.
+        Build context-aware image generation prompt (legacy 1-step method).
 
         v1.4.0: Uses ContentContext (audience, purpose) to generate
         contextually relevant images instead of generic illustrations.
+
+        DEPRECATED: Use _build_image_prompt_2step() for intentional spotlight images.
 
         Args:
             request: Generation request with narrative and visual_style
@@ -392,6 +406,162 @@ CRITICAL REQUIREMENTS:
         logger.info(
             f"Built context-aware image prompt (audience={audience_type}, "
             f"purpose={purpose_type}, domain={detected_domain}, archetype={archetype})"
+        )
+
+        return prompt, archetype, style_params
+
+    async def _build_image_prompt_2step(
+        self,
+        request: ISeriesGenerationRequest,
+        content_context: Optional[Dict[str, Any]] = None
+    ) -> tuple[str, str, Dict[str, Any]]:
+        """
+        Build image prompt using 2-step intentional spotlight approach.
+
+        v1.5.0: 2-Step Intentional Spotlight Image Generation
+        - Step 1: Extract visual concept (WHAT to show) using SpotlightConceptExtractor
+        - Step 2: Build prompt from concept (HOW to show it)
+
+        This produces more intentional, focused images by first understanding
+        the core message before generating the image prompt.
+
+        Args:
+            request: Generation request with narrative and visual_style
+            content_context: Optional dict with audience/purpose info
+
+        Returns:
+            Tuple of (image_prompt, archetype, style_params)
+        """
+        narrative = request.narrative
+        topics = request.topics or []
+        visual_style = request.visual_style.value
+
+        # Extract audience and purpose from content_context
+        audience_type = None
+        purpose_type = None
+        if content_context:
+            audience_info = content_context.get("audience", {})
+            purpose_info = content_context.get("purpose", {})
+            audience_type = audience_info.get("audience_type")
+            purpose_type = purpose_info.get("purpose_type")
+
+        # Combined text for domain detection
+        combined_text = f"{narrative} {' '.join(topics)}".lower()
+
+        # Get base style configuration
+        style_config = get_style_config(visual_style)
+
+        # Get context-aware style parameters
+        style_params = get_image_style_params(
+            audience_type=audience_type,
+            purpose_type=purpose_type,
+            narrative_text=combined_text
+        )
+
+        detected_domain = style_params.get("domain", "default")
+
+        # =================================================================
+        # STEP 1: Extract Visual Concept (WHAT to show)
+        # =================================================================
+        extractor = SpotlightConceptExtractor(llm_service=self.llm_service)
+
+        try:
+            concept, extraction_metadata = await extractor.extract(
+                narrative=narrative,
+                topics=topics,
+                audience_type=audience_type,
+                purpose_type=purpose_type,
+                content_context=content_context
+            )
+
+            logger.info(
+                f"Spotlight concept extracted: primary_subject='{concept.primary_subject}', "
+                f"method={extraction_metadata.get('extraction_method')}, "
+                f"complexity={extraction_metadata.get('complexity_score', 0):.2f}"
+            )
+        except Exception as e:
+            logger.warning(f"Spotlight extraction failed, using fallback: {e}")
+            # Fallback to legacy 1-step method
+            return self._build_image_prompt_legacy(request, content_context)
+
+        # =================================================================
+        # STEP 2: Build Prompt from Concept (HOW to show it)
+        # =================================================================
+
+        # Get context style parameters
+        context_style = style_params.get("style", "illustration")
+        context_lighting = style_params.get("lighting", "professional")
+        context_color = style_params.get("color_scheme", "neutral")
+        mood = style_params.get("mood", "professional")
+
+        # Build visual elements string
+        visual_elements_str = ", ".join(concept.visual_elements[:3]) if concept.visual_elements else ""
+
+        # Map abstraction level to prompt language
+        abstraction_guidance = {
+            "literal": "Direct, realistic representation",
+            "metaphorical": "Visual metaphor, symbolic representation",
+            "abstract": "Abstract, geometric, conceptual imagery"
+        }
+        abstraction_hint = abstraction_guidance.get(
+            concept.abstraction_level.value if hasattr(concept.abstraction_level, 'value') else concept.abstraction_level,
+            "Professional imagery"
+        )
+
+        # Build intentional spotlight prompt
+        prompt = f"""High-quality {context_style} portrait image for presentation slide.
+
+VISUAL FOCUS (Intentional Spotlight):
+- Primary Subject: {concept.primary_subject}
+- Supporting Elements: {visual_elements_str if visual_elements_str else "minimal background elements"}
+- Composition: {concept.composition_hint}, vertical portrait orientation
+
+STYLE:
+- Visual approach: {abstraction_hint}
+- Lighting: {context_lighting}
+- Color scheme: {context_color}
+- Mood: {concept.emotional_focus}
+- Aspect ratio: Tall portrait (9:16)
+
+CRITICAL REQUIREMENTS:
+- Absolutely NO text, words, letters, numbers, or typography
+- NO human faces, people, or characters
+- Clean, professional appearance
+- Subject should be clearly prominent and intentionally spotlighted
+- Background should complement but not compete with main subject"""
+
+        # Determine archetype based on context and concept
+        archetype = style_config.archetype  # Default from visual_style
+
+        # Override based on audience type
+        if audience_type in ["executives", "professional"]:
+            archetype = "photorealistic"
+        elif audience_type in ["technical", "developers"]:
+            archetype = "minimalist_vector_art"
+        elif context_style == "minimal":
+            archetype = "minimalist_vector_art"
+
+        # If concept is abstract, prefer minimalist archetype
+        if concept.abstraction_level == AbstractionLevel.ABSTRACT:
+            if archetype not in ["photorealistic", "minimalist_vector_art"]:
+                archetype = "minimalist_vector_art"
+
+        # Add extraction metadata to style_params
+        style_params["domain"] = detected_domain
+        style_params["spotlight_concept"] = {
+            "primary_subject": concept.primary_subject,
+            "visual_elements": concept.visual_elements,
+            "composition_hint": concept.composition_hint,
+            "emotional_focus": concept.emotional_focus,
+            "abstraction_level": concept.abstraction_level.value if hasattr(concept.abstraction_level, 'value') else str(concept.abstraction_level),
+            "spotlight_rationale": concept.spotlight_rationale
+        }
+        style_params["extraction_metadata"] = extraction_metadata
+
+        logger.info(
+            f"Built 2-step spotlight image prompt (audience={audience_type}, "
+            f"purpose={purpose_type}, domain={detected_domain}, archetype={archetype}, "
+            f"spotlight='{concept.primary_subject[:50]}...')"
         )
 
         return prompt, archetype, style_params
@@ -514,7 +684,8 @@ Generate the content HTML now:"""
         archetype: str,
         request: ISeriesGenerationRequest,
         aspect_ratio: str = "9:16",
-        style_params: Optional[Dict[str, Any]] = None
+        style_params: Optional[Dict[str, Any]] = None,
+        image_model: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Generate portrait image via Image Service with correct aspect ratio.
@@ -526,6 +697,7 @@ Generate the content HTML now:"""
         - I4: 7:18 (420×1080, narrow)
 
         v1.4.0: Uses context-aware style_params for Image Builder v2.0 API.
+        v1.5.0: Accepts image_model from Director for quality tier selection.
 
         Args:
             prompt: Image generation prompt
@@ -533,6 +705,7 @@ Generate the content HTML now:"""
             request: Original request for metadata
             aspect_ratio: Target aspect ratio (e.g., "11:18", "2:3")
             style_params: Context-aware style parameters (style, color_scheme, lighting, domain)
+            image_model: Imagen model to use (from Director ImageStyleAgreement)
 
         Returns:
             Image API response dict
@@ -550,11 +723,15 @@ Generate the content HTML now:"""
             metadata["context_style"] = style_params.get("style")
             metadata["context_domain"] = style_params.get("domain")
 
+        # v1.5.0: Extract image_model from style_params if not explicitly provided
+        model = image_model or (style_params.get("image_model") if style_params else None)
+
         return await self.image_client.generate_iseries_image(
             prompt=prompt,
             layout_type=self.layout_type,
             visual_style=request.visual_style.value,
             metadata=metadata,
+            model=model,  # v1.5.0: Pass model for quality tier selection
             archetype=archetype,
             aspect_ratio=aspect_ratio,
             style_params=style_params  # v1.4.0: Pass style params to image client
