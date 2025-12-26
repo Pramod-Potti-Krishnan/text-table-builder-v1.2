@@ -21,13 +21,13 @@
       },
       "character_requirements": {
         "heading": {"baseline": 26, "min": 17, "max": 34},
-        "item_1": {"baseline": 72, "min": 65, "max": 80},
-        "item_2": {"baseline": 72, "min": 65, "max": 80},
-        "item_3": {"baseline": 72, "min": 65, "max": 80},
-        "item_4": {"baseline": 72, "min": 65, "max": 80},
-        "item_5": {"baseline": 72, "min": 65, "max": 80},
-        "item_6": {"baseline": 72, "min": 65, "max": 80},
-        "item_7": {"baseline": 72, "min": 65, "max": 80}
+        "item_1": {"baseline": 62, "min": 55, "max": 70},
+        "item_2": {"baseline": 62, "min": 55, "max": 70},
+        "item_3": {"baseline": 62, "min": 55, "max": 70},
+        "item_4": {"baseline": 62, "min": 55, "max": 70},
+        "item_5": {"baseline": 62, "min": 55, "max": 70},
+        "item_6": {"baseline": 62, "min": 55, "max": 70},
+        "item_7": {"baseline": 62, "min": 55, "max": 70}
       }
     },
     {
@@ -46,13 +46,13 @@
       },
       "character_requirements": {
         "heading": {"baseline": 26, "min": 17, "max": 34},
-        "item_1": {"baseline": 72, "min": 65, "max": 80},
-        "item_2": {"baseline": 72, "min": 65, "max": 80},
-        "item_3": {"baseline": 72, "min": 65, "max": 80},
-        "item_4": {"baseline": 72, "min": 65, "max": 80},
-        "item_5": {"baseline": 72, "min": 65, "max": 80},
-        "item_6": {"baseline": 72, "min": 65, "max": 80},
-        "item_7": {"baseline": 72, "min": 65, "max": 80}
+        "item_1": {"baseline": 62, "min": 55, "max": 70},
+        "item_2": {"baseline": 62, "min": 55, "max": 70},
+        "item_3": {"baseline": 62, "min": 55, "max": 70},
+        "item_4": {"baseline": 62, "min": 55, "max": 70},
+        "item_5": {"baseline": 62, "min": 55, "max": 70},
+        "item_6": {"baseline": 62, "min": 55, "max": 70},
+        "item_7": {"baseline": 62, "min": 55, "max": 70}
       }
     },
     {
@@ -71,13 +71,13 @@
       },
       "character_requirements": {
         "heading": {"baseline": 26, "min": 17, "max": 34},
-        "item_1": {"baseline": 72, "min": 65, "max": 80},
-        "item_2": {"baseline": 72, "min": 65, "max": 80},
-        "item_3": {"baseline": 72, "min": 65, "max": 80},
-        "item_4": {"baseline": 72, "min": 65, "max": 80},
-        "item_5": {"baseline": 72, "min": 65, "max": 80},
-        "item_6": {"baseline": 72, "min": 65, "max": 80},
-        "item_7": {"baseline": 72, "min": 65, "max": 80}
+        "item_1": {"baseline": 62, "min": 55, "max": 70},
+        "item_2": {"baseline": 62, "min": 55, "max": 70},
+        "item_3": {"baseline": 62, "min": 55, "max": 70},
+        "item_4": {"baseline": 62, "min": 55, "max": 70},
+        "item_5": {"baseline": 62, "min": 55, "max": 70},
+        "item_6": {"baseline": 62, "min": 55, "max": 70},
+        "item_7": {"baseline": 62, "min": 55, "max": 70}
       }
     }
   ],
