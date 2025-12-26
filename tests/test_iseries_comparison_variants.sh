@@ -7,16 +7,29 @@
 # - 4 layouts (I1, I2, I3, I4)
 #
 # Uses: POST /v1.2/iseries/{I1|I2|I3|I4} endpoint
-# Generates content + image via Text Service -> Creates ONE presentation
+# Includes v4.6 ImageStyleAgreement for consistent image generation
 #
 
 # Service URLs
 TEXT_SERVICE="https://web-production-5daf.up.railway.app"
 LAYOUT_SERVICE="https://web-production-f0d13.up.railway.app"
 
+# Skip image generation flag (set SKIP_IMAGES=true to skip)
+# Usage: SKIP_IMAGES=true ./test_iseries_comparison_variants.sh
+SKIP_IMAGES=${SKIP_IMAGES:-false}
+
 # Output directory for responses
 OUTPUT_DIR="./test_outputs/iseries_comparison_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$OUTPUT_DIR"
+
+# Default image style (executives + professional)
+AUDIENCE_TYPE="executives"
+PURPOSE_TYPE="inform"
+ARCHETYPE="photorealistic"
+MOOD="professional"
+COLOR_SCHEME="neutral"
+AVOID_ELEMENTS='["anime", "cartoon", "playful", "childish"]'
+QUALITY_TIER="smart"
 
 # Test configurations: layout|variant|layout_name|title|narrative|topics|image_hint
 declare -a TESTS=(
@@ -40,11 +53,15 @@ declare -a TESTS=(
 echo "=============================================="
 echo "  I-Series Comparison Variants Test"
 echo "  Phase 3: 8 Slides (2 variants x 4 layouts)"
+echo "  With v4.6 ImageStyleAgreement"
 echo "=============================================="
 echo ""
 echo "Text Service:   $TEXT_SERVICE"
 echo "Layout Service: $LAYOUT_SERVICE"
 echo "Output Dir:     $OUTPUT_DIR"
+echo ""
+echo "Image Style: $ARCHETYPE, $MOOD, $COLOR_SCHEME"
+echo "Skip Images: $SKIP_IMAGES"
 echo ""
 
 # Array to collect slides JSON
@@ -65,7 +82,7 @@ for item in "${TESTS[@]}"; do
   # Convert comma-separated topics to JSON array
   TOPICS_JSON=$(echo "$topics" | sed 's/,/","/g' | sed 's/^/["/' | sed 's/$/"]/')
 
-  # Generate content from Text Service I-series endpoint
+  # Generate content from Text Service I-series endpoint with v4.6 context
   TEXT_RESPONSE=$(curl -s -X POST "$TEXT_SERVICE/v1.2/iseries/$layout" \
     -H "Content-Type: application/json" \
     -d "{
@@ -78,9 +95,30 @@ for item in "${TESTS[@]}"; do
       \"visual_style\": \"illustrated\",
       \"image_prompt_hint\": \"$image_hint\",
       \"content_style\": \"bullets\",
-      \"max_bullets\": 5,
+      \"max_bullets\": 6,
       \"content_variant\": \"$variant\",
-      \"context\": {\"audience\": \"executives\", \"tone\": \"professional\"}
+      \"skip_image_generation\": $SKIP_IMAGES,
+      \"context\": {
+        \"content_context\": {
+          \"audience\": {
+            \"audience_type\": \"$AUDIENCE_TYPE\",
+            \"complexity_level\": \"moderate\"
+          },
+          \"purpose\": {
+            \"purpose_type\": \"$PURPOSE_TYPE\",
+            \"emotional_tone\": \"$MOOD\"
+          }
+        },
+        \"image_style_agreement\": {
+          \"archetype\": \"$ARCHETYPE\",
+          \"mood\": \"$MOOD\",
+          \"color_scheme\": \"$COLOR_SCHEME\",
+          \"lighting\": \"professional\",
+          \"avoid_elements\": $AVOID_ELEMENTS,
+          \"quality_tier\": \"$QUALITY_TIER\"
+        },
+        \"styling_mode\": \"inline_styles\"
+      }
     }")
 
   # Save raw response
@@ -187,6 +225,7 @@ echo "  [ ] Image + content balance looks correct"
 echo "  [ ] Character counts are appropriate"
 echo "  [ ] No overflow or truncation"
 echo "  [ ] Visual consistency across I1-I4"
+echo "  [ ] Images are $ARCHETYPE style"
 echo ""
 
 # Open in browser

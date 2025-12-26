@@ -224,14 +224,19 @@ class BaseISeriesGenerator(ABC):
         )
 
         # Parallel generation: image + multi-step content
-        image_task = asyncio.create_task(
-            self._generate_image(
-                image_prompt, archetype, request,
-                aspect_ratio=image_spec["aspect_ratio"],
-                style_params=style_params,  # v1.4.0: Pass style params
-                image_model=image_model  # v1.5.0: Pass model for quality tier
+        # v1.6.0: Support skip_image_generation flag for testing
+        if getattr(request, 'skip_image_generation', False):
+            logger.info("Skipping image generation (skip_image_generation=True)")
+            image_task = asyncio.create_task(self._skip_image_task())
+        else:
+            image_task = asyncio.create_task(
+                self._generate_image(
+                    image_prompt, archetype, request,
+                    aspect_ratio=image_spec["aspect_ratio"],
+                    style_params=style_params,  # v1.4.0: Pass style params
+                    image_model=image_model  # v1.5.0: Pass model for quality tier
+                )
             )
-        )
         content_task = asyncio.create_task(
             self._generate_content_multi_step(
                 request,
@@ -736,6 +741,21 @@ Generate the content HTML now:"""
             aspect_ratio=aspect_ratio,
             style_params=style_params  # v1.4.0: Pass style params to image client
         )
+
+    async def _skip_image_task(self) -> Dict[str, Any]:
+        """
+        Return empty result when skipping image generation.
+
+        v1.6.0: Used when skip_image_generation=True for testing content-only.
+
+        Returns:
+            Dict indicating image was skipped (triggers fallback placeholder)
+        """
+        return {
+            "success": False,
+            "skipped": True,
+            "message": "Image generation skipped (skip_image_generation=True)"
+        }
 
     async def _generate_content(
         self,

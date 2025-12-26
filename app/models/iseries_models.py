@@ -192,6 +192,13 @@ class ISeriesGenerationRequest(BaseModel):
         description="Additional context: theme, audience, presentation_title, etc."
     )
 
+    # Testing/Development flags
+    skip_image_generation: bool = Field(
+        default=False,
+        description="Skip image generation (for testing content only). "
+                    "When True, uses fallback placeholder instead of calling Image Service."
+    )
+
     class Config:
         json_schema_extra = {
             "example": {

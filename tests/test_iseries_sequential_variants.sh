@@ -2,49 +2,75 @@
 #
 # Test Script: I-Series Sequential Variants (Phase 2)
 #
-# Tests 8 slides total:
-# - 2 variants (sequential_3col, sequential_4col)
-# - 4 layouts (I1, I2, I3, I4)
+# Tests 6 slides total (updated for v4.6):
+# - 3-col sequential for I1, I2 (wide layouts)
+# - 3-col and 4-col sequential for I3, I4 (narrow layouts)
+# - Note: 4-col sequential is NOT available for I1/I2 (content too cramped)
 #
 # Uses: POST /v1.2/iseries/{I1|I2|I3|I4} endpoint
-# Generates content + image via Text Service -> Creates ONE presentation
+# Includes v4.6 ImageStyleAgreement for consistent image generation
+#
+# Character limits (updated):
+# - I1/I2 3-col: 45-70 chars/bullet, baseline 60, 6 bullets/step
+# - I3/I4 3-col: 50-75 chars/bullet, baseline 65, 6 bullets/step
+# - I3/I4 4-col: 30-50 chars/bullet, baseline 40, 6 bullets/step
 #
 
 # Service URLs
 TEXT_SERVICE="https://web-production-5daf.up.railway.app"
 LAYOUT_SERVICE="https://web-production-f0d13.up.railway.app"
 
+# Skip image generation flag (set SKIP_IMAGES=true to skip)
+# Usage: SKIP_IMAGES=true ./test_iseries_sequential_variants.sh
+SKIP_IMAGES=${SKIP_IMAGES:-false}
+
 # Output directory for responses
 OUTPUT_DIR="./test_outputs/iseries_sequential_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$OUTPUT_DIR"
 
+# Default image style (executives + professional)
+AUDIENCE_TYPE="executives"
+PURPOSE_TYPE="inform"
+ARCHETYPE="photorealistic"
+MOOD="professional"
+COLOR_SCHEME="neutral"
+AVOID_ELEMENTS='["anime", "cartoon", "playful", "childish"]'
+QUALITY_TIER="smart"
+
 # Test configurations: layout|variant|layout_name|title|narrative|topics|image_hint
 declare -a TESTS=(
-  # I1: Wide Image Left (2 slides)
+  # I1: Wide Image Left - ONLY 3-col (no 4-col for wide layouts)
   "I1|sequential_3col_i1|I1-image-left|Three-Phase Transformation|Our transformation journey follows three sequential phases for maximum impact|Assessment & Planning,Implementation & Training,Optimization & Growth|transformation journey phases stages"
-  "I1|sequential_4col_i1|I1-image-left|Customer Lifecycle Journey|Understanding the four stages of customer engagement and retention|Awareness,Consideration,Purchase,Loyalty|customer journey funnel lifecycle"
 
-  # I2: Wide Image Right (2 slides)
+  # I2: Wide Image Right - ONLY 3-col (no 4-col for wide layouts)
   "I2|sequential_3col_i1|I2-image-right|Innovation Process|Our proven three-stage innovation process drives breakthrough solutions|Ideate,Prototype,Launch|innovation lightbulb creative process"
-  "I2|sequential_4col_i1|I2-image-right|Project Delivery Framework|Four sequential stages ensure successful project outcomes|Initiate,Plan,Execute,Close|project management delivery timeline"
 
-  # I3: Narrow Image Left (2 slides)
+  # I3: Narrow Image Left - both 3-col and 4-col available
   "I3|sequential_3col_i3|I3-image-left-narrow|Agile Sprint Cycle|Our three-phase sprint cycle delivers consistent value|Plan,Build,Review|agile sprint cycle kanban board"
   "I3|sequential_4col_i3|I3-image-left-narrow|Data Analytics Pipeline|Four stages transform raw data into actionable insights|Collect,Process,Analyze,Visualize|data analytics pipeline charts"
 
-  # I4: Narrow Image Right (2 slides)
+  # I4: Narrow Image Right - both 3-col and 4-col available
   "I4|sequential_3col_i3|I4-image-right-narrow|Design Thinking Process|Three stages of human-centered design methodology|Empathize & Define,Ideate & Prototype,Test & Iterate|design thinking creative workshop"
   "I4|sequential_4col_i3|I4-image-right-narrow|Product Launch Sequence|Four-phase approach to successful product launches|Pre-Launch,Soft Launch,Full Launch,Post-Launch|product launch rocket success"
 )
 
 echo "=============================================="
 echo "  I-Series Sequential Variants Test"
-echo "  Phase 2: 8 Slides (2 variants x 4 layouts)"
+echo "  Phase 2: 6 Slides (updated for v4.6)"
+echo "  With ImageStyleAgreement + 6 bullets/step"
 echo "=============================================="
 echo ""
 echo "Text Service:   $TEXT_SERVICE"
 echo "Layout Service: $LAYOUT_SERVICE"
 echo "Output Dir:     $OUTPUT_DIR"
+echo ""
+echo "Image Style: $ARCHETYPE, $MOOD, $COLOR_SCHEME"
+echo "Skip Images: $SKIP_IMAGES"
+echo ""
+echo "Sequential Variants Available:"
+echo "  I1/I2 (wide): 3-col only (6 bullets, 45-70 chars)"
+echo "  I3/I4 (narrow): 3-col (6 bullets, 50-75 chars)"
+echo "                  4-col (6 bullets, 30-50 chars)"
 echo ""
 
 # Array to collect slides JSON
@@ -65,7 +91,7 @@ for item in "${TESTS[@]}"; do
   # Convert comma-separated topics to JSON array
   TOPICS_JSON=$(echo "$topics" | sed 's/,/","/g' | sed 's/^/["/' | sed 's/$/"]/')
 
-  # Generate content from Text Service I-series endpoint
+  # Generate content from Text Service I-series endpoint with v4.6 context
   TEXT_RESPONSE=$(curl -s -X POST "$TEXT_SERVICE/v1.2/iseries/$layout" \
     -H "Content-Type: application/json" \
     -d "{
@@ -78,9 +104,30 @@ for item in "${TESTS[@]}"; do
       \"visual_style\": \"illustrated\",
       \"image_prompt_hint\": \"$image_hint\",
       \"content_style\": \"bullets\",
-      \"max_bullets\": 5,
+      \"max_bullets\": 6,
       \"content_variant\": \"$variant\",
-      \"context\": {\"audience\": \"executives\", \"tone\": \"professional\"}
+      \"skip_image_generation\": $SKIP_IMAGES,
+      \"context\": {
+        \"content_context\": {
+          \"audience\": {
+            \"audience_type\": \"$AUDIENCE_TYPE\",
+            \"complexity_level\": \"moderate\"
+          },
+          \"purpose\": {
+            \"purpose_type\": \"$PURPOSE_TYPE\",
+            \"emotional_tone\": \"$MOOD\"
+          }
+        },
+        \"image_style_agreement\": {
+          \"archetype\": \"$ARCHETYPE\",
+          \"mood\": \"$MOOD\",
+          \"color_scheme\": \"$COLOR_SCHEME\",
+          \"lighting\": \"professional\",
+          \"avoid_elements\": $AVOID_ELEMENTS,
+          \"quality_tier\": \"$QUALITY_TIER\"
+        },
+        \"styling_mode\": \"inline_styles\"
+      }
     }")
 
   # Save raw response
@@ -148,7 +195,7 @@ echo "$SLIDES_JSON" > "$OUTPUT_DIR/all_slides.json"
 
 # Create single presentation with all slides
 LAYOUT_REQUEST="{
-  \"title\": \"I-Series Phase 2: Sequential (8 slides)\",
+  \"title\": \"I-Series Phase 2: Sequential (6 slides)\",
   \"slides\": $SLIDES_JSON
 }"
 
@@ -178,15 +225,19 @@ echo ""
 echo "Presentation ID: $PRES_ID"
 echo "URL: $URL"
 echo ""
-echo "Slides: $SUCCESS_COUNT / 8"
+echo "Slides: $SUCCESS_COUNT / 6"
 echo "Output: $OUTPUT_DIR"
 echo ""
 echo "Review Checklist:"
 echo "  [ ] Content fits within layout bounds"
+echo "  [ ] 6 bullets per step with 24px spacing"
+echo "  [ ] I1/I2 3-col: 45-70 chars/bullet"
+echo "  [ ] I3/I4 3-col: 50-75 chars/bullet"
+echo "  [ ] I3/I4 4-col: 30-50 chars/bullet"
 echo "  [ ] Image + content balance looks correct"
-echo "  [ ] Character counts are appropriate"
 echo "  [ ] No overflow or truncation"
 echo "  [ ] Visual consistency across I1-I4"
+echo "  [ ] Images are $ARCHETYPE style"
 echo ""
 
 # Open in browser
