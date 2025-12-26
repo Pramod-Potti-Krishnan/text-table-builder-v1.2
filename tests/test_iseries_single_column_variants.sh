@@ -39,9 +39,9 @@ declare -a TESTS=(
   "I1|single_column_5section_i1|I1-image-left|Core Value Proposition|Our solution delivers five core benefits that transform business operations|Speed,Reliability,Cost Savings,Scalability,Security|value proposition business benefits abstract"
 
   # I2: Wide Image Right (3 slides)
-  "I2|single_column_3section_i1|I2-image-right|Customer Success Framework|Our customer success framework ensures long-term partnership through three strategic stages|Onboarding Excellence,Growth Partnership,Strategic Alignment|customer success partnership handshake professional"
-  "I2|single_column_4section_i1|I2-image-right|Market Expansion Strategy|Our market expansion leverages four distinct growth vectors for sustainable success|Geographic Expansion,Product Innovation,Channel Partnerships,Market Penetration|market expansion growth chart business"
-  "I2|single_column_5section_i1|I2-image-right|Technology Stack Overview|Our technology stack comprises five integrated layers for robust performance|Infrastructure,Platform,Services,Applications,Experience|technology stack architecture layers modern"
+  "I2|single_column_3section_i2|I2-image-right|Customer Success Framework|Our customer success framework ensures long-term partnership through three strategic stages|Onboarding Excellence,Growth Partnership,Strategic Alignment|customer success partnership handshake professional"
+  "I2|single_column_4section_i2|I2-image-right|Market Expansion Strategy|Our market expansion leverages four distinct growth vectors for sustainable success|Geographic Expansion,Product Innovation,Channel Partnerships,Market Penetration|market expansion growth chart business"
+  "I2|single_column_5section_i2|I2-image-right|Technology Stack Overview|Our technology stack comprises five integrated layers for robust performance|Infrastructure,Platform,Services,Applications,Experience|technology stack architecture layers modern"
 
   # I3: Narrow Image Left (3 slides)
   "I3|single_column_3section_i3|I3-image-left-narrow|Operational Excellence|Operational excellence is achieved through three fundamental principles|Continuous Improvement,Quality First,Team Empowerment|operational excellence quality improvement team"
@@ -49,9 +49,9 @@ declare -a TESTS=(
   "I3|single_column_5section_i3|I3-image-left-narrow|Enterprise Security Framework|Our enterprise security implements five defense layers for comprehensive protection|Perimeter,Network,Endpoint,Application,Data|enterprise security shield protection layers"
 
   # I4: Narrow Image Right (3 slides)
-  "I4|single_column_3section_i3|I4-image-right-narrow|Brand Strategy Blueprint|Our brand strategy is built on three interconnected strategic pillars|Brand Identity,Market Position,Customer Connection|brand strategy marketing blueprint professional"
-  "I4|single_column_4section_i3|I4-image-right-narrow|Innovation Pipeline|Our innovation pipeline moves ideas through four structured stages|Research,Prototype,Validate,Scale|innovation pipeline funnel ideas lightbulb"
-  "I4|single_column_5section_i3|I4-image-right-narrow|Sustainability Commitment|Our sustainability commitment spans five critical focus areas|Carbon Neutral,Circular Economy,Ethical Sourcing,Community Impact,Innovation|sustainability green environment nature eco"
+  "I4|single_column_3section_i4|I4-image-right-narrow|Brand Strategy Blueprint|Our brand strategy is built on three interconnected strategic pillars|Brand Identity,Market Position,Customer Connection|brand strategy marketing blueprint professional"
+  "I4|single_column_4section_i4|I4-image-right-narrow|Innovation Pipeline|Our innovation pipeline moves ideas through four structured stages|Research,Prototype,Validate,Scale|innovation pipeline funnel ideas lightbulb"
+  "I4|single_column_5section_i4|I4-image-right-narrow|Sustainability Commitment|Our sustainability commitment spans five critical focus areas|Carbon Neutral,Circular Economy,Ethical Sourcing,Community Impact,Innovation|sustainability green environment nature eco"
 )
 
 echo "=============================================="

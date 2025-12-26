@@ -1,5 +1,5 @@
 {
-  "variant_id": "single_column_3section_i1",
+  "variant_id": "single_column_3section_i2",
   "slide_type": "single_column",
   "template_path": "app/templates/single_column/single_column_3section_c1_themed.html",
   "description": "Single column layout with 3 sections (4 bullets each) for I1/I2 layouts",
