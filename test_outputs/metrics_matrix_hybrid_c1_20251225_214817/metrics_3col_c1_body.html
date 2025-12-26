@@ -1,0 +1,183 @@
+<!--
+  Themed Template: metrics_3col_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+-->
+<div style="background: transparent; height: 100%;">
+
+  <!-- Metrics Grid -->
+  <div style="display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              gap: 24px;
+              padding: 20px 40px 20px 0;
+              align-items: stretch;">
+
+    <!-- Card 1: Purple Gradient -->
+    <div style="padding: 36px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 340px;">
+
+      <div style="font-size: 77px;
+                  font-weight: 900;
+                  color: var(--text-on-dark, white);
+                  line-height: 1;
+                  margin: 0 0 16px 0;
+                  text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        $12.5M
+      </div>
+
+      <h3 style="font-size: 29px;
+                 font-weight: 700;
+                 color: var(--text-on-dark, white);
+                 margin: 0 0 20px 0;
+                 text-transform: uppercase;
+                 letter-spacing: 1px;">
+        Total Quarterly Revenue
+      </h3>
+
+      <p style="font-size: 18px;
+                font-weight: 400;
+                color: rgba(255,255,255,0.95);
+                line-height: 1.6;
+                margin: 0;">
+        Achieved a significant increase in total revenue this quarter, exceeding all internal projections.
+      </p>
+
+    </div>
+
+    <!-- Card 2: Pink Gradient -->
+    <div style="padding: 36px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                box-shadow: 0 12px 32px rgba(240, 147, 251, 0.2);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 340px;">
+
+      <div style="font-size: 77px;
+                  font-weight: 900;
+                  color: var(--text-on-dark, white);
+                  line-height: 1;
+                  margin: 0 0 16px 0;
+                  text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        +28%
+      </div>
+
+      <h3 style="font-size: 29px;
+                 font-weight: 700;
+                 color: var(--text-on-dark, white);
+                 margin: 0 0 20px 0;
+                 text-transform: uppercase;
+                 letter-spacing: 1px;">
+        Year-over-Year Growth
+      </h3>
+
+      <p style="font-size: 18px;
+                font-weight: 400;
+                color: rgba(255,255,255,0.95);
+                line-height: 1.6;
+                margin: 0;">
+        Demonstrates strong market penetration and successful product line expansion efforts across key segments.
+      </p>
+
+    </div>
+
+    <!-- Card 3: Blue Gradient -->
+    <div style="padding: 36px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                box-shadow: 0 12px 32px rgba(79, 172, 254, 0.2);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                min-height: 340px;">
+
+      <div style="font-size: 77px;
+                  font-weight: 900;
+                  color: var(--text-on-dark, white);
+                  line-height: 1;
+                  margin: 0 0 16px 0;
+                  text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        $45.2M
+      </div>
+
+      <h3 style="font-size: 29px;
+                 font-weight: 700;
+                 color: var(--text-on-dark, white);
+                 margin: 0 0 20px 0;
+                 text-transform: uppercase;
+                 letter-spacing: 1px;">
+        Annual Recurring Revenue
+      </h3>
+
+      <p style="font-size: 18px;
+                font-weight: 400;
+                color: rgba(255,255,255,0.95);
+                line-height: 1.6;
+                margin: 0;">
+        Consistent growth in recurring revenue indicates robust customer retention and sustained value delivery.
+      </p>
+
+    </div>
+
+  </div>
+
+  <!-- Key Insights Box - Asymmetric Blue Box Style, Left Aligned, +50% Height -->
+  <div style="margin: 20px 40px 40px 0;
+              padding: 36px 32px;
+              border-radius: 12px;
+              background: var(--sidebar-bg, linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%));
+              border-left: 4px solid var(--accent-blue, #1a73e8);
+              box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+              min-height: 180px;">
+
+    <h4 style="font-size: 26px;
+               color: var(--text-primary, #1a73e8);
+               margin: 0 0 20px 0;
+               font-weight: 700;">
+      Key Revenue Insights
+    </h4>
+
+    <ul style="list-style: none;
+               padding: 0;
+               margin: 0;
+               font-size: 20px;
+               line-height: 1.6;
+               color: var(--text-primary, #374151);">
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Strategic partnerships and expanded sales channels were primary drivers of this quarter's revenue surge.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Our diversified product portfolio continues to mitigate market risks, contributing to stable growth.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Customer lifetime value initiatives are showing positive results, enhancing recurring revenue streams.
+      </li>
+      <li style="margin-bottom: 14px; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Geographic expansion into new markets has opened significant revenue opportunities for the coming year.
+      </li>
+      <li style="margin-bottom: 0; padding-left: 28px; position: relative;">
+        <span style="position: absolute; left: 0; color: var(--accent-blue, #1a73e8); font-size: 24px;">•</span>
+        Operational efficiencies implemented last quarter have positively impacted gross margins and overall profitability.
+      </li>
+    </ul>
+
+  </div>
+
+</div>
