@@ -2,13 +2,13 @@
   "variant_id": "sequential_3col_i1",
   "slide_type": "sequential",
   "template_path": "app/templates/sequential/sequential_3col_c1_themed.html",
-  "description": "3-step sequential layout for I1/I2 layouts (6 bullets per step)",
+  "description": "3-step sequential layout for I1 layout (5 bullets per step)",
   "iseries_layout": "wide",
   "elements": [
     {
       "element_id": "step_1",
       "element_type": "sequential_step_explicit",
-      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4", "sentence_5", "sentence_6"],
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4", "sentence_5"],
       "placeholders": {
         "number": "step_1_number",
         "title": "step_1_title",
@@ -16,8 +16,7 @@
         "sentence_2": "step_1_sentence_2",
         "sentence_3": "step_1_sentence_3",
         "sentence_4": "step_1_sentence_4",
-        "sentence_5": "step_1_sentence_5",
-        "sentence_6": "step_1_sentence_6"
+        "sentence_5": "step_1_sentence_5"
       },
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
@@ -26,14 +25,13 @@
         "sentence_2": {"baseline": 60, "min": 45, "max": 70},
         "sentence_3": {"baseline": 60, "min": 45, "max": 70},
         "sentence_4": {"baseline": 60, "min": 45, "max": 70},
-        "sentence_5": {"baseline": 60, "min": 45, "max": 70},
-        "sentence_6": {"baseline": 60, "min": 45, "max": 70}
+        "sentence_5": {"baseline": 60, "min": 45, "max": 70}
       }
     },
     {
       "element_id": "step_2",
       "element_type": "sequential_step_explicit",
-      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4", "sentence_5", "sentence_6"],
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4", "sentence_5"],
       "placeholders": {
         "number": "step_2_number",
         "title": "step_2_title",
@@ -41,8 +39,7 @@
         "sentence_2": "step_2_sentence_2",
         "sentence_3": "step_2_sentence_3",
         "sentence_4": "step_2_sentence_4",
-        "sentence_5": "step_2_sentence_5",
-        "sentence_6": "step_2_sentence_6"
+        "sentence_5": "step_2_sentence_5"
       },
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
@@ -51,14 +48,13 @@
         "sentence_2": {"baseline": 60, "min": 45, "max": 70},
         "sentence_3": {"baseline": 60, "min": 45, "max": 70},
         "sentence_4": {"baseline": 60, "min": 45, "max": 70},
-        "sentence_5": {"baseline": 60, "min": 45, "max": 70},
-        "sentence_6": {"baseline": 60, "min": 45, "max": 70}
+        "sentence_5": {"baseline": 60, "min": 45, "max": 70}
       }
     },
     {
       "element_id": "step_3",
       "element_type": "sequential_step_explicit",
-      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4", "sentence_5", "sentence_6"],
+      "required_fields": ["number", "title", "sentence_1", "sentence_2", "sentence_3", "sentence_4", "sentence_5"],
       "placeholders": {
         "number": "step_3_number",
         "title": "step_3_title",
@@ -66,8 +62,7 @@
         "sentence_2": "step_3_sentence_2",
         "sentence_3": "step_3_sentence_3",
         "sentence_4": "step_3_sentence_4",
-        "sentence_5": "step_3_sentence_5",
-        "sentence_6": "step_3_sentence_6"
+        "sentence_5": "step_3_sentence_5"
       },
       "character_requirements": {
         "number": {"baseline": 1, "min": 1, "max": 2},
@@ -76,10 +71,9 @@
         "sentence_2": {"baseline": 60, "min": 45, "max": 70},
         "sentence_3": {"baseline": 60, "min": 45, "max": 70},
         "sentence_4": {"baseline": 60, "min": 45, "max": 70},
-        "sentence_5": {"baseline": 60, "min": 45, "max": 70},
-        "sentence_6": {"baseline": 60, "min": 45, "max": 70}
+        "sentence_5": {"baseline": 60, "min": 45, "max": 70}
       }
     }
   ],
-  "layout": {"columns": 3, "layout_type": "sequential_steps", "steps_count": 3, "sentences_per_step": 6}
+  "layout": {"columns": 3, "layout_type": "sequential_steps", "steps_count": 3, "sentences_per_step": 5}
 }
