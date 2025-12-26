@@ -38,16 +38,16 @@ declare -a TESTS=(
   "I1|comparison_3col_i1|I1-image-left|Service Tier Comparison|Compare our three service tiers to find the best fit for your needs|Starter,Professional,Enterprise|pricing tiers comparison plans"
 
   # I2: Wide Image Right (2 slides)
-  "I2|comparison_2col_i1|I2-image-right|Cloud vs On-Premise|Detailed comparison of cloud and on-premise deployment options|Cloud Solution,On-Premise Solution|cloud versus on premise servers"
-  "I2|comparison_3col_i1|I2-image-right|Platform Options|Three platform options designed for different organizational needs|Basic,Advanced,Premium|platform options technology comparison"
+  "I2|comparison_2col_i2|I2-image-right|Cloud vs On-Premise|Detailed comparison of cloud and on-premise deployment options|Cloud Solution,On-Premise Solution|cloud versus on premise servers"
+  "I2|comparison_3col_i2|I2-image-right|Platform Options|Three platform options designed for different organizational needs|Basic,Advanced,Premium|platform options technology comparison"
 
   # I3: Narrow Image Left (2 slides)
   "I3|comparison_2col_i3|I3-image-left-narrow|Traditional vs Modern|Comparing traditional approaches with modern methodologies|Traditional Approach,Modern Approach|traditional modern comparison innovation"
   "I3|comparison_3col_i3|I3-image-left-narrow|Deployment Models|Three deployment models for flexible infrastructure choices|Public Cloud,Private Cloud,Hybrid Cloud|cloud deployment models infrastructure"
 
   # I4: Narrow Image Right (2 slides)
-  "I4|comparison_2col_i3|I4-image-right-narrow|Manual vs Automated|Comparing manual processes with automated solutions|Manual Process,Automated Solution|automation comparison manual robot"
-  "I4|comparison_3col_i3|I4-image-right-narrow|Team Structure Options|Three organizational models for modern teams|Centralized,Distributed,Hybrid|team organization structure modern"
+  "I4|comparison_2col_i4|I4-image-right-narrow|Manual vs Automated|Comparing manual processes with automated solutions|Manual Process,Automated Solution|automation comparison manual robot"
+  "I4|comparison_3col_i4|I4-image-right-narrow|Team Structure Options|Three organizational models for modern teams|Centralized,Distributed,Hybrid|team organization structure modern"
 )
 
 echo "=============================================="

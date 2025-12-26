@@ -1,8 +1,8 @@
 {
-  "variant_id": "comparison_2col_i3",
+  "variant_id": "comparison_2col_i4",
   "slide_type": "comparison",
   "template_path": "app/templates/multilateral_comparison/comparison_2col_c1_themed.html",
-  "description": "2-column comparison layout with 7 items per column for I3/I4 layouts (15% character reduction)",
+  "description": "2-column comparison layout with 7 items per column for I4 layout (narrow image right)",
   "iseries_layout": "narrow",
   "elements": [
     {
