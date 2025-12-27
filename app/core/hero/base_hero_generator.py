@@ -25,6 +25,7 @@ class HeroGenerationRequest(BaseModel):
     Request model for hero slide generation.
 
     Designed to work with Director v3.4's slide data structure.
+    v1.2.3: Added global_brand for simplified image prompting.
     """
     slide_number: int = Field(..., description="Slide number in presentation")
     slide_type: str = Field(..., description="Hero slide type: title_slide, section_divider, closing_slide")
@@ -37,6 +38,11 @@ class HeroGenerationRequest(BaseModel):
     visual_style: str = Field(
         default="illustrated",
         description="Visual style for background images: illustrated (Ghibli-style, default), professional, kids"
+    )
+    # v1.2.3: Global brand variables for simplified image prompting
+    global_brand: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Global brand variables: target_demographic, visual_style, color_palette, lighting_mood"
     )
 
 

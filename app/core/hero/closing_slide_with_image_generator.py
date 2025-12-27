@@ -118,12 +118,19 @@ class ClosingSlideWithImageGenerator(ClosingSlideGenerator):
         Creates an inspiring, forward-looking background suitable for the RIGHT side
         of split-layout closing slide, with visual style support.
 
+        v1.2.3: If global_brand is provided, uses simplified prompting (~30 words).
+
         Args:
             request: Hero generation request with narrative, context, and visual_style
 
         Returns:
             Tuple of (image_prompt, archetype)
         """
+        # v1.2.3: Check for global_brand for simplified prompting
+        if request.global_brand and request.global_brand.get("visual_style"):
+            return self._build_image_prompt_simplified(request)
+
+        # Legacy domain-based prompting
         narrative = request.narrative
         topics = request.topics
         visual_style = request.visual_style
@@ -155,6 +162,74 @@ The image MUST prominently feature visual elements related to: {topic_focus}
 CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind in the image."""
 
         return prompt, style_config.archetype
+
+    def _build_image_prompt_simplified(
+        self,
+        request: HeroGenerationRequest
+    ) -> tuple[str, str]:
+        """
+        Build simplified ~30 word image prompt using global brand variables.
+
+        v1.2.3: Uses prompt_assembler pattern for concise, natural language prompts.
+
+        Args:
+            request: Hero generation request with global_brand variables
+
+        Returns:
+            Tuple of (image_prompt, archetype)
+        """
+        from app.core.iseries.prompt_assembler import (
+            GlobalBrandVars, LocalMessageVars, assemble_prompt
+        )
+
+        # Extract global brand variables
+        global_vars = GlobalBrandVars.from_dict(request.global_brand)
+
+        # Extract anchor subject from narrative/topics
+        anchor_subject = self._extract_anchor_subject(request)
+
+        # Build local variables for this closing slide
+        local_vars = LocalMessageVars(
+            content_archetype="closing-hero",
+            topic=request.narrative[:80] if request.narrative else "closing and thank you",
+            anchor_subject=anchor_subject,
+            action_composition="with inspiring composition and forward-looking imagery",
+            semantic_link="closing slide",
+            aspect_ratio="16:9"  # Closing slides use landscape
+        )
+
+        # Assemble the simplified prompt
+        prompt = assemble_prompt(global_vars, local_vars)
+
+        # Determine archetype for metadata
+        style_config = get_style_config(request.visual_style)
+
+        return prompt, style_config.archetype
+
+    def _extract_anchor_subject(self, request: HeroGenerationRequest) -> str:
+        """
+        Extract anchor subject for simplified prompting.
+
+        Analyzes narrative and topics to find the best visual subject.
+
+        Args:
+            request: Hero generation request
+
+        Returns:
+            Anchor subject string for image prompt
+        """
+        topics = request.topics or []
+        narrative = request.narrative or ""
+
+        # Try to find a visual noun from topics
+        if topics and len(topics[0]) > 5:
+            return f"inspiring visualization representing {topics[0]}"
+
+        # Fall back to narrative-based subject
+        if narrative:
+            return f"abstract hopeful shapes representing {narrative[:50]}"
+
+        return "abstract professional success and achievement"
 
     def _get_theme_style(self, theme: str) -> str:
         """
