@@ -19,6 +19,10 @@ Version: 1.5.0 - 2-Step Intentional Spotlight Image Generation
               - Step 1: Extract visual concept (WHAT to show)
               - Step 2: Build prompt from concept (HOW to show it)
               - Hybrid extraction (LLM for complex, rules for simple)
+Version: 1.5.1 - Updated aspect ratios to use Gemini 2.5 Flash native ratios
+              - I1: 11:18 → 2:3 (native, 8% crop)
+              - I3: 1:3 → 9:16 (native, 41% crop)
+              - I4: 7:18 → 9:16 (native, 31% crop)
 """
 
 import asyncio
@@ -40,19 +44,19 @@ from typing import Dict, Any, Callable, Optional, List
 ISERIES_LAYOUT_SPECS = {
     "I1": {
         "content": {"width_px": 1200, "height_px": 840},
-        "image": {"width_px": 660, "height_px": 1080, "aspect_ratio": "11:18"}
+        "image": {"width_px": 660, "height_px": 1080, "aspect_ratio": "2:3"}  # Native 2:3, crop to 660×1080 (8%)
     },
     "I2": {
         "content": {"width_px": 1140, "height_px": 840},
-        "image": {"width_px": 720, "height_px": 1080, "aspect_ratio": "2:3"}
+        "image": {"width_px": 720, "height_px": 1080, "aspect_ratio": "2:3"}  # Native 2:3
     },
     "I3": {
         "content": {"width_px": 1500, "height_px": 840},
-        "image": {"width_px": 360, "height_px": 1080, "aspect_ratio": "1:3"}
+        "image": {"width_px": 360, "height_px": 1080, "aspect_ratio": "9:16"}  # Native 9:16, crop to 360×1080 (41%)
     },
     "I4": {
         "content": {"width_px": 1440, "height_px": 840},
-        "image": {"width_px": 420, "height_px": 1080, "aspect_ratio": "7:18"}
+        "image": {"width_px": 420, "height_px": 1080, "aspect_ratio": "9:16"}  # Native 9:16, crop to 420×1080 (31%)
     },
 }
 
@@ -296,12 +300,14 @@ class BaseISeriesGenerator(ABC):
         generation_time_ms = int((time.time() - start_time) * 1000)
 
         # Build response
+        # v1.6.1: Pass image_prompt for debugging (helps identify why images look similar)
         response = self._build_response(
             image_url=image_url,
             image_fallback=image_fallback,
             content_result=content_result,
             request=request,
-            generation_time_ms=generation_time_ms
+            generation_time_ms=generation_time_ms,
+            image_prompt=image_prompt  # v1.6.1: For debugging
         )
 
         logger.info(
@@ -622,11 +628,18 @@ CRITICAL REQUIREMENTS:
         narrative = request.narrative
         topics = request.topics or []
 
+        # v1.6.1: Use image_prompt_hint as anchor_subject if provided
+        # This is the key local parameter that differentiates slide images
+        if request.image_prompt_hint:
+            anchor_subject = request.image_prompt_hint
+        else:
+            anchor_subject = self._extract_anchor_subject(narrative, topics)
+
         # Build local variables - simple extraction without LLM
         local_vars = LocalMessageVars(
             content_archetype=self._detect_content_archetype(narrative, topics),
             topic=topics[0] if topics else narrative[:100],
-            anchor_subject=self._extract_anchor_subject(narrative, topics),
+            anchor_subject=anchor_subject,  # v1.6.1: Use image_prompt_hint when available
             action_composition=self._extract_action_composition(narrative),
             semantic_link="",  # Optional, not needed for simplified prompts
             aspect_ratio="9:16"  # I-series uses portrait orientation
@@ -650,9 +663,10 @@ CRITICAL REQUIREMENTS:
 
         logger.info(
             f"Built simplified image prompt (visual_style={visual_style}, "
-            f"archetype={archetype}, anchor='{local_vars.anchor_subject[:50]}...')"
+            f"archetype={archetype}, anchor='{local_vars.anchor_subject[:50]}...', "
+            f"hint_used={bool(request.image_prompt_hint)})"
         )
-        logger.debug(f"Simplified prompt: {prompt}")
+        logger.info(f"Simplified prompt: {prompt}")
 
         return prompt, archetype, style_params
 
@@ -888,17 +902,23 @@ Generate the content HTML now:"""
             metadata["context_domain"] = style_params.get("domain")
 
         # v1.5.0: Extract image_model from style_params if not explicitly provided
+        # NOTE: model param is now deprecated - API handles fallback chain automatically
         model = image_model or (style_params.get("image_model") if style_params else None)
+
+        # v1.6.0: Extract topics from request for semantic cache
+        # Per API_USAGE.md best practices: topics enable semantic caching
+        topics = list(request.topics) if request.topics else None
 
         return await self.image_client.generate_iseries_image(
             prompt=prompt,
             layout_type=self.layout_type,
             visual_style=request.visual_style.value,
             metadata=metadata,
-            model=model,  # v1.5.0: Pass model for quality tier selection
+            model=model,  # DEPRECATED: API handles fallback chain automatically
             archetype=archetype,
             aspect_ratio=aspect_ratio,
-            style_params=style_params  # v1.4.0: Pass style params to image client
+            style_params=style_params,  # v1.4.0: Pass style params to image client
+            topics=topics  # v1.6.0: Pass topics for semantic cache
         )
 
     async def _skip_image_task(self) -> Dict[str, Any]:
@@ -1372,7 +1392,8 @@ Generate the JSON object now:"""
         image_fallback: bool,
         content_result: Dict[str, Any],
         request: ISeriesGenerationRequest,
-        generation_time_ms: int
+        generation_time_ms: int,
+        image_prompt: Optional[str] = None  # v1.6.1: For debugging
     ) -> ISeriesGenerationResponse:
         """
         Build final response with all slot HTML.
@@ -1383,6 +1404,7 @@ Generate the JSON object now:"""
             content_result: Content generation result
             request: Original request
             generation_time_ms: Total generation time
+            image_prompt: The actual prompt sent to Image Service (for debugging)
 
         Returns:
             ISeriesGenerationResponse
@@ -1418,7 +1440,10 @@ Generate the JSON object now:"""
             "multi_step": content_result.get("metadata", {}).get("multi_step", {
                 "enabled": content_result.get("validation", {}).get("multi_step", False)
             }),
-            "generation_mode": "multi_step" if content_result.get("validation", {}).get("multi_step") else "single_step"
+            "generation_mode": "multi_step" if content_result.get("validation", {}).get("multi_step") else "single_step",
+            # v1.6.1: Include image prompt for debugging (helps identify why images look similar)
+            "image_prompt": image_prompt,
+            "topics": list(request.topics) if request.topics else None
         }
 
         # Per SLIDE_GENERATION_INPUT_SPEC.md: I-series uses background_color #ffffff

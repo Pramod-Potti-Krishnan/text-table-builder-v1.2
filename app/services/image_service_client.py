@@ -10,10 +10,16 @@ Features:
 - Context-aware prompt engineering
 - Crop anchor positioning for text placement
 - Retry logic with exponential backoff
-- Timeout handling (20 seconds max)
+- Timeout handling (120 seconds - per API best practices)
 - Graceful error handling
+- Semantic cache metadata for improved cache hits
 
 Version: 1.1.0 - Added context-aware style params and improved negative prompts
+Version: 1.2.0 - Updated to follow Image Builder v2.0 API best practices:
+              - Increased timeout from 20s to 120s (API can take 8-15s)
+              - Removed explicit model parameter (API handles fallback chain)
+              - Added semantic cache metadata (topics, visual_style, slide_type, domain)
+              - Layout-specific aspect ratios: I1/I2=2:3, I3/I4=9:16
 """
 
 import os
@@ -60,7 +66,7 @@ class ImageServiceClient:
         self,
         base_url: Optional[str] = None,
         api_key: Optional[str] = None,
-        timeout: float = 20.0,
+        timeout: float = 120.0,
         max_retries: int = 2
     ):
         """
@@ -69,7 +75,7 @@ class ImageServiceClient:
         Args:
             base_url: Image Builder API base URL (from env if None)
             api_key: Optional API key (from env if None)
-            timeout: Request timeout in seconds (default: 20)
+            timeout: Request timeout in seconds (default: 120, per API best practices)
             max_retries: Maximum retry attempts (default: 2)
         """
         self.base_url = base_url or os.getenv(
@@ -246,31 +252,36 @@ class ImageServiceClient:
         layout_type: str,
         visual_style: str = "illustrated",
         metadata: Optional[Dict[str, Any]] = None,
-        model: Optional[str] = None,
+        model: Optional[str] = None,  # DEPRECATED: API handles fallback chain automatically
         archetype: Optional[str] = None,
         aspect_ratio: str = "9:16",
-        style_params: Optional[Dict[str, Any]] = None
+        style_params: Optional[Dict[str, Any]] = None,
+        topics: Optional[list] = None  # v1.2.0: For semantic cache
     ) -> Dict[str, Any]:
         """
         Generate portrait-oriented image for I-series layouts.
 
-        v1.3.1: Uses per-layout aspect ratio for correct image dimensions.
-        - I1: 11:18 (660×1080) - wide portrait
-        - I2: 2:3 (720×1080) - standard portrait
-        - I3: 1:3 (360×1080) - very narrow
-        - I4: 7:18 (420×1080) - narrow
+        v1.2.0: Updated for Image Builder v2.0 API best practices:
+        - Removed model parameter (API handles Gemini→Imagen fallback chain)
+        - Added semantic cache metadata for improved cache hits
+        - Layout-specific aspect ratios: I1/I2=2:3, I3/I4=9:16
 
-        v1.1.0: Uses context-aware style_params for improved image relevance.
+        v1.3.1: Uses per-layout aspect ratio for correct image dimensions.
+        - I1: 2:3 (native Gemini, 8% crop to 660×1080)
+        - I2: 2:3 (native Gemini, 720×1080)
+        - I3: 9:16 (native Gemini, 41% crop to 360×1080)
+        - I4: 9:16 (native Gemini, 31% crop to 420×1080)
 
         Args:
             prompt: Image description/prompt
             layout_type: I-series layout type (I1, I2, I3, I4)
             visual_style: Visual style (professional, illustrated, kids)
             metadata: Custom metadata to store with image
-            model: Imagen model to use (default based on visual_style)
+            model: DEPRECATED - API handles fallback chain automatically
             archetype: Image style archetype (default based on visual_style)
-            aspect_ratio: Target aspect ratio (default 9:16, can be custom)
+            aspect_ratio: Target aspect ratio (I1/I2: 2:3, I3/I4: 9:16)
             style_params: Context-aware style parameters (style, color_scheme, lighting, domain)
+            topics: List of topic keywords for semantic cache
 
         Returns:
             API response dict with image URLs and metadata
@@ -303,28 +314,28 @@ class ImageServiceClient:
                 }
                 archetype = archetype_map.get(visual_style, "spot_illustration")
 
-        # Determine model from visual style if not provided
-        if model is None:
-            # v1.1.0: Use faster model for illustrations, standard for photo
-            if archetype == "photorealistic":
-                model = "imagen-3.0-generate-001"  # Standard quality for photos
-            else:
-                model = "imagen-3.0-fast-generate-001"  # Fast for illustrations
+        # v1.2.0: Model parameter is DEPRECATED - API handles fallback chain automatically
+        # Gemini 2.5 Flash → Imagen 3 Fast → Imagen 3 Regular → Semantic Cache
+        if model:
+            logger.warning(
+                f"model parameter is deprecated - Image Builder v2.0 handles "
+                f"fallback chain automatically (Gemini→Imagen→Cache)"
+            )
 
         # v1.1.0: Build context-aware negative prompt
         negative_prompt = self._get_iseries_negative_prompt(layout_type, context_domain)
 
         # Build request payload with per-layout aspect ratio
+        # v1.2.0: Removed model parameter - API handles generator selection
         # v1.3.1: Use passed aspect_ratio instead of hardcoded 9:16
         payload = {
             "prompt": prompt,
-            "aspect_ratio": aspect_ratio,  # Per-layout ratio (I1: 11:18, I2: 2:3, etc.)
-            "model": model,
+            "aspect_ratio": aspect_ratio,  # Per-layout ratio (I1/I2: 2:3, I3/I4: 9:16)
             "archetype": archetype,
             "negative_prompt": negative_prompt,
             "options": {
                 "remove_background": False,
-                "crop_anchor": "center",  # Center crop for portrait
+                "crop_anchor": "center",  # Center crop for portrait (important for I3/I4 with 41% crop)
                 "store_in_cloud": True,
                 "return_base64": False
             },
@@ -335,6 +346,14 @@ class ImageServiceClient:
         payload["metadata"]["layout_type"] = layout_type
         payload["metadata"]["visual_style"] = visual_style
         payload["metadata"]["aspect_ratio"] = aspect_ratio  # v1.3.1: Use actual per-layout ratio
+
+        # v1.2.0: Add semantic cache metadata for improved cache hits
+        # Per API_USAGE.md: topics, visual_style, slide_type, domain enable semantic caching
+        payload["metadata"]["slide_type"] = "iseries_content"  # For semantic cache
+        if topics:
+            payload["metadata"]["topics"] = topics
+        if context_domain:
+            payload["metadata"]["domain"] = context_domain
 
         # v1.1.0: Add context info to metadata
         if style_params:
@@ -573,7 +592,7 @@ def get_image_service_client(
             "https://web-production-1b5df.up.railway.app"
         )
         key = api_key or os.getenv("IMAGE_SERVICE_API_KEY")
-        timeout_val = timeout or float(os.getenv("IMAGE_SERVICE_TIMEOUT", "20.0"))
+        timeout_val = timeout or float(os.getenv("IMAGE_SERVICE_TIMEOUT", "120.0"))
 
         _image_service_client_instance = ImageServiceClient(
             base_url=url,
