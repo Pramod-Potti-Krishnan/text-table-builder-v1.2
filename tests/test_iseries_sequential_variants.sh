@@ -11,9 +11,9 @@
 # Includes v4.6 ImageStyleAgreement for consistent image generation
 #
 # Character limits (updated):
-# - I1/I2 3-col: 45-70 chars/bullet, baseline 60, 6 bullets/step
-# - I3/I4 3-col: 50-75 chars/bullet, baseline 65, 6 bullets/step
-# - I3/I4 4-col: 30-50 chars/bullet, baseline 40, 6 bullets/step
+# - I1/I2 3-col: 45-70 chars/bullet, baseline 60, 5 bullets/step
+# - I3/I4 3-col: 50-75 chars/bullet, baseline 65, 5 bullets/step
+# - I3/I4 4-col: 30-50 chars/bullet, baseline 40, 5 bullets/step
 #
 
 # Service URLs
@@ -29,7 +29,7 @@ OUTPUT_DIR="./test_outputs/iseries_sequential_$(date +%Y%m%d_%H%M%S)"
 mkdir -p "$OUTPUT_DIR"
 
 # Default image style (executives + professional)
-AUDIENCE_TYPE="executives"
+AUDIENCE_TYPE="professional"
 PURPOSE_TYPE="inform"
 ARCHETYPE="photorealistic"
 MOOD="professional"
@@ -57,7 +57,7 @@ declare -a TESTS=(
 echo "=============================================="
 echo "  I-Series Sequential Variants Test"
 echo "  Phase 2: 6 Slides (updated for v4.6)"
-echo "  With ImageStyleAgreement + 6 bullets/step"
+echo "  With ImageStyleAgreement + 5 bullets/step"
 echo "=============================================="
 echo ""
 echo "Text Service:   $TEXT_SERVICE"
@@ -68,9 +68,9 @@ echo "Image Style: $ARCHETYPE, $MOOD, $COLOR_SCHEME"
 echo "Skip Images: $SKIP_IMAGES"
 echo ""
 echo "Sequential Variants Available:"
-echo "  I1/I2 (wide): 3-col only (6 bullets, 45-70 chars)"
-echo "  I3/I4 (narrow): 3-col (6 bullets, 50-75 chars)"
-echo "                  4-col (6 bullets, 30-50 chars)"
+echo "  I1/I2 (wide): 3-col only (5 bullets, 45-70 chars)"
+echo "  I3/I4 (narrow): 3-col (5 bullets, 50-75 chars)"
+echo "                  4-col (5 bullets, 30-50 chars)"
 echo ""
 
 # Array to collect slides JSON
@@ -230,7 +230,7 @@ echo "Output: $OUTPUT_DIR"
 echo ""
 echo "Review Checklist:"
 echo "  [ ] Content fits within layout bounds"
-echo "  [ ] 6 bullets per step with 24px spacing"
+echo "  [ ] 5 bullets per step with 24px spacing"
 echo "  [ ] I1/I2 3-col: 45-70 chars/bullet"
 echo "  [ ] I3/I4 3-col: 50-75 chars/bullet"
 echo "  [ ] I3/I4 4-col: 30-50 chars/bullet"
