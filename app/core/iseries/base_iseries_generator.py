@@ -277,8 +277,10 @@ class BaseISeriesGenerator(ABC):
         image_url = None
         image_fallback = False
         image_metadata = {}
+        image_error = None  # v1.6.2: Capture error for debugging
 
         if isinstance(image_result, Exception):
+            image_error = str(image_result)
             logger.warning(
                 f"Image generation failed, using fallback: {image_result}"
             )
@@ -292,8 +294,14 @@ class BaseISeriesGenerator(ABC):
             logger.info(
                 f"Image generated in {image_metadata.get('generation_time_ms', 0)}ms"
             )
+        elif image_result and image_result.get("skipped"):
+            # v1.6.0: skip_image_generation=True case
+            image_fallback = True
+            image_error = "skipped (skip_image_generation=True)"
         else:
-            logger.warning("Image generation returned unsuccessful, using fallback")
+            # v1.6.2: Capture the actual error from Image Service
+            image_error = image_result.get("error") if image_result else "No response from Image Service"
+            logger.warning(f"Image generation returned unsuccessful: {image_error}")
             image_fallback = True
 
         # Calculate generation time
@@ -301,13 +309,15 @@ class BaseISeriesGenerator(ABC):
 
         # Build response
         # v1.6.1: Pass image_prompt for debugging (helps identify why images look similar)
+        # v1.6.2: Pass image_error for debugging fallback issues
         response = self._build_response(
             image_url=image_url,
             image_fallback=image_fallback,
             content_result=content_result,
             request=request,
             generation_time_ms=generation_time_ms,
-            image_prompt=image_prompt  # v1.6.1: For debugging
+            image_prompt=image_prompt,  # v1.6.1: For debugging
+            image_error=image_error  # v1.6.2: For debugging fallback issues
         )
 
         logger.info(
@@ -1393,7 +1403,8 @@ Generate the JSON object now:"""
         content_result: Dict[str, Any],
         request: ISeriesGenerationRequest,
         generation_time_ms: int,
-        image_prompt: Optional[str] = None  # v1.6.1: For debugging
+        image_prompt: Optional[str] = None,  # v1.6.1: For debugging
+        image_error: Optional[str] = None  # v1.6.2: For debugging fallback issues
     ) -> ISeriesGenerationResponse:
         """
         Build final response with all slot HTML.
@@ -1405,6 +1416,7 @@ Generate the JSON object now:"""
             request: Original request
             generation_time_ms: Total generation time
             image_prompt: The actual prompt sent to Image Service (for debugging)
+            image_error: Error message if image generation failed (for debugging)
 
         Returns:
             ISeriesGenerationResponse
@@ -1443,7 +1455,9 @@ Generate the JSON object now:"""
             "generation_mode": "multi_step" if content_result.get("validation", {}).get("multi_step") else "single_step",
             # v1.6.1: Include image prompt for debugging (helps identify why images look similar)
             "image_prompt": image_prompt,
-            "topics": list(request.topics) if request.topics else None
+            "topics": list(request.topics) if request.topics else None,
+            # v1.6.2: Include image error for debugging fallback issues
+            "image_error": image_error
         }
 
         # Per SLIDE_GENERATION_INPUT_SPEC.md: I-series uses background_color #ffffff
