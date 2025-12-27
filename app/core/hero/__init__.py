@@ -26,6 +26,7 @@ from .closing_slide_generator import ClosingSlideGenerator
 
 # Image-enhanced variants
 from .title_slide_with_image_generator import TitleSlideWithImageGenerator
+from .title_slide_structured_with_image_generator import TitleSlideStructuredWithImageGenerator
 from .section_divider_with_image_generator import SectionDividerWithImageGenerator
 from .closing_slide_with_image_generator import ClosingSlideWithImageGenerator
 
@@ -38,6 +39,7 @@ __all__ = [
     "ClosingSlideGenerator",
     # Image-enhanced variants
     "TitleSlideWithImageGenerator",
+    "TitleSlideStructuredWithImageGenerator",
     "SectionDividerWithImageGenerator",
     "ClosingSlideWithImageGenerator",
 ]

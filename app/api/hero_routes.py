@@ -9,7 +9,8 @@ Standard (gradient backgrounds):
 - POST /v1.2/hero/closing - Closing/conclusion slides
 
 Image-Enhanced (AI-generated backgrounds):
-- POST /v1.2/hero/title-with-image - Title slides with 16:9 background images
+- POST /v1.2/hero/title-with-image - Title slides with 16:9 background images (full HTML)
+- POST /v1.2/hero/title-structured-with-image - Title slides with structured fields + background image
 - POST /v1.2/hero/section-with-image - Section dividers with background images
 - POST /v1.2/hero/closing-with-image - Closing slides with background images
 
@@ -37,6 +38,7 @@ from ..core.hero import (
     ClosingSlideGenerator,
     # Image-enhanced variants
     TitleSlideWithImageGenerator,
+    TitleSlideStructuredWithImageGenerator,
     SectionDividerWithImageGenerator,
     ClosingSlideWithImageGenerator
 )
@@ -124,6 +126,24 @@ def get_title_with_image_generator(
         TitleSlideWithImageGenerator instance
     """
     return TitleSlideWithImageGenerator(llm_service)
+
+
+def get_title_structured_with_image_generator(
+    llm_service: Callable = Depends(get_async_llm_service)
+) -> TitleSlideStructuredWithImageGenerator:
+    """
+    Create TitleSlideStructuredWithImageGenerator instance.
+
+    Returns structured fields (slide_title, subtitle, author_info) + background_image URL.
+    This is for H1-structured layout (not H1-generated which uses hero_content).
+
+    Args:
+        llm_service: Async LLM callable (injected)
+
+    Returns:
+        TitleSlideStructuredWithImageGenerator instance
+    """
+    return TitleSlideStructuredWithImageGenerator(llm_service)
 
 
 def get_section_with_image_generator(
@@ -477,6 +497,98 @@ async def generate_title_slide_with_image(
         )
 
 
+@router.post("/title-structured-with-image")
+async def generate_title_structured_with_image(
+    request: HeroGenerationRequest,
+    generator: TitleSlideStructuredWithImageGenerator = Depends(get_title_structured_with_image_generator)
+):
+    """
+    Generate title slide with STRUCTURED fields + AI-generated background image.
+
+    Unlike `/title-with-image` which returns full `hero_content` HTML, this endpoint
+    returns structured fields for Layout Service to compose:
+
+    **Response Format**:
+    ```json
+    {
+        "slide_title": "AI in Healthcare",
+        "subtitle": "Transforming patient outcomes",
+        "author_info": "Dr. Jane Doe | TechCorp | Dec 2024",
+        "background_image": "https://supabase.../generated/abc.png",
+        "metadata": { ... }
+    }
+    ```
+
+    **Use Case**: H1-structured layout type where Layout Service needs separate fields
+    to compose the final slide (as opposed to H1-generated which uses hero_content).
+
+    **Visual Style Options** (request.visual_style):
+    - `illustrated` (default): Studio Ghibli-style, anime illustration
+    - `professional`: Photorealistic, modern, clean corporate imagery
+    - `kids`: Bright vibrant colors, playful, cartoon illustration
+
+    **Image Generation**:
+    - Automatically generates contextual background based on narrative and topics
+    - Uses Image Builder v2.0 API with 16:9 aspect ratio
+    - Crop anchor: LEFT (text placement area)
+    - Generation time: ~10-15 seconds (parallel with content)
+    - Graceful fallback: background_image will be null if generation fails
+
+    **Request Body**:
+    - slide_number: Slide number in presentation
+    - slide_type: "title_slide"
+    - narrative: Narrative or purpose for the slide
+    - topics: List of key topics (used for image context)
+    - visual_style: "illustrated" | "professional" | "kids"
+    - context: Additional context (theme, audience, presentation_title, etc.)
+
+    **Metadata includes**:
+    - image_prompt_built: The prompt constructed for image generation
+    - image_archetype_built: The archetype used (photorealistic/spot_illustration)
+    - image_generation_time_ms: Time taken to generate image
+    - fallback_to_gradient: Whether image generation failed
+    """
+    import time
+    start_time = time.time()
+
+    # REQUEST ARRIVAL LOGGING
+    print(f"[HERO-REQ] type=title-structured-with-image, slide_num={request.slide_number}")
+
+    try:
+        result = await generator.generate(request)
+
+        # SUCCESS LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        has_image = bool(result.get('background_image'))
+        fallback = result.get('metadata', {}).get('fallback_to_gradient', False)
+        print(f"[HERO-OK] type=title-structured-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, has_image={has_image}, fallback={fallback}")
+
+        # Log image prompt for debugging/reference
+        metadata = result.get('metadata', {})
+        if metadata.get('image_prompt_built'):
+            print(f"[HERO-IMG] slide_num={request.slide_number}, prompt={metadata.get('image_prompt_built')[:200]}...")
+
+        return result
+
+    except ValueError as e:
+        # VALIDATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-400] type=title-structured-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
+        raise HTTPException(
+            status_code=400,
+            detail=f"Title structured with image validation failed: {str(e)}"
+        )
+
+    except Exception as e:
+        # GENERATION ERROR LOGGING
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        print(f"[HERO-ERROR] type=title-structured-with-image, slide_num={request.slide_number}, time={elapsed_ms}ms, error={str(e)[:100]}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Title structured with image generation failed: {str(e)}"
+        )
+
+
 @router.post("/section-with-image", response_model=HeroGenerationResponse)
 async def generate_section_divider_with_image(
     request: HeroGenerationRequest,
@@ -696,6 +808,7 @@ async def hero_health_check():
             },
             "image_enhanced": {
                 "title": "/v1.2/hero/title-with-image",
+                "title_structured": "/v1.2/hero/title-structured-with-image",
                 "section": "/v1.2/hero/section-with-image",
                 "closing": "/v1.2/hero/closing-with-image"
             }
@@ -708,6 +821,7 @@ async def hero_health_check():
             },
             "image_enhanced": {
                 "title": "TitleSlideWithImageGenerator (L29 + Image Builder)",
+                "title_structured": "TitleSlideStructuredWithImageGenerator (H1-structured + Image Builder)",
                 "section": "SectionDividerWithImageGenerator (L29 + Image Builder)",
                 "closing": "ClosingSlideWithImageGenerator (L29 + Image Builder)"
             }
