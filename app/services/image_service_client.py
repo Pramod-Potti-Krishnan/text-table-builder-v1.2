@@ -133,11 +133,10 @@ class ImageServiceClient:
             slide_type: Type of hero slide (affects crop anchor)
             negative_prompt: What to avoid in image
             metadata: Custom metadata to store with image
-            model: Imagen model to use (default: imagen-3.0-generate-001)
+            model: Imagen model to use (default: imagen-3.0-generate)
                    Options:
-                   - imagen-3.0-fast-generate-001 (~5s, $0.02) - fastest/cheapest
-                   - imagen-3.0-generate-001 (~11s, $0.04) - standard quality
-                   - imagen-3.0-generate-002 (~11s, $0.04) - high quality
+                   - imagen-3.0-fast-generate (~5s, $0.02) - fastest/cheapest
+                   - imagen-3.0-generate (~11s, $0.04) - standard quality
             archetype: Image style archetype (default: photorealistic)
                        Options:
                        - photorealistic: Realistic photography style
@@ -157,7 +156,7 @@ class ImageServiceClient:
         crop_anchor = self._get_crop_anchor(slide_type)
 
         # Use provided model or default to standard quality
-        image_model = model or "imagen-3.0-generate-001"
+        image_model = model or "imagen-3.0-generate"
 
         # Build request payload
         payload = {
@@ -307,9 +306,9 @@ class ImageServiceClient:
         if model is None:
             # v1.1.0: Use faster model for illustrations, standard for photo
             if archetype == "photorealistic":
-                model = "imagen-3.0-generate-001"  # Standard quality for photos
+                model = "imagen-3.0-generate"  # Standard quality for photos
             else:
-                model = "imagen-3.0-fast-generate-001"  # Fast for illustrations
+                model = "imagen-3.0-fast-generate"  # Fast for illustrations
 
         # v1.1.0: Build context-aware negative prompt
         negative_prompt = self._get_iseries_negative_prompt(layout_type, context_domain)

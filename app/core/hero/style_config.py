@@ -13,9 +13,9 @@ Each style has:
 - Model selection logic (standard vs fast)
 
 Model Selection Strategy:
-- Title + Professional → imagen-3.0-generate-001 (standard, $0.04, ~10s)
-- Title + Illustrated/Kids → imagen-3.0-fast-generate-001 (fast, $0.02, ~5s)
-- Section/Closing + Any style → imagen-3.0-fast-generate-001 (always fast)
+- Title + Professional → imagen-3.0-generate (standard, $0.04, ~10s)
+- Title + Illustrated/Kids → imagen-3.0-fast-generate (fast, $0.02, ~5s)
+- Section/Closing + Any style → imagen-3.0-fast-generate (always fast)
 """
 
 from enum import Enum
@@ -229,9 +229,9 @@ def get_image_model(
     Get Imagen model based on slide type and visual style.
 
     Model Selection Strategy:
-    - Title + Professional → imagen-3.0-generate-001 (standard quality)
-    - Title + Illustrated/Kids → imagen-3.0-fast-generate-001 (fast/cheap)
-    - Section/Closing + Any style → imagen-3.0-fast-generate-001 (always fast)
+    - Title + Professional → imagen-3.0-generate (standard quality)
+    - Title + Illustrated/Kids → imagen-3.0-fast-generate (fast/cheap)
+    - Section/Closing + Any style → imagen-3.0-fast-generate (always fast)
 
     Args:
         slide_type: Slide type (title_slide, section_divider, closing_slide)
@@ -246,10 +246,10 @@ def get_image_model(
 
     # Title slide with professional style uses standard quality
     if slide_type_lower == "title_slide" and visual_style_lower == "professional":
-        return "imagen-3.0-generate-001"  # Standard quality (~10s, $0.04)
+        return "imagen-3.0-generate"  # Standard quality (~10s, $0.04)
 
     # All other combinations use fast model
-    return "imagen-3.0-fast-generate-001"  # Fast/cheap (~5s, $0.02)
+    return "imagen-3.0-fast-generate"  # Fast/cheap (~5s, $0.02)
 
 
 def build_style_aware_prompt(
