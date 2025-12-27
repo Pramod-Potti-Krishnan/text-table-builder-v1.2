@@ -119,11 +119,38 @@ class SpotlightConcept(BaseModel):
         }
 
 
+class GlobalBrandVarsModel(BaseModel):
+    """
+    v1.2.3: Global brand variables from Director for simplified prompting.
+
+    These are set once per presentation and provide brand-level consistency
+    for image generation across all slides.
+    """
+    target_demographic: str = Field(
+        default="",
+        description="Audience keywords for prompt aesthetic (e.g., 'enterprise executives')"
+    )
+    visual_style: str = Field(
+        default="",
+        description="Visual style phrase (e.g., 'sleek modern photorealistic')"
+    )
+    color_palette: str = Field(
+        default="",
+        description="Color palette phrase (e.g., 'cool blues and metallic silvers')"
+    )
+    lighting_mood: str = Field(
+        default="",
+        description="Lighting/mood phrase (e.g., 'professional dramatic lighting')"
+    )
+
+
 class ISeriesGenerationRequest(BaseModel):
     """
     Request model for I-series layout generation.
 
     Generates both image and text content in parallel.
+
+    v1.2.3: Added global_brand for simplified image prompting.
     """
     # Required fields
     slide_number: int = Field(
@@ -165,6 +192,12 @@ class ISeriesGenerationRequest(BaseModel):
     visual_style: ISeriesVisualStyle = Field(
         default=ISeriesVisualStyle.ILLUSTRATED,
         description="Visual style: illustrated (default), professional, kids"
+    )
+
+    # v1.2.3: Global brand variables for simplified prompting
+    global_brand: Optional[GlobalBrandVarsModel] = Field(
+        default=None,
+        description="v1.2.3: Global brand variables from Director for simplified image prompting"
     )
 
     # Content configuration

@@ -28,7 +28,7 @@ import os
 import re
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Dict, Any, Callable, Optional
+from typing import Dict, Any, Callable, Optional, List
 
 
 # =============================================================================
@@ -75,6 +75,12 @@ from app.core.iseries.context_style_mapper import (
     get_spotlight_depth
 )
 from app.core.iseries.spotlight_concept_extractor import SpotlightConceptExtractor
+from app.core.iseries.prompt_assembler import (
+    GlobalBrandVars,
+    LocalMessageVars,
+    assemble_prompt,
+    assemble_prompt_with_fallback
+)
 from app.models.iseries_models import SpotlightConcept, SpotlightDepth, AbstractionLevel
 
 logger = logging.getLogger(__name__)
@@ -427,6 +433,11 @@ CRITICAL REQUIREMENTS:
         - Step 1: Extract visual concept (WHAT to show) using SpotlightConceptExtractor
         - Step 2: Build prompt from concept (HOW to show it)
 
+        v1.2.3: When global_brand is provided, uses simplified prompting:
+        - Global variables (brand) from Director
+        - Local variables (message) from slide content
+        - Simple ~30 word natural language prompt
+
         This produces more intentional, focused images by first understanding
         the core message before generating the image prompt.
 
@@ -440,6 +451,16 @@ CRITICAL REQUIREMENTS:
         narrative = request.narrative
         topics = request.topics or []
         visual_style = request.visual_style.value
+
+        # =================================================================
+        # v1.2.3: SIMPLIFIED PROMPTING (when global_brand provided)
+        # =================================================================
+        if request.global_brand and request.global_brand.visual_style:
+            return await self._build_image_prompt_simplified(request, content_context)
+
+        # =================================================================
+        # LEGACY: 2-Step Intentional Spotlight (when no global_brand)
+        # =================================================================
 
         # Extract audience and purpose from content_context
         audience_type = None
@@ -570,6 +591,144 @@ CRITICAL REQUIREMENTS:
         )
 
         return prompt, archetype, style_params
+
+    async def _build_image_prompt_simplified(
+        self,
+        request: ISeriesGenerationRequest,
+        content_context: Optional[Dict[str, Any]] = None
+    ) -> tuple[str, str, Dict[str, Any]]:
+        """
+        Build image prompt using simplified Global + Local variable approach.
+
+        v1.2.3: When Director provides global_brand, we use this simplified
+        prompting approach instead of the complex 2-step spotlight extraction.
+
+        Formula: [Visual Style] of a [Anchor Subject] [Action/Composition].
+                 [Lighting & Mood]. [Color Palette]. [Target Demographic Keywords].
+
+        Args:
+            request: Generation request with global_brand and narrative
+            content_context: Optional dict with audience/purpose info
+
+        Returns:
+            Tuple of (image_prompt, archetype, style_params)
+        """
+        # Extract global brand variables from request
+        global_brand = GlobalBrandVars.from_dict(
+            request.global_brand.model_dump() if request.global_brand else None
+        )
+
+        # Extract local message variables from content
+        narrative = request.narrative
+        topics = request.topics or []
+
+        # Build local variables - simple extraction without LLM
+        local_vars = LocalMessageVars(
+            content_archetype=self._detect_content_archetype(narrative, topics),
+            topic=topics[0] if topics else narrative[:100],
+            anchor_subject=self._extract_anchor_subject(narrative, topics),
+            action_composition=self._extract_action_composition(narrative),
+            semantic_link="",  # Optional, not needed for simplified prompts
+            aspect_ratio="9:16"  # I-series uses portrait orientation
+        )
+
+        # Assemble the simplified prompt (~30 words)
+        prompt = assemble_prompt(global_brand, local_vars)
+
+        # Determine archetype from visual style
+        visual_style = request.visual_style.value
+        archetype = self._map_visual_style_to_archetype(visual_style, global_brand)
+
+        # Build style_params for API call
+        style_params = {
+            "visual_style": visual_style,
+            "archetype": archetype,
+            "prompt_type": "simplified_global_local",
+            "global_brand_provided": True,
+            "aspect_ratio": "9:16"
+        }
+
+        logger.info(
+            f"Built simplified image prompt (visual_style={visual_style}, "
+            f"archetype={archetype}, anchor='{local_vars.anchor_subject[:50]}...')"
+        )
+        logger.debug(f"Simplified prompt: {prompt}")
+
+        return prompt, archetype, style_params
+
+    def _detect_content_archetype(self, narrative: str, topics: List[str]) -> str:
+        """Detect content archetype from narrative and topics."""
+        combined = f"{narrative} {' '.join(topics)}".lower()
+
+        # Simple keyword-based detection
+        if any(word in combined for word in ["compare", "vs", "versus", "difference", "better"]):
+            return "comparison"
+        elif any(word in combined for word in ["step", "process", "workflow", "phase", "stage"]):
+            return "process"
+        elif any(word in combined for word in ["metric", "kpi", "percent", "%", "growth", "increase"]):
+            return "metrics"
+        elif any(word in combined for word in ["benefit", "advantage", "feature", "capability"]):
+            return "benefits"
+        elif any(word in combined for word in ["problem", "solution", "challenge", "solve"]):
+            return "problem_solution"
+        else:
+            return "general"
+
+    def _extract_anchor_subject(self, narrative: str, topics: List[str]) -> str:
+        """Extract anchor subject (concrete visual noun) from content."""
+        combined = f"{narrative} {' '.join(topics)}"
+
+        # Look for concrete nouns that can be visualized
+        # Simple heuristic: use first topic if available, or extract from narrative
+        if topics and len(topics[0]) > 5:
+            # Use first topic as anchor, but make it more visual
+            topic = topics[0]
+            # Add visual context based on topic
+            return f"abstract visualization representing {topic}"
+
+        # Fallback: create abstract visual from narrative
+        words = narrative.split()[:5]  # First 5 words
+        concept = " ".join(words)
+        return f"abstract geometric shapes representing {concept}"
+
+    def _extract_action_composition(self, narrative: str) -> str:
+        """Extract action/composition hint from narrative."""
+        # Look for action verbs or descriptive phrases
+        narrative_lower = narrative.lower()
+
+        if any(word in narrative_lower for word in ["transform", "change", "evolve"]):
+            return "transforming with flowing energy"
+        elif any(word in narrative_lower for word in ["grow", "expand", "scale"]):
+            return "expanding with dynamic motion"
+        elif any(word in narrative_lower for word in ["connect", "integrate", "link"]):
+            return "with interconnected flowing lines"
+        elif any(word in narrative_lower for word in ["speed", "fast", "quick", "efficient"]):
+            return "with swift dynamic movement"
+        elif any(word in narrative_lower for word in ["secure", "protect", "safe"]):
+            return "with protective geometric patterns"
+        elif any(word in narrative_lower for word in ["innovate", "create", "new"]):
+            return "emerging with creative energy"
+        else:
+            return "with elegant flowing composition"
+
+    def _map_visual_style_to_archetype(
+        self,
+        visual_style: str,
+        global_brand: GlobalBrandVars
+    ) -> str:
+        """Map visual style to image archetype."""
+        # Check global brand style for hints
+        brand_style = global_brand.visual_style.lower() if global_brand.visual_style else ""
+
+        if "photorealistic" in brand_style or visual_style == "professional":
+            return "photorealistic"
+        elif "minimalist" in brand_style or "technical" in brand_style:
+            return "minimalist_vector_art"
+        elif "vibrant" in brand_style or "playful" in brand_style or visual_style == "kids":
+            return "illustration_flat_minimal"
+        else:
+            # Default for illustrated style
+            return "illustration_detailed"
 
     def _build_content_prompt(
         self,
