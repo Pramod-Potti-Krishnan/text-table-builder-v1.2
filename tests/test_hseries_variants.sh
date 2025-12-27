@@ -402,16 +402,27 @@ else
   # Escape for JSON
   HERO_ESCAPED=$(echo "$HERO_CONTENT" | jq -Rs .)
 
+  # Extract slide_title and subtitle from response if available
+  RESP_SLIDE_TITLE=$(echo "$TEXT_RESPONSE" | jq -r '.slide_title // ""')
+  RESP_SUBTITLE=$(echo "$TEXT_RESPONSE" | jq -r '.subtitle // ""')
+
+  # Use response fields if available, otherwise use defaults
+  if [ -z "$RESP_SLIDE_TITLE" ] || [ "$RESP_SLIDE_TITLE" == "null" ]; then
+    RESP_SLIDE_TITLE="$SECTION_TITLE"
+  fi
+  if [ -z "$RESP_SUBTITLE" ] || [ "$RESP_SUBTITLE" == "null" ]; then
+    RESP_SUBTITLE="Section Overview"
+  fi
+
   # Build slide JSON for Layout Service
+  # NOTE: H2-section uses background_image at SLIDE level, NOT hero_content
   SLIDE_JSON="{
     \"layout\": \"H2-section\",
     \"content\": {
-      \"slide_title\": \"$SECTION_TITLE\",
-      \"subtitle\": \"Section 01\",
-      \"hero_content\": $HERO_ESCAPED,
-      \"logo\": \" \",
-      \"presentation_name\": \"H-Series Test\"
-    }
+      \"section_number\": \"01\",
+      \"slide_title\": \"$RESP_SLIDE_TITLE\"
+    },
+    \"background_image\": \"$BACKGROUND_IMAGE\"
   }"
 
   SLIDES_JSON="$SLIDES_JSON,$SLIDE_JSON"
@@ -517,19 +528,32 @@ else
   # Save HTML for inspection
   echo "$HERO_CONTENT" > "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_hero.html"
 
-  # Escape for JSON
-  HERO_ESCAPED=$(echo "$HERO_CONTENT" | jq -Rs .)
+  # Extract or use defaults for closing slide fields
+  RESP_SLIDE_TITLE=$(echo "$TEXT_RESPONSE" | jq -r '.slide_title // ""')
+  RESP_SUBTITLE=$(echo "$TEXT_RESPONSE" | jq -r '.subtitle // ""')
+  RESP_CONTACT=$(echo "$TEXT_RESPONSE" | jq -r '.contact_info // ""')
+
+  # Use response fields if available, otherwise use defaults
+  if [ -z "$RESP_SLIDE_TITLE" ] || [ "$RESP_SLIDE_TITLE" == "null" ]; then
+    RESP_SLIDE_TITLE="$CLOSING_MESSAGE"
+  fi
+  if [ -z "$RESP_SUBTITLE" ] || [ "$RESP_SUBTITLE" == "null" ]; then
+    RESP_SUBTITLE="Questions & Discussion"
+  fi
+  if [ -z "$RESP_CONTACT" ] || [ "$RESP_CONTACT" == "null" ]; then
+    RESP_CONTACT="contact@company.com | www.company.com"
+  fi
 
   # Build slide JSON for Layout Service
+  # NOTE: H3-closing uses background_image at SLIDE level, NOT hero_content
   SLIDE_JSON="{
     \"layout\": \"H3-closing\",
     \"content\": {
-      \"slide_title\": \"$CLOSING_MESSAGE\",
-      \"subtitle\": \"contact@company.com\",
-      \"hero_content\": $HERO_ESCAPED,
-      \"logo\": \" \",
-      \"presentation_name\": \"H-Series Test\"
-    }
+      \"slide_title\": \"$RESP_SLIDE_TITLE\",
+      \"subtitle\": \"$RESP_SUBTITLE\",
+      \"contact_info\": \"$RESP_CONTACT\"
+    },
+    \"background_image\": \"$BACKGROUND_IMAGE\"
   }"
 
   SLIDES_JSON="$SLIDES_JSON,$SLIDE_JSON"
