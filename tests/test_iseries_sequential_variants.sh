@@ -11,9 +11,9 @@
 # Includes v4.6 ImageStyleAgreement for consistent image generation
 #
 # Character limits (updated):
-# - I1/I2 3-col: 45-70 chars/bullet, baseline 60, 5 bullets/step
+# - I1/I2 3-col: 40-55 chars/bullet, baseline 47, 5 bullets/step
 # - I3/I4 3-col: 50-75 chars/bullet, baseline 65, 5 bullets/step
-# - I3/I4 4-col: 30-50 chars/bullet, baseline 40, 5 bullets/step
+# - I3/I4 4-col: 35-50 chars/bullet, baseline 42, 5 bullets/step
 #
 
 # Service URLs
@@ -68,9 +68,9 @@ echo "Image Style: $ARCHETYPE, $MOOD, $COLOR_SCHEME"
 echo "Skip Images: $SKIP_IMAGES"
 echo ""
 echo "Sequential Variants Available:"
-echo "  I1/I2 (wide): 3-col only (5 bullets, 45-70 chars)"
+echo "  I1/I2 (wide): 3-col only (5 bullets, 40-55 chars)"
 echo "  I3/I4 (narrow): 3-col (5 bullets, 50-75 chars)"
-echo "                  4-col (5 bullets, 30-50 chars)"
+echo "                  4-col (5 bullets, 35-50 chars)"
 echo ""
 
 # Array to collect slides JSON
@@ -231,9 +231,9 @@ echo ""
 echo "Review Checklist:"
 echo "  [ ] Content fits within layout bounds"
 echo "  [ ] 5 bullets per step with 24px spacing"
-echo "  [ ] I1/I2 3-col: 45-70 chars/bullet"
+echo "  [ ] I1/I2 3-col: 40-55 chars/bullet"
 echo "  [ ] I3/I4 3-col: 50-75 chars/bullet"
-echo "  [ ] I3/I4 4-col: 30-50 chars/bullet"
+echo "  [ ] I3/I4 4-col: 35-50 chars/bullet"
 echo "  [ ] Image + content balance looks correct"
 echo "  [ ] No overflow or truncation"
 echo "  [ ] Visual consistency across I1-I4"
