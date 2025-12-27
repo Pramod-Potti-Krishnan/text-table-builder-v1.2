@@ -442,8 +442,8 @@ Generate the professional title slide HTML NOW:"""
         Generate background image with style-aware model selection.
 
         Uses smart model selection based on visual style:
-        - Professional → imagen-3.0-generate (standard quality)
-        - Illustrated/Kids → imagen-3.0-fast-generate (fast/cheap)
+        - Professional → imagen-3.0-generate-001 (standard quality)
+        - Illustrated/Kids → imagen-3.0-fast-generate-001 (fast/cheap)
 
         v1.5.0: Director can override model via request.context["image_model"]
         for presentation-level quality tier control.
