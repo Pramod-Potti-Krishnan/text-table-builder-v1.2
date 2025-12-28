@@ -302,11 +302,12 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 {context_section}
 ## 📋 Content Requirements
 
-1. **Section Title** (3-6 words maximum)
+1. **Section Title** (2-7 words, 10-35 characters)
    - Clear topic or phase name
    - Impactful and memorable
    - Based on: {narrative}
    - Topics: {', '.join(topics) if topics else 'N/A'}
+   - STRICT: Must be between 10-35 characters
 
 2. **Context Text** (5-12 words, optional)
    - Brief preview of what's coming

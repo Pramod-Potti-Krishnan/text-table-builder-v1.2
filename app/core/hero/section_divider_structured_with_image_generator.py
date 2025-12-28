@@ -224,7 +224,7 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
 Return ONLY a JSON object with these exact fields:
 - section_number: Section number (e.g., "01", "02", "03") - max 2 characters
-- slide_title: Section title (3-6 words, max 50 chars) - clear and impactful
+- slide_title: Section title (2-7 words, 10-35 chars) - clear and impactful
 {context_section}
 ## Content Requirements
 
@@ -232,11 +232,12 @@ Return ONLY a JSON object with these exact fields:
    - Format: Two-digit number like "01", "02", "03"
    - {f"Use: '{section_number}'" if section_number else "Derive from context or default to '01'"}
 
-2. **slide_title**:
-   - Clear topic or phase name (3-6 words)
+2. **slide_title** (2-7 words, 10-35 characters):
+   - Clear topic or phase name
    - Impactful and memorable
    {f"- Consider using: '{section_title}'" if section_title else ""}
    - Otherwise derive from narrative: {narrative}
+   - STRICT: Must be between 10-35 characters
 
 ## Content Inputs
 - Narrative: {narrative}

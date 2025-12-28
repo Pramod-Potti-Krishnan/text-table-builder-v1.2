@@ -225,25 +225,28 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
         prompt = f"""Generate STRUCTURED content for a TITLE SLIDE (H1-structured layout).
 
 Return ONLY a JSON object with these exact fields:
-- slide_title: Main presentation title (5-10 words, max 80 chars)
-- subtitle: Compelling tagline or value proposition (10-15 words, max 120 chars)
-- author_info: Presenter | Company | Date format (max 100 chars)
+- slide_title: Main presentation title (3-6 words, 25-45 chars)
+- subtitle: Compelling tagline or value proposition (10-18 words, 60-100 chars)
+- author_info: Presenter | Company | Date format (35-50 chars)
 {context_section}
 ## Content Requirements
 
-1. **slide_title**:
+1. **slide_title** (3-6 words, 25-45 characters):
    - Core presentation topic - clear and memorable
    {f"- Consider using: '{presentation_title}'" if presentation_title else ""}
    - Otherwise derive from narrative: {narrative}
+   - STRICT: Must be between 25-45 characters
 
-2. **subtitle**:
+2. **subtitle** (10-18 words, 60-100 characters):
    - What the presentation delivers
    - Key theme or benefit
    - Compelling value proposition
+   - STRICT: Must be between 60-100 characters
 
-3. **author_info**:
-   - Format: "Presenter Name | Company Name | Date"
+3. **author_info** (35-50 characters):
+   - Format: "FirstName LastName | Company | Mon DD, YYYY"
    - Professional and complete
+   - STRICT: Must be between 35-50 characters
 
 ## Content Inputs
 - Narrative: {narrative}

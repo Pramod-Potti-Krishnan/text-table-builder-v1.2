@@ -308,22 +308,22 @@ CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind
 
 ## 🎯 Slide Purpose
 **Function**: Opening slide with maximum visual impact
-**Word Count**: 40-55 words total (brief and punchy)
+**Word Count**: 30-45 words total (brief and punchy)
 {context_section}
 ## 📋 Content Requirements
 
-1. **Main Title** (5-8 words maximum)
+1. **Main Title** (3-6 words, 25-45 characters)
    - Clear, memorable, high-impact
    {f"- Suggested: '{presentation_title}'" if presentation_title else ""}
    - Based on: {narrative}
 
-2. **Subtitle** (8-12 words maximum)
+2. **Subtitle** (10-18 words, 60-100 characters)
    - ONE compelling benefit or value statement
    - Brief and focused
    - What the audience will gain
 
-3. **Footer Attribution**
-   - Format EXACTLY: "Dr. FirstName LastName | Company Name | Mon DD, YYYY"
+3. **Footer Attribution** (35-50 characters)
+   - Format EXACTLY: "FirstName LastName | Company | Mon DD, YYYY"
    - Clean, professional, separated by pipes
 
 ## 🎨 MANDATORY STYLING (Modern Professional Design)
@@ -482,7 +482,8 @@ Generate the professional title slide HTML NOW:"""
             if background_image:
                 final_content = self._inject_background_image(final_content, background_image)
 
-            # Build response
+            # Build response with full image metadata for debugging/logging
+            # v1.3.1: Include built prompt + archetype for complete traceability
             response = {
                 "content": final_content,
                 "metadata": {
@@ -490,6 +491,14 @@ Generate the professional title slide HTML NOW:"""
                     "slide_number": request.slide_number,
                     "background_image": background_image,
                     "image_generation_time_ms": image_metadata.get("generation_time_ms"),
+                    # v1.3.1: Built prompt (what we sent to Image Builder)
+                    "image_prompt_built": image_prompt,
+                    "image_archetype_built": archetype,
+                    # v1.3.1: Response from Image Builder (may differ if simplified)
+                    "image_prompt_used": image_metadata.get("prompt"),
+                    "image_archetype_used": image_metadata.get("archetype"),
+                    "image_generator": image_metadata.get("generator_used") or image_metadata.get("generator"),
+                    "image_model": image_metadata.get("model"),
                     "fallback_to_gradient": fallback_to_gradient,
                     "validation": content_result.get("validation", {}),
                     "generation_mode": "hero_slide_with_image_async"
