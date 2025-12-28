@@ -285,6 +285,6 @@ Composition: Clean and minimal, suitable for text overlay
 Mood: Professional, {visual_style}, appropriate for presentation
 Focus on: {', '.join(topics[:2]) if topics else 'professional setting'}
 
-CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind in the image."""
+TEXT GUIDANCE: Prefer text-free imagery - the slide content handles messaging. Avoid adding words, letters, or typography unless naturally part of the scene (book titles, signs, labels are acceptable)."""
 
     return prompt, style_config.archetype

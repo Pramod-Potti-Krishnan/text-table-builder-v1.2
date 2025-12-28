@@ -518,12 +518,14 @@ else
 
   # Build slide JSON for Layout Service
   # H3-closing uses structured fields + background_image at SLIDE level
+  # logo: " " prevents the default logo placeholder from showing
   SLIDE_JSON="{
     \"layout\": \"H3-closing\",
     \"content\": {
       \"slide_title\": \"$RESP_SLIDE_TITLE\",
       \"subtitle\": \"$RESP_SUBTITLE\",
-      \"contact_info\": \"$RESP_CONTACT\"
+      \"contact_info\": \"$RESP_CONTACT\",
+      \"logo\": \" \"
     },
     \"background_image\": \"$BACKGROUND_IMAGE\"
   }"

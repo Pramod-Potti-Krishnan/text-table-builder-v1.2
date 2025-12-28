@@ -140,7 +140,7 @@ Lighting: Natural, soft, appropriate for title slide
 MAIN SUBJECT: {topic_focus}
 The image MUST prominently feature visual elements related to: {topic_focus}
 
-CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind in the image."""
+TEXT GUIDANCE: Prefer text-free imagery - the slide content handles messaging. Avoid adding words, letters, or typography unless naturally part of the scene (book titles, signs, labels are acceptable)."""
 
         return prompt, style_config.archetype
 
