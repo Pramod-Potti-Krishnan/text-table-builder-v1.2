@@ -24,11 +24,15 @@ from .title_slide_generator import TitleSlideGenerator
 from .section_divider_generator import SectionDividerGenerator
 from .closing_slide_generator import ClosingSlideGenerator
 
-# Image-enhanced variants
+# Image-enhanced variants (hero_content HTML output)
 from .title_slide_with_image_generator import TitleSlideWithImageGenerator
-from .title_slide_structured_with_image_generator import TitleSlideStructuredWithImageGenerator
 from .section_divider_with_image_generator import SectionDividerWithImageGenerator
 from .closing_slide_with_image_generator import ClosingSlideWithImageGenerator
+
+# Structured variants (separate fields output for Layout Service)
+from .title_slide_structured_with_image_generator import TitleSlideStructuredWithImageGenerator
+from .section_divider_structured_with_image_generator import SectionDividerStructuredWithImageGenerator
+from .closing_slide_structured_with_image_generator import ClosingSlideStructuredWithImageGenerator
 
 __all__ = [
     "BaseHeroGenerator",
@@ -37,9 +41,12 @@ __all__ = [
     "TitleSlideGenerator",
     "SectionDividerGenerator",
     "ClosingSlideGenerator",
-    # Image-enhanced variants
+    # Image-enhanced variants (hero_content HTML)
     "TitleSlideWithImageGenerator",
-    "TitleSlideStructuredWithImageGenerator",
     "SectionDividerWithImageGenerator",
     "ClosingSlideWithImageGenerator",
+    # Structured variants (separate fields for Layout Service)
+    "TitleSlideStructuredWithImageGenerator",
+    "SectionDividerStructuredWithImageGenerator",
+    "ClosingSlideStructuredWithImageGenerator",
 ]

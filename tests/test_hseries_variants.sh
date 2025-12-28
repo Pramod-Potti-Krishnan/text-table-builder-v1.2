@@ -3,10 +3,10 @@
 # Test Script: H-Series Hero Slide Variants with AI Image Generation
 #
 # Tests all 4 H-series slide types with AI-generated background images:
-# - Slide 1: H1-generated → POST /v1.2/hero/title-with-image (full HTML)
+# - Slide 1: H1-generated → POST /v1.2/hero/title-with-image (full HTML hero_content)
 # - Slide 2: H1-structured → POST /v1.2/hero/title-structured-with-image (structured fields)
-# - Slide 3: H2-section → POST /v1.2/hero/section-with-image
-# - Slide 4: H3-closing → POST /v1.2/hero/closing-with-image
+# - Slide 3: H2-section → POST /v1.2/hero/section-structured-with-image (structured fields)
+# - Slide 4: H3-closing → POST /v1.2/hero/closing-structured-with-image (structured fields)
 #
 # Image Generation Details:
 # - Uses Image Builder v2.0 API at https://web-production-1b5df.up.railway.app
@@ -300,12 +300,12 @@ else
 fi
 
 # ============================================
-# SLIDE 3: H2-SECTION (section-with-image)
+# SLIDE 3: H2-SECTION (section-structured-with-image)
 # ============================================
 
 echo ""
 echo "=============================================="
-echo "  SLIDE 3: H2-Section (section-with-image)"
+echo "  SLIDE 3: H2-Section (section-structured-with-image)"
 echo "=============================================="
 
 SLIDE_NUM=3
@@ -319,8 +319,8 @@ echo ">>> Section: $SECTION_TITLE"
 echo ">>> Visual Style: $VISUAL_STYLE"
 echo ""
 
-# Call the section-with-image endpoint
-TEXT_RESPONSE=$(curl -s -X POST "$TEXT_SERVICE/v1.2/hero/section-with-image" \
+# Call the section-structured-with-image endpoint (returns structured fields, not HTML)
+TEXT_RESPONSE=$(curl -s -X POST "$TEXT_SERVICE/v1.2/hero/section-structured-with-image" \
   -H "Content-Type: application/json" \
   -d "{
     \"slide_number\": $SLIDE_NUM,
@@ -348,25 +348,27 @@ TEXT_RESPONSE=$(curl -s -X POST "$TEXT_SERVICE/v1.2/hero/section-with-image" \
 # Save raw response
 echo "$TEXT_RESPONSE" > "$OUTPUT_DIR/${SLIDE_NUM}_H2_section_response.json"
 
-# Extract fields from response
-HERO_CONTENT=$(echo "$TEXT_RESPONSE" | jq -r '.hero_content // .content')
-BACKGROUND_IMAGE=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.background_image // .background_image // "N/A"')
-IMAGE_FALLBACK=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.fallback_to_gradient // .image_fallback // false')
+# Extract STRUCTURED fields from response (NOT hero_content)
+RESP_SECTION_NUMBER=$(echo "$TEXT_RESPONSE" | jq -r '.section_number // "01"')
+RESP_SLIDE_TITLE=$(echo "$TEXT_RESPONSE" | jq -r '.slide_title // ""')
+BACKGROUND_IMAGE=$(echo "$TEXT_RESPONSE" | jq -r '.background_image // "N/A"')
+IMAGE_FALLBACK=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.fallback_to_gradient // false')
 
 # Extract image generation metadata for logging
 IMAGE_PROMPT_BUILT=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.image_prompt_built // "N/A"')
 IMAGE_ARCHETYPE=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.image_archetype_built // "N/A"')
 IMAGE_GENERATOR=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.image_generator // "N/A"')
 IMAGE_MODEL=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.image_model // "N/A"')
-GEN_TIME=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.generation_time_ms // .metadata.image_generation_time_ms // "N/A"')
+GEN_TIME=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.image_generation_time_ms // "N/A"')
 
-if [ "$HERO_CONTENT" == "null" ] || [ -z "$HERO_CONTENT" ]; then
+if [ -z "$RESP_SLIDE_TITLE" ] || [ "$RESP_SLIDE_TITLE" == "null" ]; then
   echo "    ERROR: Text Service failed to generate content"
   echo "$TEXT_RESPONSE" | jq . 2>/dev/null || echo "$TEXT_RESPONSE"
   ((FAIL_COUNT++))
 else
-  echo "    Text Service: OK"
-  echo "    Content: ${#HERO_CONTENT} chars"
+  echo "    Text Service: OK (Structured Response)"
+  echo "    Section Number: $RESP_SECTION_NUMBER"
+  echo "    Slide Title: $RESP_SLIDE_TITLE"
   echo "    Background Image: ${BACKGROUND_IMAGE:0:80}..."
   echo "    Image Fallback: $IMAGE_FALLBACK"
   echo ""
@@ -384,7 +386,8 @@ else
 
   # Save image prompt to separate file for reference
   echo "=== H2-section Slide $SLIDE_NUM ===" > "$OUTPUT_DIR/${SLIDE_NUM}_H2_section_image_prompt.txt"
-  echo "Section: $SECTION_TITLE" >> "$OUTPUT_DIR/${SLIDE_NUM}_H2_section_image_prompt.txt"
+  echo "Section Number: $RESP_SECTION_NUMBER" >> "$OUTPUT_DIR/${SLIDE_NUM}_H2_section_image_prompt.txt"
+  echo "Slide Title: $RESP_SLIDE_TITLE" >> "$OUTPUT_DIR/${SLIDE_NUM}_H2_section_image_prompt.txt"
   echo "Visual Style: $VISUAL_STYLE" >> "$OUTPUT_DIR/${SLIDE_NUM}_H2_section_image_prompt.txt"
   echo "" >> "$OUTPUT_DIR/${SLIDE_NUM}_H2_section_image_prompt.txt"
   echo "=== BUILT PROMPT ===" >> "$OUTPUT_DIR/${SLIDE_NUM}_H2_section_image_prompt.txt"
@@ -396,30 +399,12 @@ else
   echo "Model: $IMAGE_MODEL" >> "$OUTPUT_DIR/${SLIDE_NUM}_H2_section_image_prompt.txt"
   echo "Generation Time: ${GEN_TIME}ms" >> "$OUTPUT_DIR/${SLIDE_NUM}_H2_section_image_prompt.txt"
 
-  # Save HTML for inspection
-  echo "$HERO_CONTENT" > "$OUTPUT_DIR/${SLIDE_NUM}_H2_section_hero.html"
-
-  # Escape for JSON
-  HERO_ESCAPED=$(echo "$HERO_CONTENT" | jq -Rs .)
-
-  # Extract slide_title and subtitle from response if available
-  RESP_SLIDE_TITLE=$(echo "$TEXT_RESPONSE" | jq -r '.slide_title // ""')
-  RESP_SUBTITLE=$(echo "$TEXT_RESPONSE" | jq -r '.subtitle // ""')
-
-  # Use response fields if available, otherwise use defaults
-  if [ -z "$RESP_SLIDE_TITLE" ] || [ "$RESP_SLIDE_TITLE" == "null" ]; then
-    RESP_SLIDE_TITLE="$SECTION_TITLE"
-  fi
-  if [ -z "$RESP_SUBTITLE" ] || [ "$RESP_SUBTITLE" == "null" ]; then
-    RESP_SUBTITLE="Section Overview"
-  fi
-
   # Build slide JSON for Layout Service
-  # NOTE: H2-section uses background_image at SLIDE level, NOT hero_content
+  # H2-section uses structured fields + background_image at SLIDE level
   SLIDE_JSON="{
     \"layout\": \"H2-section\",
     \"content\": {
-      \"section_number\": \"01\",
+      \"section_number\": \"$RESP_SECTION_NUMBER\",
       \"slide_title\": \"$RESP_SLIDE_TITLE\"
     },
     \"background_image\": \"$BACKGROUND_IMAGE\"
@@ -429,12 +414,12 @@ else
 fi
 
 # ============================================
-# SLIDE 4: H3-CLOSING (closing-with-image)
+# SLIDE 4: H3-CLOSING (closing-structured-with-image)
 # ============================================
 
 echo ""
 echo "=============================================="
-echo "  SLIDE 4: H3-Closing (closing-with-image)"
+echo "  SLIDE 4: H3-Closing (closing-structured-with-image)"
 echo "=============================================="
 
 SLIDE_NUM=4
@@ -448,8 +433,8 @@ echo ">>> Closing Message: $CLOSING_MESSAGE"
 echo ">>> Visual Style: $VISUAL_STYLE"
 echo ""
 
-# Call the closing-with-image endpoint
-TEXT_RESPONSE=$(curl -s -X POST "$TEXT_SERVICE/v1.2/hero/closing-with-image" \
+# Call the closing-structured-with-image endpoint (returns structured fields, not HTML)
+TEXT_RESPONSE=$(curl -s -X POST "$TEXT_SERVICE/v1.2/hero/closing-structured-with-image" \
   -H "Content-Type: application/json" \
   -d "{
     \"slide_number\": $SLIDE_NUM,
@@ -477,25 +462,29 @@ TEXT_RESPONSE=$(curl -s -X POST "$TEXT_SERVICE/v1.2/hero/closing-with-image" \
 # Save raw response
 echo "$TEXT_RESPONSE" > "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_response.json"
 
-# Extract fields from response
-HERO_CONTENT=$(echo "$TEXT_RESPONSE" | jq -r '.hero_content // .content')
-BACKGROUND_IMAGE=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.background_image // .background_image // "N/A"')
-IMAGE_FALLBACK=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.fallback_to_gradient // .image_fallback // false')
+# Extract STRUCTURED fields from response (NOT hero_content)
+RESP_SLIDE_TITLE=$(echo "$TEXT_RESPONSE" | jq -r '.slide_title // ""')
+RESP_SUBTITLE=$(echo "$TEXT_RESPONSE" | jq -r '.subtitle // ""')
+RESP_CONTACT=$(echo "$TEXT_RESPONSE" | jq -r '.contact_info // ""')
+BACKGROUND_IMAGE=$(echo "$TEXT_RESPONSE" | jq -r '.background_image // "N/A"')
+IMAGE_FALLBACK=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.fallback_to_gradient // false')
 
 # Extract image generation metadata for logging
 IMAGE_PROMPT_BUILT=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.image_prompt_built // "N/A"')
 IMAGE_ARCHETYPE=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.image_archetype_built // "N/A"')
 IMAGE_GENERATOR=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.image_generator // "N/A"')
 IMAGE_MODEL=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.image_model // "N/A"')
-GEN_TIME=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.generation_time_ms // .metadata.image_generation_time_ms // "N/A"')
+GEN_TIME=$(echo "$TEXT_RESPONSE" | jq -r '.metadata.image_generation_time_ms // "N/A"')
 
-if [ "$HERO_CONTENT" == "null" ] || [ -z "$HERO_CONTENT" ]; then
+if [ -z "$RESP_SLIDE_TITLE" ] || [ "$RESP_SLIDE_TITLE" == "null" ]; then
   echo "    ERROR: Text Service failed to generate content"
   echo "$TEXT_RESPONSE" | jq . 2>/dev/null || echo "$TEXT_RESPONSE"
   ((FAIL_COUNT++))
 else
-  echo "    Text Service: OK"
-  echo "    Content: ${#HERO_CONTENT} chars"
+  echo "    Text Service: OK (Structured Response)"
+  echo "    Slide Title: $RESP_SLIDE_TITLE"
+  echo "    Subtitle: $RESP_SUBTITLE"
+  echo "    Contact Info: $RESP_CONTACT"
   echo "    Background Image: ${BACKGROUND_IMAGE:0:80}..."
   echo "    Image Fallback: $IMAGE_FALLBACK"
   echo ""
@@ -513,7 +502,9 @@ else
 
   # Save image prompt to separate file for reference
   echo "=== H3-closing Slide $SLIDE_NUM ===" > "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_image_prompt.txt"
-  echo "Message: $CLOSING_MESSAGE" >> "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_image_prompt.txt"
+  echo "Slide Title: $RESP_SLIDE_TITLE" >> "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_image_prompt.txt"
+  echo "Subtitle: $RESP_SUBTITLE" >> "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_image_prompt.txt"
+  echo "Contact: $RESP_CONTACT" >> "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_image_prompt.txt"
   echo "Visual Style: $VISUAL_STYLE" >> "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_image_prompt.txt"
   echo "" >> "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_image_prompt.txt"
   echo "=== BUILT PROMPT ===" >> "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_image_prompt.txt"
@@ -525,27 +516,8 @@ else
   echo "Model: $IMAGE_MODEL" >> "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_image_prompt.txt"
   echo "Generation Time: ${GEN_TIME}ms" >> "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_image_prompt.txt"
 
-  # Save HTML for inspection
-  echo "$HERO_CONTENT" > "$OUTPUT_DIR/${SLIDE_NUM}_H3_closing_hero.html"
-
-  # Extract or use defaults for closing slide fields
-  RESP_SLIDE_TITLE=$(echo "$TEXT_RESPONSE" | jq -r '.slide_title // ""')
-  RESP_SUBTITLE=$(echo "$TEXT_RESPONSE" | jq -r '.subtitle // ""')
-  RESP_CONTACT=$(echo "$TEXT_RESPONSE" | jq -r '.contact_info // ""')
-
-  # Use response fields if available, otherwise use defaults
-  if [ -z "$RESP_SLIDE_TITLE" ] || [ "$RESP_SLIDE_TITLE" == "null" ]; then
-    RESP_SLIDE_TITLE="$CLOSING_MESSAGE"
-  fi
-  if [ -z "$RESP_SUBTITLE" ] || [ "$RESP_SUBTITLE" == "null" ]; then
-    RESP_SUBTITLE="Questions & Discussion"
-  fi
-  if [ -z "$RESP_CONTACT" ] || [ "$RESP_CONTACT" == "null" ]; then
-    RESP_CONTACT="contact@company.com | www.company.com"
-  fi
-
   # Build slide JSON for Layout Service
-  # NOTE: H3-closing uses background_image at SLIDE level, NOT hero_content
+  # H3-closing uses structured fields + background_image at SLIDE level
   SLIDE_JSON="{
     \"layout\": \"H3-closing\",
     \"content\": {
