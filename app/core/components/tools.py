@@ -338,6 +338,10 @@ def _parse_content_response(
             else:
                 raise ValueError(f"Could not parse LLM response as JSON: {llm_response[:200]}")
 
+    # Validate data is a dict with instances
+    if data is None or not isinstance(data, dict):
+        raise ValueError(f"LLM response parsed to invalid data type: {type(data)}. Response: {llm_response[:200]}")
+
     # Extract instances
     instances = data.get("instances", [])
 

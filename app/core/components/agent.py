@@ -374,11 +374,24 @@ Now reason through the problem and output your decision as JSON:"""
             import re
             json_match = re.search(r'\{.*\}', response, re.DOTALL)
             if json_match:
-                return json.loads(json_match.group(0))
+                parsed = json.loads(json_match.group(0))
             else:
-                return json.loads(response)
+                parsed = json.loads(response)
+
+            # Validate parsed result is a dict with expected structure
+            if parsed is None or not isinstance(parsed, dict):
+                logger.warning(f"[COMPONENT-AGENT] LLM returned invalid type: {type(parsed)}, using heuristic")
+                return self._heuristic_component_selection(context)
+
+            # Check for expected keys, fall back to heuristic if missing
+            if "component_choice" not in parsed:
+                logger.warning("[COMPONENT-AGENT] LLM response missing component_choice, using heuristic")
+                return self._heuristic_component_selection(context)
+
+            return parsed
         except json.JSONDecodeError:
             # If parsing fails, use heuristic
+            logger.warning("[COMPONENT-AGENT] JSON parse failed, using heuristic")
             return self._heuristic_component_selection(context)
 
     def _heuristic_component_selection(
