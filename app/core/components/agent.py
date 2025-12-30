@@ -301,9 +301,13 @@ class ComponentAssemblyAgent:
 
         except Exception as e:
             import traceback
-            error_msg = f"{type(e).__name__}: {str(e)}"
+            tb = traceback.format_exc()
+            # Extract just the last few lines showing the error location
+            tb_lines = tb.strip().split('\n')
+            short_tb = '\n'.join(tb_lines[-4:]) if len(tb_lines) > 4 else tb
+            error_msg = f"{type(e).__name__}: {str(e)} | Location: {short_tb}"
             logger.error(f"[COMPONENT-AGENT] Exception: {error_msg}")
-            logger.error(f"[COMPONENT-AGENT] Traceback: {traceback.format_exc()}")
+            logger.error(f"[COMPONENT-AGENT] Full Traceback: {tb}")
             return AgentResult(
                 success=False,
                 html="",
