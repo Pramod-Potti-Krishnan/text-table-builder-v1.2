@@ -32,9 +32,13 @@ Architecture:
 """
 
 from fastapi import APIRouter, Depends
-from typing import Callable
+from typing import Callable, Optional
 import logging
 
+from app.core.components import (
+    ComponentAssemblyAgent,
+    AgentResult
+)
 from app.core.layout import (
     GridCalculator,
     TextGenerateGenerator,
@@ -61,6 +65,10 @@ from app.models.layout_models import (
     # Slide-specific text models (32×18 grid)
     SlideTextRequest,
     SlideTextResponse,
+    SlideTextContentData,
+    ElementDimensions,
+    TextConstraintsUsed,
+    TypographyApplied,
     TitleSlideRequest,
     TitleSlideResponse,
     SectionSlideRequest,
@@ -753,8 +761,10 @@ async def generate_text_element(
     """
     Generate generic text element with full styling control.
 
-    The most flexible text generation endpoint, suitable for any text element
-    with custom typography levels and styling.
+    v1.4.0: Now uses component-based agentic generation by default.
+    The agent reasons about storytelling needs and selects appropriate
+    components (metrics cards, numbered cards, comparison columns, etc.)
+    to produce Gold Standard-quality output.
 
     **Request Body**:
     - prompt: Content prompt or text to generate
@@ -765,6 +775,10 @@ async def generate_text_element(
     - style: Optional text box styling (background, border, shadow, etc.)
     - listStyle: Optional list/bullet styling
     - themeId: Optional theme ID
+    - use_components: Enable component-based generation (default: True)
+    - audience: Target audience (executive, technical, general, educational, sales)
+    - purpose: Slide purpose (inform, persuade, compare, explain, inspire)
+    - component_hints: Optional hints for component selection
 
     **Typography Levels**:
     - h1: 72px, weight 700, line-height 1.2 (title slide title)
@@ -775,28 +789,112 @@ async def generate_text_element(
     - subtitle: 28px, weight 400, line-height 1.5 (subtitle)
     - caption: 16px, weight 400, line-height 1.4 (small text)
 
+    **Component Types** (selected automatically by agent):
+    - metrics_card: KPIs, statistics, performance numbers
+    - numbered_card: Steps, phases, sequential items
+    - comparison_column: Comparing options, pros/cons
+    - colored_section: Categories with bullet lists
+    - sidebar_box: Key insights, highlights, callouts
+
     **Example Request**:
     ```json
     {
-        "prompt": "Write 3 bullet points about sustainability initiatives",
+        "prompt": "Show our Q4 performance with key metrics",
         "constraints": {
             "gridWidth": 15,
             "gridHeight": 8
         },
-        "typographyLevel": "body",
-        "style": {
-            "background": "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
-            "borderWidth": "1px",
-            "borderColor": "#0ea5e9",
-            "borderRadius": "12px"
-        },
-        "options": {
-            "format": "bullets"
-        }
+        "audience": "executive",
+        "purpose": "inform"
     }
     ```
     """
     try:
+        # v1.4.0: Use component-based generation if enabled
+        if getattr(request, 'use_components', True):
+            logger.info(
+                f"[COMPONENT-AGENT] Generating with components "
+                f"(grid: {request.constraints.gridWidth}×{request.constraints.gridHeight}, "
+                f"audience: {getattr(request, 'audience', None)}, "
+                f"purpose: {getattr(request, 'purpose', None)})"
+            )
+
+            # Get LLM service from generator
+            llm_service = generator.llm_service
+
+            # Create component assembly agent
+            agent = ComponentAssemblyAgent(llm_service=llm_service)
+
+            # Generate using component-based approach
+            agent_result: AgentResult = await agent.generate(
+                prompt=request.prompt,
+                grid_width=request.constraints.gridWidth,
+                grid_height=request.constraints.gridHeight,
+                audience=getattr(request, 'audience', None),
+                purpose=getattr(request, 'purpose', None),
+                presentation_title=request.context.presentationTitle if request.context else None
+            )
+
+            if agent_result.success:
+                logger.info(
+                    f"[COMPONENT-AGENT] Success: {agent_result.assembly_info.component_type} "
+                    f"x{agent_result.assembly_info.component_count} "
+                    f"({agent_result.assembly_info.arrangement})"
+                )
+
+                # Calculate pixel dimensions
+                pixel_width = request.constraints.gridWidth * 60  # 60px per cell
+                pixel_height = request.constraints.gridHeight * 60
+                content_width = pixel_width - 2 * (request.constraints.outerPadding + request.constraints.innerPadding)
+                content_height = pixel_height - 2 * (request.constraints.outerPadding + request.constraints.innerPadding)
+
+                # Build response with component metadata
+                return SlideTextResponse(
+                    success=True,
+                    data=SlideTextContentData(
+                        content=agent_result.html,
+                        dimensions=ElementDimensions(
+                            gridWidth=request.constraints.gridWidth,
+                            gridHeight=request.constraints.gridHeight,
+                            elementWidth=float(pixel_width),
+                            elementHeight=float(pixel_height),
+                            contentWidth=float(content_width),
+                            contentHeight=float(content_height)
+                        ),
+                        constraintsUsed=TextConstraintsUsed(
+                            charsPerLine=0,  # Component-based doesn't use char limits
+                            maxLines=0,
+                            maxCharacters=0,
+                            targetCharacters=0,
+                            minCharacters=0
+                        ),
+                        typographyApplied=TypographyApplied(
+                            fontFamily="Poppins, sans-serif",
+                            fontSize=20,
+                            fontWeight=400,
+                            lineHeight=1.6,
+                            color="#374151",
+                            source="component"
+                        ),
+                        characterCount=len(agent_result.html),
+                        lineCount=agent_result.html.count('\n') + 1,
+                        fits=True,
+                        assembly_info={
+                            "component_type": agent_result.assembly_info.component_type,
+                            "component_count": agent_result.assembly_info.component_count,
+                            "arrangement": agent_result.assembly_info.arrangement,
+                            "variants_used": agent_result.assembly_info.variants_used,
+                            "agent_reasoning": agent_result.assembly_info.agent_reasoning
+                        } if agent_result.assembly_info else None
+                    )
+                )
+            else:
+                # Component generation failed, fall back to legacy generation
+                logger.warning(
+                    f"[COMPONENT-AGENT] Failed: {agent_result.error}, falling back to legacy"
+                )
+
+        # Legacy text generation (fallback or when use_components=False)
         logger.info(
             f"Generating text element (grid: {request.constraints.gridWidth}×{request.constraints.gridHeight}, "
             f"level: {request.typographyLevel})"

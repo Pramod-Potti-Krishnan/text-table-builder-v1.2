@@ -1,0 +1,84 @@
+{
+  "component_id": "numbered_card",
+  "description": "Pastel-colored card with large number, title, and description. Perfect for steps, phases, or numbered key points.",
+  "use_cases": [
+    "steps",
+    "phases",
+    "numbered points",
+    "process stages",
+    "sequential items",
+    "key points",
+    "ordered lists"
+  ],
+
+  "template": "<div style=\"padding: 20px 40px 20px 40px; border-radius: 12px; background: {gradient}; border: 2px solid #e5e7eb; display: flex; flex-direction: row; align-items: flex-start; text-align: left; box-shadow: 0 4px 12px rgba(0,0,0,0.05);\"><div style=\"font-size: 80px; font-weight: 800; color: {number_color}; line-height: 1; margin-right: 28px; flex-shrink: 0; font-family: system-ui, -apple-system, sans-serif;\">{card_number}</div><div style=\"flex: 1;\"><h3 style=\"font-size: 28px; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2;\">{card_title}</h3><p style=\"font-size: 20px; font-weight: 400; color: #6b7280; line-height: 1.6; margin: 0;\">{card_description}</p></div></div>",
+
+  "wrapper_template": "<div style=\"display: grid; grid-template-columns: repeat({column_count}, 1fr); grid-template-rows: repeat({row_count}, 1fr); gap: 40px; padding: 20px 40px 0 0; height: 100%; background: transparent; align-items: stretch; overflow: hidden;\">{instances}</div>",
+
+  "slots": {
+    "card_number": {
+      "min_chars": 1,
+      "max_chars": 1,
+      "baseline_chars": 1,
+      "description": "The step/phase number (1, 2, 3, 4)",
+      "format_hint": "number"
+    },
+    "card_title": {
+      "min_chars": 10,
+      "max_chars": 35,
+      "baseline_chars": 22,
+      "description": "Title for the step or phase",
+      "format_hint": "title_case"
+    },
+    "card_description": {
+      "min_chars": 50,
+      "max_chars": 120,
+      "baseline_chars": 85,
+      "description": "Description explaining this step",
+      "format_hint": "sentence"
+    }
+  },
+
+  "variants": {
+    "blue": {
+      "gradient": "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+      "number_color": "#0369a1"
+    },
+    "green": {
+      "gradient": "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+      "number_color": "#15803d"
+    },
+    "yellow": {
+      "gradient": "linear-gradient(135deg, #fef3c7 0%, #fde68a 100%)",
+      "number_color": "#a16207"
+    },
+    "pink": {
+      "gradient": "linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%)",
+      "number_color": "#be185d"
+    }
+  },
+
+  "space_requirements": {
+    "min_grid_width": 10,
+    "min_grid_height": 4,
+    "ideal_grid_width": 16,
+    "ideal_grid_height": 5,
+    "padding_px": 20
+  },
+
+  "arrangement_rules": {
+    "min_instances": 2,
+    "max_instances": 6,
+    "valid_arrangements": ["grid_2x2", "grid_3x2", "row_2", "row_3"],
+    "gap_px": 40,
+    "prefer_row": false
+  },
+
+  "scaling_rules": {
+    "compress_slot": "card_description",
+    "min_scale": 0.7,
+    "expand_slot": "card_description",
+    "max_scale": 1.2,
+    "preserve_slots": ["card_number"]
+  }
+}

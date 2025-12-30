@@ -1,0 +1,90 @@
+{
+  "component_id": "colored_section",
+  "description": "Colored heading with gradient underline and bullet points. Perfect for categories, phases, or themed content groups.",
+  "use_cases": [
+    "categories",
+    "phases",
+    "topics",
+    "grouped content",
+    "themed sections",
+    "bullet lists",
+    "key points by category"
+  ],
+
+  "template": "<div style=\"margin-bottom: {margin_bottom};\"><h3 style=\"font-size: 28px; font-weight: 700; color: {heading_color}; margin: 0 0 10px 0; line-height: 1.2;\">{section_heading}</h3><hr style=\"height: 3px; background: linear-gradient(90deg, {heading_color} 0%, transparent 100%); border: none; margin: 0 0 13px 0;\"><ul style=\"font-size: 21px; line-height: 1.28; color: #374151; margin: 0; padding-left: 24px; list-style-type: disc;\"><li style=\"margin-bottom: 10px;\">{bullet_1}</li><li style=\"margin-bottom: 10px;\">{bullet_2}</li><li style=\"margin-bottom: 0;\">{bullet_3}</li></ul></div>",
+
+  "wrapper_template": "<div style=\"padding: 0; margin: 0;\">{instances}</div>",
+
+  "slots": {
+    "section_heading": {
+      "min_chars": 10,
+      "max_chars": 30,
+      "baseline_chars": 20,
+      "description": "Heading for the section (e.g., 'Discovery Phase', 'Key Benefits')",
+      "format_hint": "title_case"
+    },
+    "bullet_1": {
+      "min_chars": 40,
+      "max_chars": 100,
+      "baseline_chars": 70,
+      "description": "First bullet point",
+      "format_hint": "sentence"
+    },
+    "bullet_2": {
+      "min_chars": 40,
+      "max_chars": 100,
+      "baseline_chars": 70,
+      "description": "Second bullet point",
+      "format_hint": "sentence"
+    },
+    "bullet_3": {
+      "min_chars": 40,
+      "max_chars": 100,
+      "baseline_chars": 70,
+      "description": "Third bullet point",
+      "format_hint": "sentence"
+    }
+  },
+
+  "variants": {
+    "blue": {
+      "heading_color": "#2563eb"
+    },
+    "red": {
+      "heading_color": "#dc2626"
+    },
+    "green": {
+      "heading_color": "#10b981"
+    },
+    "amber": {
+      "heading_color": "#f59e0b"
+    },
+    "purple": {
+      "heading_color": "#7c3aed"
+    }
+  },
+
+  "space_requirements": {
+    "min_grid_width": 12,
+    "min_grid_height": 3,
+    "ideal_grid_width": 20,
+    "ideal_grid_height": 4,
+    "padding_px": 0
+  },
+
+  "arrangement_rules": {
+    "min_instances": 2,
+    "max_instances": 5,
+    "valid_arrangements": ["stacked_2", "stacked_3", "stacked_4", "stacked_5"],
+    "gap_px": 19,
+    "prefer_row": false
+  },
+
+  "scaling_rules": {
+    "compress_slot": "bullet_3",
+    "min_scale": 0.75,
+    "expand_slot": "bullet_1",
+    "max_scale": 1.15,
+    "preserve_slots": ["section_heading"]
+  }
+}

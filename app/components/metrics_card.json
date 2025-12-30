@@ -1,0 +1,84 @@
+{
+  "component_id": "metrics_card",
+  "description": "Gradient-filled metric card with large number, label, and description. Perfect for KPIs, statistics, and performance metrics.",
+  "use_cases": [
+    "KPIs",
+    "statistics",
+    "performance metrics",
+    "data points",
+    "numbers with context",
+    "evidence",
+    "proof points"
+  ],
+
+  "template": "<div style=\"padding: {padding}; border-radius: 16px; background: {gradient}; box-shadow: {shadow}; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;\"><div style=\"font-size: 77px; font-weight: 900; color: white; line-height: 1; margin: 0 0 16px 0; text-shadow: 0 4px 12px rgba(0,0,0,0.2);\">{metric_number}</div><h3 style=\"font-size: 29px; font-weight: 700; color: white; margin: 0 0 20px 0; text-transform: uppercase; letter-spacing: 1px;\">{metric_label}</h3><p style=\"font-size: 18px; font-weight: 400; color: rgba(255,255,255,0.95); line-height: 1.6; margin: 0;\">{metric_description}</p></div>",
+
+  "wrapper_template": "<div style=\"display: grid; grid-template-columns: repeat({column_count}, 1fr); gap: {gap}px; padding: 0 40px 0 0; align-items: stretch;\">{instances}</div>",
+
+  "slots": {
+    "metric_number": {
+      "min_chars": 2,
+      "max_chars": 6,
+      "baseline_chars": 4,
+      "description": "The main metric value (e.g., '95%', '1.2M', '$4.5B')",
+      "format_hint": "number_with_unit"
+    },
+    "metric_label": {
+      "min_chars": 6,
+      "max_chars": 18,
+      "baseline_chars": 12,
+      "description": "Short label in UPPERCASE (e.g., 'REVENUE GROWTH')",
+      "format_hint": "UPPERCASE"
+    },
+    "metric_description": {
+      "min_chars": 60,
+      "max_chars": 90,
+      "baseline_chars": 75,
+      "description": "Supporting context explaining the metric",
+      "format_hint": "sentence"
+    }
+  },
+
+  "variants": {
+    "purple": {
+      "gradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "shadow": "0 12px 32px rgba(102, 126, 234, 0.2)"
+    },
+    "pink": {
+      "gradient": "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+      "shadow": "0 12px 32px rgba(240, 147, 251, 0.2)"
+    },
+    "cyan": {
+      "gradient": "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+      "shadow": "0 12px 32px rgba(79, 172, 254, 0.2)"
+    },
+    "green": {
+      "gradient": "linear-gradient(135deg, #11998e 0%, #38ef7d 100%)",
+      "shadow": "0 12px 32px rgba(17, 153, 142, 0.2)"
+    }
+  },
+
+  "space_requirements": {
+    "min_grid_width": 6,
+    "min_grid_height": 5,
+    "ideal_grid_width": 8,
+    "ideal_grid_height": 6,
+    "padding_px": 36
+  },
+
+  "arrangement_rules": {
+    "min_instances": 2,
+    "max_instances": 4,
+    "valid_arrangements": ["row_2", "row_3", "row_4", "grid_2x2"],
+    "gap_px": 24,
+    "prefer_row": true
+  },
+
+  "scaling_rules": {
+    "compress_slot": "metric_description",
+    "min_scale": 0.75,
+    "expand_slot": "metric_description",
+    "max_scale": 1.15,
+    "preserve_slots": ["metric_number", "metric_label"]
+  }
+}

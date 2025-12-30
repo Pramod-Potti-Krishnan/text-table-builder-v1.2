@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "components": {
+    "metrics_card": "metrics_card.json",
+    "numbered_card": "numbered_card.json",
+    "comparison_column": "comparison_column.json",
+    "colored_section": "colored_section.json",
+    "sidebar_box": "sidebar_box.json"
+  },
+  "categories": {
+    "evidence": ["metrics_card"],
+    "process": ["numbered_card", "colored_section"],
+    "comparison": ["comparison_column"],
+    "highlight": ["sidebar_box"]
+  }
+}

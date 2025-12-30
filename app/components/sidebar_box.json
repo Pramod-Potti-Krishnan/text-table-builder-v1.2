@@ -1,0 +1,119 @@
+{
+  "component_id": "sidebar_box",
+  "description": "Highlighted box with gradient background, accent border, and bullet points. Perfect for key insights, highlights, or callouts.",
+  "use_cases": [
+    "key insights",
+    "highlights",
+    "callouts",
+    "important notes",
+    "takeaways",
+    "summary points",
+    "sidebar content"
+  ],
+
+  "template": "<div style=\"padding: 32px; border-radius: 12px; background: {gradient}; border-left: 4px solid {accent_color}; box-shadow: 0 4px 12px rgba(0,0,0,0.05);\"><h4 style=\"font-size: 26px; color: {accent_color}; margin: 0 0 20px 0; font-weight: 700;\">{sidebar_heading}</h4><ul style=\"list-style: none; padding: 0; margin: 0; font-size: 20px; line-height: 1.6; color: #374151;\"><li style=\"margin-bottom: 14px; padding-left: 28px; position: relative;\"><span style=\"position: absolute; left: 0; color: {accent_color}; font-size: 24px;\">&#8226;</span>{item_1}</li><li style=\"margin-bottom: 14px; padding-left: 28px; position: relative;\"><span style=\"position: absolute; left: 0; color: {accent_color}; font-size: 24px;\">&#8226;</span>{item_2}</li><li style=\"margin-bottom: 14px; padding-left: 28px; position: relative;\"><span style=\"position: absolute; left: 0; color: {accent_color}; font-size: 24px;\">&#8226;</span>{item_3}</li><li style=\"margin-bottom: 14px; padding-left: 28px; position: relative;\"><span style=\"position: absolute; left: 0; color: {accent_color}; font-size: 24px;\">&#8226;</span>{item_4}</li><li style=\"margin-bottom: 14px; padding-left: 28px; position: relative;\"><span style=\"position: absolute; left: 0; color: {accent_color}; font-size: 24px;\">&#8226;</span>{item_5}</li><li style=\"margin-bottom: 14px; padding-left: 28px; position: relative;\"><span style=\"position: absolute; left: 0; color: {accent_color}; font-size: 24px;\">&#8226;</span>{item_6}</li><li style=\"margin-bottom: 0; padding-left: 28px; position: relative;\"><span style=\"position: absolute; left: 0; color: {accent_color}; font-size: 24px;\">&#8226;</span>{item_7}</li></ul></div>",
+
+  "wrapper_template": "{instances}",
+
+  "slots": {
+    "sidebar_heading": {
+      "min_chars": 10,
+      "max_chars": 28,
+      "baseline_chars": 18,
+      "description": "Heading for the sidebar (e.g., 'Key Insights', 'Important Notes')",
+      "format_hint": "title_case"
+    },
+    "item_1": {
+      "min_chars": 25,
+      "max_chars": 65,
+      "baseline_chars": 45,
+      "description": "First bullet point",
+      "format_hint": "sentence"
+    },
+    "item_2": {
+      "min_chars": 25,
+      "max_chars": 65,
+      "baseline_chars": 45,
+      "description": "Second bullet point",
+      "format_hint": "sentence"
+    },
+    "item_3": {
+      "min_chars": 25,
+      "max_chars": 65,
+      "baseline_chars": 45,
+      "description": "Third bullet point",
+      "format_hint": "sentence"
+    },
+    "item_4": {
+      "min_chars": 25,
+      "max_chars": 65,
+      "baseline_chars": 45,
+      "description": "Fourth bullet point",
+      "format_hint": "sentence"
+    },
+    "item_5": {
+      "min_chars": 25,
+      "max_chars": 65,
+      "baseline_chars": 45,
+      "description": "Fifth bullet point",
+      "format_hint": "sentence"
+    },
+    "item_6": {
+      "min_chars": 25,
+      "max_chars": 65,
+      "baseline_chars": 45,
+      "description": "Sixth bullet point",
+      "format_hint": "sentence"
+    },
+    "item_7": {
+      "min_chars": 25,
+      "max_chars": 65,
+      "baseline_chars": 45,
+      "description": "Seventh bullet point",
+      "format_hint": "sentence"
+    }
+  },
+
+  "variants": {
+    "blue": {
+      "gradient": "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+      "accent_color": "#1a73e8"
+    },
+    "green": {
+      "gradient": "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+      "accent_color": "#10b981"
+    },
+    "purple": {
+      "gradient": "linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)",
+      "accent_color": "#8b5cf6"
+    },
+    "amber": {
+      "gradient": "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
+      "accent_color": "#f59e0b"
+    }
+  },
+
+  "space_requirements": {
+    "min_grid_width": 8,
+    "min_grid_height": 10,
+    "ideal_grid_width": 10,
+    "ideal_grid_height": 14,
+    "padding_px": 32
+  },
+
+  "arrangement_rules": {
+    "min_instances": 1,
+    "max_instances": 2,
+    "valid_arrangements": ["single", "stacked_2"],
+    "gap_px": 24,
+    "prefer_row": false
+  },
+
+  "scaling_rules": {
+    "compress_slot": "item_7",
+    "min_scale": 0.7,
+    "expand_slot": "item_1",
+    "max_scale": 1.2,
+    "preserve_slots": ["sidebar_heading"]
+  }
+}

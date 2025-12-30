@@ -957,6 +957,24 @@ class GenericTextElementRequest(BaseModel):
         description="Output mode: 'inline_styles' or 'css_classes'"
     )
 
+    # v1.4.0: Component-based agentic generation
+    use_components: bool = Field(
+        default=True,
+        description="Use component-based agentic generation (default: True)"
+    )
+    audience: Optional[str] = Field(
+        default=None,
+        description="Target audience: executive, technical, general, educational, sales"
+    )
+    purpose: Optional[str] = Field(
+        default=None,
+        description="Slide purpose: inform, persuade, compare, explain, inspire"
+    )
+    component_hints: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Optional hints: preferred_type, item_count, color_scheme"
+    )
+
     class Config:
         extra = "ignore"  # v1.3.0: Forward compatibility
         json_schema_extra = {
@@ -1396,6 +1414,11 @@ class SlideTextContentData(BaseModel):
     fits: bool = Field(
         ...,
         description="Whether content fits within constraints"
+    )
+    # v1.4.0: Component-based agentic generation metadata
+    assembly_info: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Component assembly metadata: component_type, component_count, arrangement, variants_used, agent_reasoning"
     )
 
 
