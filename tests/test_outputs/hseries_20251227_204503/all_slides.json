@@ -1,0 +1,36 @@
+[{
+    "layout": "H1-generated",
+    "content": {
+      "slide_title": "Digital Transformation 2025",
+      "subtitle": "Accelerating Innovation Across Industries",
+      "hero_content": "<div style=\"position: relative; width: 100%; height: 100%; background-image: url('https://eshvntffcestlfuofwhv.supabase.co/storage/v1/object/public/generated-images/generated/6df467b1-894f-44d6-b895-3a9f73a179aa_original.png'); background-size: cover; background-position: right center;\">\n<div style=\"position: relative; width: 100%; height: 100%; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;\">\n\n  <!-- Dark gradient overlay -->\n  <div style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\n              background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0) 100%);\n              z-index: 1;\"></div>\n\n  <!-- Content -->\n  <div style=\"position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column;\n              justify-content: center; padding-left: 6%; padding-right: 50%; color: #ffffff;\">\n\n    <h1 style=\"font-size: 5.5rem; font-weight: 800; line-height: 1.05;\n               letter-spacing: -0.04em; margin: 0 0 28px 0; color: #ffffff;\n               text-shadow: 0 4px 12px rgba(0,0,0,0.4); max-width: 100%;\">\n      <span style=\"background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);\n                                    -webkit-background-clip: text;\n                                    -webkit-text-fill-color: transparent;\n                                    background-clip: text;\">Digital Transformation</span> 2025\n    </h1>\n\n    <p style=\"font-size: 2.1rem; font-weight: 300; line-height: 1.5;\n              color: rgba(255,255,255,0.92); margin: 0; max-width: 90%;\n              text-shadow: 0 2px 8px rgba(0,0,0,0.3);\">\n      Driving significant business growth through strategic technology adoption and innovation.\n    </p>\n  </div>\n\n  <!-- Footer -->\n  <div style=\"position: absolute; bottom: 8%; left: 6%; z-index: 2; display: flex; align-items: center;\n              font-size: 1.6rem; letter-spacing: 0.05em; text-transform: uppercase;\n              color: rgba(255,255,255,0.75); text-shadow: 0 2px 4px rgba(0,0,0,0.3);\">\n    <span>Alex Johnson</span>\n    <div style=\"margin: 0 15px; height: 24px; width: 1px; background-color: rgba(255,255,255,0.4);\"></div>\n    <span>TechSolutions Inc.</span>\n    <div style=\"margin: 0 15px; height: 24px; width: 1px; background-color: rgba(255,255,255,0.4);\"></div>\n    <span>Nov 27, 2023</span>\n  </div>\n\n</div>\n</div>\n",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  },{
+    "layout": "H1-structured",
+    "content": {
+      "slide_title": "Q4 Performance & Strategic Achievements",
+      "subtitle": "Analyzing Q4 performance, highlighting revenue growth, cost optimization, and market share gains for strategic insights.",
+      "author_info": "Jane Doe | Global Corp | Oct 26, 2023",
+      "background_image": "https://eshvntffcestlfuofwhv.supabase.co/storage/v1/object/public/generated-images/generated/b2df20c6-910f-4974-ac93-73a06f0caa1f_original.png",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  },{
+    "layout": "H2-section",
+    "content": {
+      "section_number": "01",
+      "slide_title": "Strategic Overview"
+    },
+    "background_image": "https://eshvntffcestlfuofwhv.supabase.co/storage/v1/object/public/generated-images/generated/fcf85990-2757-4696-8da0-d034b6366857_original.png"
+  },{
+    "layout": "H3-closing",
+    "content": {
+      "slide_title": "Thank You",
+      "subtitle": "We appreciate your time. Let's partner for mutual success.",
+      "contact_info": "contact@company.com | +1 (555) 123-4567 | www.company.com",
+      "logo": " "
+    },
+    "background_image": "https://eshvntffcestlfuofwhv.supabase.co/storage/v1/object/public/generated-images/generated/85388223-d35d-4b0c-939e-fa8bf221a9a9_original.png"
+  }]

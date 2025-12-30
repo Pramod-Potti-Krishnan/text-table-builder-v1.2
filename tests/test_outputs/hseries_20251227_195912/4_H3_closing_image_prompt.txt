@@ -1,0 +1,24 @@
+=== H3-closing Slide 4 ===
+Slide Title: Thank You for Your Time
+Subtitle: We look forward to partnering for mutual growth.
+Contact: contact@company.com | +1 (555) 123-4567 | www.company.com
+Visual Style: professional
+
+=== BUILT PROMPT ===
+High-quality professional closing slide background: artistic studio, gallery space, creative workshop, design environment, artistic expression.
+
+Style: photorealistic, modern, clean, professional, subtle
+Composition: Clean and impactful, suitable for thank you/closing message, darker area for text
+Mood: Warm, appreciative, forward-looking, professional
+Lighting: Natural, soft, inspiring
+
+MAIN SUBJECT: Partnership, Growth
+The image should evoke completion, gratitude, and future partnership.
+
+CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind in the image.
+
+=== METADATA ===
+Archetype: photorealistic
+Generator: imagen-fast
+Model: imagen-3.0-fast-generate-001
+Generation Time: 49418ms

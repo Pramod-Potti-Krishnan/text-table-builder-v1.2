@@ -1,0 +1,23 @@
+=== H2-section Slide 3 ===
+Section Number: 01
+Slide Title: Strategic Overview
+Visual Style: professional
+
+=== BUILT PROMPT ===
+High-quality professional section transition background: modern research laboratory, scientific equipment, experimental facility, discovery and innovation, academic research.
+
+Style: photorealistic, modern, clean, professional, subtle
+Composition: Clean and minimal, darker RIGHT side for text overlay, lighter LEFT side
+Mood: Professional, transitional, forward-moving
+Lighting: Natural, soft, appropriate for section break
+
+MAIN SUBJECT: Market Analysis, Competitive Landscape
+The image MUST prominently feature visual elements related to: Market Analysis, Competitive Landscape
+
+CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind in the image.
+
+=== METADATA ===
+Archetype: photorealistic
+Generator: gemini
+Model: gemini-2.5-flash-image
+Generation Time: 43396ms

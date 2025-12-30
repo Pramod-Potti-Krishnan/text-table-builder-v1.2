@@ -1,0 +1,98 @@
+[{
+    "layout": "H1-generated",
+    "content": {
+      "slide_title": "Digital Transformation 2025",
+      "subtitle": "Accelerating Innovation Across Industries",
+      "hero_content": "<div style=\"position: relative; width: 100%; height: 100%; background-image: url('https://eshvntffcestlfuofwhv.supabase.co/storage/v1/object/public/generated-images/generated/27824eaa-ba0b-441a-be87-a262936c45f9_original.png'); background-size: cover; background-position: right center;\">\n<div style=\"position: relative; width: 100%; height: 100%; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;\">\n\n  <!-- Dark gradient overlay -->\n  <div style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\n              background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0) 100%);\n              z-index: 1;\"></div>\n\n  <!-- Content -->\n  <div style=\"position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column;\n              justify-content: center; padding-left: 6%; padding-right: 50%; color: #ffffff;\">\n\n    <h1 style=\"font-size: 5.5rem; font-weight: 800; line-height: 1.05;\n               letter-spacing: -0.04em; margin: 0 0 28px 0; color: #ffffff;\n               text-shadow: 0 4px 12px rgba(0,0,0,0.4); max-width: 100%;\">\n      Digital <span style=\"background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);\n                                    -webkit-background-clip: text;\n                                    -webkit-text-fill-color: transparent;\n                                    background-clip: text;\">Transformation</span> 2025\n    </h1>\n\n    <p style=\"font-size: 2.1rem; font-weight: 300; line-height: 1.5;\n              color: rgba(255,255,255,0.92); margin: 0; max-width: 90%;\n              text-shadow: 0 2px 8px rgba(0,0,0,0.3);\">\n      Leveraging cutting-edge technology to drive unprecedented business growth and efficiency.\n    </p>\n  </div>\n\n  <!-- Footer -->\n  <div style=\"position: absolute; bottom: 8%; left: 6%; z-index: 2; display: flex; align-items: center;\n              font-size: 1.6rem; letter-spacing: 0.05em; text-transform: uppercase;\n              color: rgba(255,255,255,0.75); text-shadow: 0 2px 4px rgba(0,0,0,0.3);\">\n    <span>Dr. Alex Chen</span>\n    <div style=\"margin: 0 15px; height: 24px; width: 1px; background-color: rgba(255,255,255,0.4);\"></div>\n    <span>Tech Solutions Inc.</span>\n    <div style=\"margin: 0 15px; height: 24px; width: 1px; background-color: rgba(255,255,255,0.4);\"></div>\n    <span>Nov 15, 2023</span>\n  </div>\n\n</div>\n</div>\n",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  },{
+    "layout": "H1-generated",
+    "content": {
+      "slide_title": "Sustainable Future Initiative",
+      "subtitle": "Building Tomorrow, Today",
+      "hero_content": "<div style=\"position: relative; width: 100%; height: 100%; background-image: url('https://eshvntffcestlfuofwhv.supabase.co/storage/v1/object/public/generated-images/generated/acf23002-2164-4022-88d1-0d164a09948c_original.png'); background-size: cover; background-position: right center;\">\n<div style=\"position: relative; width: 100%; height: 100%; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;\">\n\n  <!-- AI Background Image -->\n  <div style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;\n              background-image: url('https://images.unsplash.com/photo-1620712943543-bcc4688e7485?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80');\n              background-size: cover; background-position: center;\"></div>\n\n  <!-- Dark gradient overlay -->\n  <div style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\n              background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0) 100%);\n              z-index: 1;\"></div>\n\n  <!-- Content -->\n  <div style=\"position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column;\n              justify-content: center; padding-left: 6%; padding-right: 50%; color: #ffffff;\">\n\n    <h1 style=\"font-size: 5.5rem; font-weight: 800; line-height: 1.05;\n               letter-spacing: -0.04em; margin: 0 0 28px 0; color: #ffffff;\n               text-shadow: 0 4px 12px rgba(0,0,0,0.4); max-width: 100%;\">\n      Leading a <span style=\"background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);\n                                    -webkit-background-clip: text;\n                                    -webkit-text-fill-color: transparent;\n                                    background-clip: text;\">Sustainable</span> Future Initiative\n    </h1>\n\n    <p style=\"font-size: 2.1rem; font-weight: 300; line-height: 1.5;\n              color: rgba(255,255,255,0.92); margin: 0; max-width: 90%;\n              text-shadow: 0 2px 8px rgba(0,0,0,0.3);\">\n      Driving measurable environmental impact for long-term business resilience and value.\n    </p>\n  </div>\n\n  <!-- Footer -->\n  <div style=\"position: absolute; bottom: 8%; left: 6%; z-index: 2; display: flex; align-items: center;\n              font-size: 1.6rem; letter-spacing: 0.05em; text-transform: uppercase;\n              color: rgba(255,255,255,0.75); text-shadow: 0 2px 4px rgba(0,0,0,0.3);\">\n    <span>Dr. Anya Sharma</span>\n    <div style=\"margin: 0 15px; height: 24px; width: 1px; background-color: rgba(255,255,255,0.4);\"></div>\n    <span>Quantum Solutions</span>\n    <div style=\"margin: 0 15px; height: 24px; width: 1px; background-color: rgba(255,255,255,0.4);\"></div>\n    <span>Dec 15, 2023</span>\n  </div>\n\n</div>\n</div>\n",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  },{
+    "layout": "H1-generated",
+    "content": {
+      "slide_title": "Global Expansion Strategy",
+      "subtitle": "Connecting Markets Worldwide",
+      "hero_content": "<div style=\"position: relative; width: 100%; height: 100%; background-image: url('https://eshvntffcestlfuofwhv.supabase.co/storage/v1/object/public/generated-images/generated/7b9ff687-4731-4a96-834b-fcfcea46614e_original.png'); background-size: cover; background-position: right center;\">\n<div style=\"position: relative; width: 100%; height: 100%; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;\">\n\n  <!-- Dark gradient overlay -->\n  <div style=\"position: absolute; top: 0; left: 0; width: 100%; height: 100%;\n              background: linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 45%, rgba(0,0,0,0) 100%);\n              z-index: 1;\"></div>\n\n  <!-- Content -->\n  <div style=\"position: relative; z-index: 2; height: 100%; display: flex; flex-direction: column;\n              justify-content: center; padding-left: 6%; padding-right: 50%; color: #ffffff;\">\n\n    <h1 style=\"font-size: 5.5rem; font-weight: 800; line-height: 1.05;\n               letter-spacing: -0.04em; margin: 0 0 28px 0; color: #ffffff;\n               text-shadow: 0 4px 12px rgba(0,0,0,0.4); max-width: 100%;\">\n      Global <span style=\"background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);\n                                    -webkit-background-clip: text;\n                                    -webkit-text-fill-color: transparent;\n                                    background-clip: text;\">Expansion</span> Strategy\n    </h1>\n\n    <p style=\"font-size: 2.1rem; font-weight: 300; line-height: 1.5;\n              color: rgba(255,255,255,0.92); margin: 0; max-width: 90%;\n              text-shadow: 0 2px 8px rgba(0,0,0,0.3);\">\n      Unlock new growth opportunities with tailored market entry strategies.\n    </p>\n  </div>\n\n  <!-- Footer -->\n  <div style=\"position: absolute; bottom: 8%; left: 6%; z-index: 2; display: flex; align-items: center;\n              font-size: 1.6rem; letter-spacing: 0.05em; text-transform: uppercase;\n              color: rgba(255,255,255,0.75); text-shadow: 0 2px 4px rgba(0,0,0,0.3);\">\n    <span>Dr. Evelyn Reed</span>\n    <div style=\"margin: 0 15px; height: 24px; width: 1px; background-color: rgba(255,255,255,0.4);\"></div>\n    <span>Apex Solutions Group</span>\n    <div style=\"margin: 0 15px; height: 24px; width: 1px; background-color: rgba(255,255,255,0.4);\"></div>\n    <span>Nov 15, 2023</span>\n  </div>\n\n</div>\n</div>\n",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  },{
+    "layout": "H1-structured",
+    "content": {
+      "slide_title": "Q4 Financial Review",
+      "subtitle": "Annual Performance Summary",
+      "hero_content": "<div style=\"width: 100%;\n            height: 100%;\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            justify-content: center;\n            padding: 80px;\">\n\n  <h1 style=\"font-size: 96px;\n             color: white;\n             font-weight: 900;\n             text-align: center;\n             margin: 0 0 40px 0;\n             text-shadow: 0 4px 12px rgba(0,0,0,0.3);\n             line-height: 1.1;\n             letter-spacing: -2px;\">\n    Q4 Financial Review\n  </h1>\n\n  <p style=\"font-size: 42px;\n            color: rgba(255,255,255,0.95);\n            text-align: center;\n            margin: 0 0 64px 0;\n            line-height: 1.4;\n            text-shadow: 0 2px 8px rgba(0,0,0,0.2);\">\n    Analyzing revenue growth, cost optimization, and market share for informed executive decisions.\n  </p>\n\n  <div style=\"font-size: 32px;\n              color: rgba(255,255,255,0.9);\n              text-align: center;\n              text-shadow: 0 2px 6px rgba(0,0,0,0.2);\">\n    Presenter Name | Company Name | Date\n  </div>\n\n</div>\n",
+      "background_color": "#1e3a5f",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  },{
+    "layout": "H1-structured",
+    "content": {
+      "slide_title": "Engineering Excellence",
+      "subtitle": "Building the Future",
+      "hero_content": "<div style=\"width: 100%;\n            height: 100%;\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            justify-content: center;\n            padding: 80px;\">\n\n  <h1 style=\"font-size: 96px;\n             color: white;\n             font-weight: 900;\n             text-align: center;\n             margin: 0 0 40px 0;\n             text-shadow: 0 4px 12px rgba(0,0,0,0.3);\n             line-height: 1.1;\n             letter-spacing: -2px;\">\n    Engineering Excellence\n  </h1>\n\n  <p style=\"font-size: 42px;\n            color: rgba(255,255,255,0.95);\n            text-align: center;\n            margin: 0 0 64px 0;\n            line-height: 1.4;\n            text-shadow: 0 2px 8px rgba(0,0,0,0.2);\">\n    Unlocking Future Growth: Strategic Innovations in Architecture, Performance, and Scale\n  </p>\n\n  <div style=\"font-size: 32px;\n              color: rgba(255,255,255,0.9);\n              text-align: center;\n              text-shadow: 0 2px 6px rgba(0,0,0,0.2);\">\n    [Presenter Name] | [Company Name] | [Date]\n  </div>\n\n</div>\n",
+      "background_color": "#1e3a5f",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  },{
+    "layout": "H2-section",
+    "content": {
+      "slide_title": "Strategic Overview",
+      "subtitle": "Section 01",
+      "hero_content": "<div style=\"width: 100%;\n            height: 100%;\n            background: #1f2937;\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            padding: 80px;\">\n\n  <div style=\"border-left: 12px solid #667eea;\n              padding-left: 48px;\">\n\n    <h2 style=\"font-size: 84px;\n               color: white;\n               font-weight: 700;\n               margin: 0 0 24px 0;\n               line-height: 1.1;\">\n      Strategic Vision & Market Positioning\n    </h2>\n\n    <p style=\"font-size: 42px;\n              color: #9ca3af;\n              font-weight: 400;\n              margin: 0;\n              line-height: 1.3;\">\n      Understanding Our Path Forward\n    </p>\n\n  </div>\n\n</div>\n",
+      "background_color": "#374151",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  },{
+    "layout": "H2-section",
+    "content": {
+      "slide_title": "Technical Deep Dive",
+      "subtitle": "Section 02",
+      "hero_content": "<div style=\"width: 100%;\n            height: 100%;\n            background: #1f2937;\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            padding: 80px;\">\n\n  <div style=\"border-left: 12px solid #667eea;\n              padding-left: 48px;\">\n\n    <h2 style=\"font-size: 84px;\n               color: white;\n               font-weight: 700;\n               margin: 0 0 24px 0;\n               line-height: 1.1;\">\n      System Design\n    </h2>\n\n    <p style=\"font-size: 42px;\n              color: #9ca3af;\n              font-weight: 400;\n              margin: 0;\n              line-height: 1.3;\">\n      Unveiling the Technical Blueprint\n    </p>\n\n  </div>\n\n</div>\n",
+      "background_color": "#374151",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  },{
+    "layout": "H2-section",
+    "content": {
+      "slide_title": "Financial Projections",
+      "subtitle": "Section 03",
+      "hero_content": "<div style=\"width: 100%;\n            height: 100%;\n            background: #1f2937;\n            display: flex;\n            align-items: center;\n            justify-content: center;\n            padding: 80px;\">\n\n  <div style=\"border-left: 12px solid #667eea;\n              padding-left: 48px;\">\n\n    <h2 style=\"font-size: 84px;\n               color: white;\n               font-weight: 700;\n               margin: 0 0 24px 0;\n               line-height: 1.1;\">\n      Revenue Forecast\n    </h2>\n\n    <p style=\"font-size: 42px;\n              color: #9ca3af;\n              font-weight: 400;\n              margin: 0;\n              line-height: 1.3;\">\n      Projecting Future Income Streams\n    </p>\n\n  </div>\n\n</div>\n",
+      "background_color": "#374151",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  },{
+    "layout": "H3-closing",
+    "content": {
+      "slide_title": "Thank You",
+      "subtitle": "contact@company.com",
+      "hero_content": "<div style=\"width: 100%;\n            height: 100%;\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            justify-content: center;\n            padding: 80px;\">\n\n  <h2 style=\"font-size: 72px;\n             color: white;\n             font-weight: 700;\n             text-align: center;\n             margin: 0 0 48px 0;\n             line-height: 1.2;\n             text-shadow: 0 4px 12px rgba(0,0,0,0.3);\">\n    Ready to Unlock Your Next Growth Phase?\n  </h2>\n\n  <p style=\"font-size: 36px;\n            color: rgba(255,255,255,0.95);\n            text-align: center;\n            max-width: 1400px;\n            line-height: 1.6;\n            margin: 0 0 56px 0;\n            text-shadow: 0 2px 8px rgba(0,0,0,0.2);\">\n    Partner with us to drive unparalleled innovation, secure sustainable growth, and redefine market leadership. We are committed to delivering tangible results and fostering long-term success. Let's discuss your strategic objectives.\n  </p>\n\n  <div style=\"padding: 32px 72px;\n              font-size: 32px;\n              background: white;\n              color: #667eea;\n              border-radius: 12px;\n              font-weight: 700;\n              box-shadow: 0 8px 24px rgba(0,0,0,0.3);\n              margin-bottom: 48px;\">\n    Schedule a Partnership Call\n  </div>\n\n  <div style=\"font-size: 28px;\n              color: rgba(255,255,255,0.9);\n              text-align: center;\n              text-shadow: 0 2px 6px rgba(0,0,0,0.2);\">\n    contact@company.com | +1 (555) 123-4567 | www.company.com\n  </div>\n\n</div>\n",
+      "background_color": "#1e3a5f",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  },{
+    "layout": "H3-closing",
+    "content": {
+      "slide_title": "Questions?",
+      "subtitle": "info@techcorp.io",
+      "hero_content": "<div style=\"width: 100%;\n            height: 100%;\n            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n            display: flex;\n            flex-direction: column;\n            align-items: center;\n            justify-content: center;\n            padding: 80px;\">\n\n  <h2 style=\"font-size: 72px;\n             color: white;\n             font-weight: 700;\n             text-align: center;\n             margin: 0 0 48px 0;\n             line-height: 1.2;\n             text-shadow: 0 4px 12px rgba(0,0,0,0.3);\">\n    Ready to Explore Collaborative Growth?\n  </h2>\n\n  <p style=\"font-size: 36px;\n            color: rgba(255,255,255,0.95);\n            text-align: center;\n            max-width: 1400px;\n            line-height: 1.6;\n            margin: 0 0 56px 0;\n            text-shadow: 0 2px 8px rgba(0,0,0,0.2);\">\n    Let's define clear next steps to unlock your potential. Our innovative solutions are designed to drive tangible results and foster lasting partnerships, ensuring your strategic success. Act now.\n  </p>\n\n  <div style=\"padding: 32px 72px;\n              font-size: 32px;\n              background: white;\n              color: #667eea;\n              border-radius: 12px;\n              font-weight: 700;\n              box-shadow: 0 8px 24px rgba(0,0,0,0.3);\n              margin-bottom: 48px;\">\n    Connect with Our Team\n  </div>\n\n  <div style=\"font-size: 28px;\n              color: rgba(255,255,255,0.9);\n              text-align: center;\n              text-shadow: 0 2px 6px rgba(0,0,0,0.2);\">\n    info@techcorp.io | +1 (800) TECH-NOW | techcorp.io\n  </div>\n\n</div>\n",
+      "background_color": "#1e3a5f",
+      "logo": " ",
+      "presentation_name": "H-Series Test"
+    }
+  }]

@@ -15,8 +15,11 @@ transparency about its reasoning process.
 """
 
 import json
+import logging
 from typing import Dict, Any, Optional, Callable, List
 from dataclasses import dataclass
+
+logger = logging.getLogger(__name__)
 
 from .registry import get_registry
 from .tools import (
@@ -181,6 +184,7 @@ class ComponentAssemblyAgent:
         """
         try:
             # Step 0: Build input context
+            logger.info(f"[COMPONENT-AGENT] Step 0: Building input context")
             context = InputContext(
                 prompt=prompt,
                 grid_width=grid_width,
@@ -192,9 +196,11 @@ class ComponentAssemblyAgent:
             )
 
             # Step 1-3: Get agent's reasoning about component selection
+            logger.info(f"[COMPONENT-AGENT] Step 1-3: Reasoning about components")
             reasoning = await self._reason_about_components(context)
 
             if not reasoning:
+                logger.error("[COMPONENT-AGENT] Failed: No reasoning returned")
                 return AgentResult(
                     success=False,
                     html="",
@@ -207,8 +213,10 @@ class ComponentAssemblyAgent:
             component_choice = reasoning.get("component_choice", {})
             primary_component = component_choice.get("primary_component")
             primary_count = component_choice.get("primary_count", 3)
+            logger.info(f"[COMPONENT-AGENT] Selected: {primary_component} x{primary_count}")
 
             if not primary_component:
+                logger.error("[COMPONENT-AGENT] Failed: No component selected")
                 return AgentResult(
                     success=False,
                     html="",
@@ -218,6 +226,7 @@ class ComponentAssemblyAgent:
                 )
 
             # Step 4: Select layout
+            logger.info(f"[COMPONENT-AGENT] Step 4: Selecting layout")
             layout = select_component_layout(
                 component_id=primary_component,
                 instance_count=primary_count,
@@ -226,6 +235,7 @@ class ComponentAssemblyAgent:
             )
 
             if not layout:
+                logger.error(f"[COMPONENT-AGENT] Failed: No layout for {primary_component}")
                 return AgentResult(
                     success=False,
                     html="",
@@ -233,8 +243,10 @@ class ComponentAssemblyAgent:
                     reasoning=reasoning,
                     error=f"Failed to configure layout for {primary_component}"
                 )
+            logger.info(f"[COMPONENT-AGENT] Layout: {layout.arrangement}, {layout.instance_count} instances")
 
             # Step 5: Generate content
+            logger.info(f"[COMPONENT-AGENT] Step 5: Generating content")
             content = await generate_component_content(
                 component_id=primary_component,
                 user_prompt=prompt,
@@ -249,6 +261,7 @@ class ComponentAssemblyAgent:
             )
 
             if not content:
+                logger.error("[COMPONENT-AGENT] Failed: No content generated")
                 return AgentResult(
                     success=False,
                     html="",
@@ -256,6 +269,7 @@ class ComponentAssemblyAgent:
                     reasoning=reasoning,
                     error="Failed to generate content"
                 )
+            logger.info(f"[COMPONENT-AGENT] Generated {len(content)} content items")
 
             # Step 6: Assemble HTML
             result = assemble_html(
@@ -286,12 +300,16 @@ class ComponentAssemblyAgent:
             )
 
         except Exception as e:
+            import traceback
+            error_msg = f"{type(e).__name__}: {str(e)}"
+            logger.error(f"[COMPONENT-AGENT] Exception: {error_msg}")
+            logger.error(f"[COMPONENT-AGENT] Traceback: {traceback.format_exc()}")
             return AgentResult(
                 success=False,
                 html="",
                 assembly_info=None,
                 reasoning={},
-                error=str(e)
+                error=error_msg
             )
 
     async def _reason_about_components(
@@ -338,8 +356,17 @@ RECOMMENDED COUNTS (based on space):
 
 Now reason through the problem and output your decision as JSON:"""
 
-        # Call LLM
-        response = await self.llm_service(prompt)
+        # Call LLM with error handling
+        try:
+            logger.info("[COMPONENT-AGENT] Calling LLM for component reasoning")
+            response = await self.llm_service(prompt)
+            logger.info(f"[COMPONENT-AGENT] LLM response received, length: {len(response)}")
+        except Exception as e:
+            # LLM call failed, use heuristic fallback
+            logger.warning(
+                f"[COMPONENT-AGENT] LLM call failed: {e}, using heuristic selection"
+            )
+            return self._heuristic_component_selection(context)
 
         # Parse response
         try:

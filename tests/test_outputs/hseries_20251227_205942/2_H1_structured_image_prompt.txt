@@ -1,0 +1,22 @@
+=== H1-structured Slide 2 ===
+Title: Q4 Financial Review
+Visual Style: professional
+
+=== BUILT PROMPT ===
+High-quality professional presentation background: artistic studio, gallery space, creative workshop, design environment, artistic expression.
+
+Style: photorealistic, modern, clean, professional, subtle
+Composition: Clean and impactful, topic-focused imagery, darker left side for text overlay
+Mood: Professional, trustworthy, innovative
+Lighting: Natural, soft, appropriate for title slide
+
+MAIN SUBJECT: Revenue Growth, Cost Optimization
+The image MUST prominently feature visual elements related to: Revenue Growth, Cost Optimization
+
+CRITICAL: Absolutely NO text, words, letters, numbers, or typography of any kind in the image.
+
+=== METADATA ===
+Archetype: photorealistic
+Generator: gemini
+Model: gemini-2.5-flash-image
+Generation Time: 7008ms

@@ -1,0 +1,13 @@
+=== H1-generated Slide 1 ===
+Title: Digital Transformation 2025
+Visual Style: professional
+Image Hint: modern city skyline with digital overlay futuristic technology
+
+=== BUILT PROMPT ===
+N/A
+
+=== METADATA ===
+Archetype: N/A
+Generator: N/A
+Model: N/A
+Generation Time: 7929ms
