@@ -890,9 +890,17 @@ async def generate_text_element(
                 )
             else:
                 # Component generation failed, fall back to legacy generation
+                component_error = agent_result.error
                 logger.warning(
-                    f"[COMPONENT-AGENT] Failed: {agent_result.error}, falling back to legacy"
+                    f"[COMPONENT-AGENT] Failed: {component_error}, falling back to legacy"
                 )
+                # Add debug info to help diagnose
+                logger.error(
+                    f"[COMPONENT-AGENT] Debug: reasoning={agent_result.reasoning}"
+                )
+
+        else:
+            component_error = None
 
         # Legacy text generation (fallback or when use_components=False)
         logger.info(
@@ -901,6 +909,13 @@ async def generate_text_element(
         )
         result = await generator.generate_from_request(request)
         logger.info(f"Text element generation successful")
+
+        # Add component debug info to response if we fell back from component generation
+        if getattr(request, 'use_components', True) and 'component_error' in locals() and component_error:
+            # Inject debug info into the response data
+            if result.data:
+                result.data.assembly_info = {"debug_error": component_error}
+
         return result
 
     except Exception as e:
