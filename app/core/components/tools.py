@@ -429,7 +429,10 @@ def assemble_html(
 
             # Handle variant-specific placeholders (like {number_color})
             for attr in ["number_color", "heading_color"]:
-                attr_value = getattr(variant, attr, None) if hasattr(variant, attr) else variant.model_extra.get(attr) if hasattr(variant, 'model_extra') else None
+                # First try direct attribute, then model_extra (if it exists and is not None)
+                attr_value = getattr(variant, attr, None)
+                if attr_value is None and hasattr(variant, 'model_extra') and variant.model_extra is not None:
+                    attr_value = variant.model_extra.get(attr)
                 if attr_value:
                     html = html.replace(f"{{{attr}}}", attr_value)
 
