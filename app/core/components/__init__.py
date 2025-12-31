@@ -9,10 +9,11 @@ and selects appropriate pre-designed components to assemble polished output.
 Components:
 - registry.py: ComponentRegistry - loads and caches component definitions
 - agent.py: ComponentAssemblyAgent - master orchestrator with CoT reasoning
+- atomic_generator.py: AtomicComponentGenerator - direct component generation
 - tools.py: Agent tools (analyze_space, select_layout, etc.)
 - constraints.py: Space calculations and scaling rules
 
-Usage:
+Usage (CoT-based agent selection):
     from app.core.components import ComponentAssemblyAgent, get_registry
 
     agent = ComponentAssemblyAgent(llm_service=my_llm_service)
@@ -22,6 +23,19 @@ Usage:
         grid_height=8,
         audience="executive",
         purpose="inform"
+    )
+
+Usage (Direct atomic component generation):
+    from app.core.components import AtomicComponentGenerator
+
+    generator = AtomicComponentGenerator(llm_service=my_llm_service)
+    result = await generator.generate(
+        component_type="colored_section",
+        prompt="Key benefits of our initiative",
+        count=3,
+        grid_width=24,
+        grid_height=12,
+        items_per_instance=4  # 4 bullets per section
     )
 """
 
@@ -52,6 +66,11 @@ from .agent import (
     generate_with_components,
     AGENT_SYSTEM_PROMPT
 )
+from .atomic_generator import (
+    AtomicComponentGenerator,
+    AtomicResult,
+    generate_atomic_component
+)
 
 __all__ = [
     # Registry
@@ -81,4 +100,8 @@ __all__ = [
     "AgentResult",
     "generate_with_components",
     "AGENT_SYSTEM_PROMPT",
+    # Atomic Generator
+    "AtomicComponentGenerator",
+    "AtomicResult",
+    "generate_atomic_component",
 ]

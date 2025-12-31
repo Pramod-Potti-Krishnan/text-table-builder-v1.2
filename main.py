@@ -32,6 +32,7 @@ from app.api.async_routes import router as async_router
 from app.api.coordination_routes import router as coordination_router
 from app.api.iseries_routes import router as iseries_router
 from app.api.slides_routes import router as slides_router
+from app.api.atomic_routes import router as atomic_router
 
 # Configure logging
 logging.basicConfig(
@@ -97,6 +98,12 @@ async def lifespan(app: FastAPI):
     logger.info("  - /v1.2/slides/I1-I4 (image + text layouts)")
     logger.info("  - /v1.2/slides/L29 (alias for H1-generated)")
     logger.info("  - /v1.2/slides/L25 (alias for C1-text)")
+    logger.info("✓ Atomic Component API (direct component generation):")
+    logger.info("  - /v1.2/atomic/METRICS (2-4 metric cards)")
+    logger.info("  - /v1.2/atomic/SEQUENTIAL (2-6 numbered steps)")
+    logger.info("  - /v1.2/atomic/COMPARISON (2-4 columns, flexible items)")
+    logger.info("  - /v1.2/atomic/SECTIONS (2-5 sections, flexible bullets)")
+    logger.info("  - /v1.2/atomic/CALLOUT (1-2 callout boxes)")
     logger.info("✓ Gemini integration enabled")
     logger.info("✓ Image Builder API integration enabled")
     logger.info(f"✓ LLM Pool enabled: {os.getenv('USE_LLM_POOL', 'true')}")
@@ -193,6 +200,9 @@ app.include_router(iseries_router)
 # Include unified slides routes (Layout Service aligned - H1, H2, H3, C1, I1-I4)
 app.include_router(slides_router)
 
+# Include atomic component routes (direct component generation)
+app.include_router(atomic_router)
+
 
 @app.get("/")
 async def root():
@@ -239,6 +249,15 @@ async def root():
                 "I4_narrow_image_right": "POST /v1.2/iseries/I4",
                 "health": "GET /v1.2/iseries/health",
                 "layouts_info": "GET /v1.2/iseries/layouts"
+            },
+            "atomic_components": {
+                "METRICS": "POST /v1.2/atomic/METRICS",
+                "SEQUENTIAL": "POST /v1.2/atomic/SEQUENTIAL",
+                "COMPARISON": "POST /v1.2/atomic/COMPARISON",
+                "SECTIONS": "POST /v1.2/atomic/SECTIONS",
+                "CALLOUT": "POST /v1.2/atomic/CALLOUT",
+                "health": "GET /v1.2/atomic/health",
+                "list_components": "GET /v1.2/atomic/components"
             }
         },
         "features": {
@@ -252,14 +271,16 @@ async def root():
             "layout_service_integration": True,
             "grid_based_constraints": True,
             "content_suggestions": True,
-            "iseries_image_text_layouts": True
+            "iseries_image_text_layouts": True,
+            "atomic_component_generation": True
         },
         "total_variants": 26,
-        "total_endpoints": 27,
+        "total_endpoints": 34,
         "hero_endpoints": 6,
         "layout_ai_endpoints": 8,
         "coordination_endpoints": 3,
         "iseries_endpoints": 7,
+        "atomic_endpoints": 7,
         "slide_types": [
             "matrix", "grid", "comparison", "sequential",
             "asymmetric", "hybrid", "metrics", "single_column",

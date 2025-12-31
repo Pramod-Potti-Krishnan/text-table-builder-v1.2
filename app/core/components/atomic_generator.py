@@ -1,0 +1,655 @@
+"""
+Atomic Component Generator for Direct Component Generation
+============================================================
+
+Direct atomic component generation without Chain of Thought reasoning.
+Unlike ComponentAssemblyAgent, this class:
+- Takes explicit component type and count
+- Does NOT reason about which component to use
+- Supports flexible bullet/item counts
+- Provides faster, more deterministic output
+
+Supports 5 atomic component types:
+- METRICS (metrics_card): 2-4 metric cards
+- SEQUENTIAL (numbered_card): 2-6 numbered steps
+- COMPARISON (comparison_column): 2-4 columns with 1-7 items each
+- SECTIONS (colored_section): 2-5 sections with 1-5 bullets each
+- CALLOUT (sidebar_box): 1-2 callout boxes with 1-7 items each
+
+v1.0.0: Initial atomic component endpoints
+"""
+
+import json
+import logging
+import time
+import re
+from typing import Dict, List, Optional, Any, Callable
+from dataclasses import dataclass
+from copy import deepcopy
+
+from .registry import get_registry
+from .constraints import (
+    SpaceCalculator,
+    CharacterLimitScaler,
+    LayoutBuilder,
+    CELL_SIZE_PX
+)
+from ...models.component_models import (
+    ComponentDefinition,
+    SlotSpec,
+    CharLimits,
+    GeneratedContent,
+    LayoutSelection,
+    AssemblyResult
+)
+from ...models.atomic_models import (
+    AtomicContext,
+    AtomicMetadata,
+    AtomicComponentResponse,
+    ATOMIC_TYPE_MAP
+)
+
+logger = logging.getLogger(__name__)
+
+
+# =============================================================================
+# Result Dataclass
+# =============================================================================
+
+@dataclass
+class AtomicResult:
+    """Result from AtomicComponentGenerator.generate()"""
+    success: bool
+    html: str
+    component_type: str
+    instance_count: int
+    arrangement: str
+    variants_used: List[str]
+    character_counts: Dict[str, List[int]]
+    metadata: AtomicMetadata
+    error: Optional[str] = None
+
+
+# =============================================================================
+# Atomic Component Generator
+# =============================================================================
+
+class AtomicComponentGenerator:
+    """
+    Direct atomic component generation without CoT reasoning.
+
+    Provides explicit control over component type, count, and item structure.
+    Faster than ComponentAssemblyAgent as it skips reasoning about component selection.
+    """
+
+    def __init__(self, llm_service: Optional[Callable] = None):
+        """
+        Initialize the generator.
+
+        Args:
+            llm_service: Async callable that takes prompt string and returns response
+        """
+        self.llm_service = llm_service
+        self.registry = get_registry()
+        self.layout_builder = LayoutBuilder()
+        self.space_calculator = SpaceCalculator()
+        self.scaler = CharacterLimitScaler()
+
+    async def generate(
+        self,
+        component_type: str,
+        prompt: str,
+        count: int,
+        grid_width: int,
+        grid_height: int,
+        items_per_instance: Optional[int] = None,
+        context: Optional[AtomicContext] = None,
+        variant: Optional[str] = None
+    ) -> AtomicResult:
+        """
+        Generate atomic component with explicit parameters.
+
+        Args:
+            component_type: Internal component ID (e.g., 'metrics_card', 'colored_section')
+            prompt: Content request describing what to generate
+            count: Number of component instances
+            grid_width: Available width in grid units (4-32)
+            grid_height: Available height in grid units (4-18)
+            items_per_instance: Number of bullets/items per instance (for flexible components)
+            context: Optional slide/presentation context
+            variant: Optional specific color variant to use
+
+        Returns:
+            AtomicResult with HTML, metadata, and character counts
+        """
+        start_time = time.time()
+
+        try:
+            # Step 1: Load base component definition
+            component = self.registry.get_component(component_type)
+            if not component:
+                return self._error_result(
+                    f"Component not found: {component_type}",
+                    component_type,
+                    count,
+                    start_time
+                )
+
+            logger.info(
+                f"[ATOMIC-{component_type.upper()}] count={count}, "
+                f"items_per={items_per_instance}, grid={grid_width}x{grid_height}"
+            )
+
+            # Step 2: Create dynamic slots if items_per_instance specified
+            dynamic_slots = self._create_dynamic_slots(
+                component, items_per_instance
+            ) if items_per_instance else component.slots
+
+            # Step 3: Build layout (arrangement, character limits, variants)
+            layout = self._build_layout(
+                component, count, grid_width, grid_height, dynamic_slots, variant
+            )
+
+            # Step 4: Generate content via LLM
+            contents = await self._generate_content(
+                component_type=component_type,
+                component_description=component.description,
+                slots=dynamic_slots,
+                char_limits=layout.scaled_char_limits,
+                prompt=prompt,
+                instance_count=count,
+                items_per_instance=items_per_instance,
+                context=context
+            )
+
+            if not contents:
+                return self._error_result(
+                    "Failed to generate content",
+                    component_type,
+                    count,
+                    start_time
+                )
+
+            # Step 5: Assemble HTML with dynamic template
+            html, char_counts = self._assemble_html(
+                component=component,
+                layout=layout,
+                contents=contents,
+                items_per_instance=items_per_instance
+            )
+
+            # Calculate metadata
+            elapsed_ms = int((time.time() - start_time) * 1000)
+            space_analysis = self.space_calculator.analyze_space(grid_width, grid_height)
+
+            # Calculate scaling factor
+            instance_width = int(layout.position_css.get("width", "0px").replace("px", ""))
+            instance_height = int(layout.position_css.get("height", "0px").replace("px", ""))
+            ideal_width = (component.space_requirements.ideal_grid_width or
+                          component.space_requirements.min_grid_width) * CELL_SIZE_PX
+            ideal_height = (component.space_requirements.ideal_grid_height or
+                           component.space_requirements.min_grid_height) * CELL_SIZE_PX
+            scaling_factor = self.scaler.calculate_scaling_factor(
+                instance_width, instance_height, ideal_width, ideal_height
+            )
+
+            metadata = AtomicMetadata(
+                generation_time_ms=elapsed_ms,
+                model_used="gemini-1.5-flash",
+                grid_dimensions={"width": grid_width, "height": grid_height},
+                space_category=space_analysis.space_category,
+                scaling_factor=round(scaling_factor, 2)
+            )
+
+            logger.info(
+                f"[ATOMIC-{component_type.upper()}-OK] count={count}, "
+                f"time={elapsed_ms}ms, html={len(html)} chars"
+            )
+
+            return AtomicResult(
+                success=True,
+                html=html,
+                component_type=component_type,
+                instance_count=count,
+                arrangement=layout.arrangement.value if hasattr(layout.arrangement, 'value') else str(layout.arrangement),
+                variants_used=layout.variant_assignments[:count],
+                character_counts=char_counts,
+                metadata=metadata
+            )
+
+        except Exception as e:
+            import traceback
+            tb = traceback.format_exc()
+            logger.error(f"[ATOMIC-{component_type.upper()}-ERROR] {e}\n{tb}")
+            return self._error_result(str(e), component_type, count, start_time)
+
+    def _create_dynamic_slots(
+        self,
+        component: ComponentDefinition,
+        items_per_instance: int
+    ) -> Dict[str, SlotSpec]:
+        """
+        Create dynamic slots based on requested item count.
+
+        For components with flexible bullet/item counts (colored_section,
+        comparison_column, sidebar_box), generate the correct number of slots.
+        """
+        # Identify the slot pattern (bullet_N or item_N)
+        slot_prefix = None
+        template_slot = None
+
+        for slot_id in component.slots:
+            if slot_id.startswith("bullet_"):
+                slot_prefix = "bullet_"
+                template_slot = component.slots.get("bullet_1")
+                break
+            elif slot_id.startswith("item_"):
+                slot_prefix = "item_"
+                template_slot = component.slots.get("item_1")
+                break
+
+        if not slot_prefix or not template_slot:
+            # No flexible slots, return original
+            return component.slots
+
+        # Build dynamic slots
+        dynamic_slots = {}
+
+        # Copy non-item slots (like section_heading, column_heading, sidebar_heading)
+        for slot_id, spec in component.slots.items():
+            if not slot_id.startswith(slot_prefix):
+                dynamic_slots[slot_id] = spec
+
+        # Generate requested number of item slots
+        for i in range(1, items_per_instance + 1):
+            slot_key = f"{slot_prefix}{i}"
+            if slot_key in component.slots:
+                # Use existing slot spec
+                dynamic_slots[slot_key] = component.slots[slot_key]
+            else:
+                # Clone from template
+                dynamic_slots[slot_key] = SlotSpec(
+                    min_chars=template_slot.min_chars,
+                    max_chars=template_slot.max_chars,
+                    baseline_chars=template_slot.baseline_chars,
+                    description=f"{slot_prefix.replace('_', ' ').title()}{i}",
+                    format_hint=template_slot.format_hint
+                )
+
+        return dynamic_slots
+
+    def _build_layout(
+        self,
+        component: ComponentDefinition,
+        instance_count: int,
+        grid_width: int,
+        grid_height: int,
+        dynamic_slots: Dict[str, SlotSpec],
+        variant: Optional[str] = None
+    ) -> LayoutSelection:
+        """
+        Build layout configuration with dynamic slots.
+        """
+        # Create a modified component with dynamic slots for layout building
+        modified_component = deepcopy(component)
+        modified_component.slots = dynamic_slots
+
+        # Use LayoutBuilder for core layout logic
+        layout = self.layout_builder.build_layout(
+            modified_component,
+            instance_count,
+            grid_width,
+            grid_height
+        )
+
+        # Override variant if specified
+        if variant and variant in component.variants:
+            layout.variant_assignments = [variant] * instance_count
+
+        return layout
+
+    async def _generate_content(
+        self,
+        component_type: str,
+        component_description: str,
+        slots: Dict[str, SlotSpec],
+        char_limits: Dict[str, CharLimits],
+        prompt: str,
+        instance_count: int,
+        items_per_instance: Optional[int],
+        context: Optional[AtomicContext]
+    ) -> List[GeneratedContent]:
+        """
+        Generate content for all component instances via LLM.
+        """
+        if not self.llm_service:
+            raise ValueError("LLM service required for content generation")
+
+        # Build slot descriptions
+        slot_specs = []
+        for slot_id in sorted(slots.keys()):
+            limits = char_limits.get(slot_id)
+            spec = slots.get(slot_id)
+            if limits and spec:
+                slot_specs.append(
+                    f"  - {slot_id}: {spec.description} "
+                    f"({limits.min_chars}-{limits.max_chars} chars"
+                    f"{', format: ' + spec.format_hint if spec.format_hint else ''})"
+                )
+
+        slots_text = "\n".join(slot_specs)
+
+        # Build context section
+        context_text = ""
+        if context:
+            if context.audience:
+                context_text += f"Audience: {context.audience}\n"
+            if context.tone:
+                context_text += f"Tone: {context.tone}\n"
+            if context.slide_purpose:
+                context_text += f"Purpose: {context.slide_purpose}\n"
+            if context.presentation_title:
+                context_text += f"Presentation: {context.presentation_title}\n"
+            if context.industry:
+                context_text += f"Industry: {context.industry}\n"
+
+        # Build the prompt
+        llm_prompt = f"""Generate content for {instance_count} {component_type} component(s).
+
+USER REQUEST:
+{prompt}
+
+{f'CONTEXT:{chr(10)}{context_text}' if context_text else ''}
+
+COMPONENT: {component_description}
+
+SLOTS TO FILL (for each of the {instance_count} instances):
+{slots_text}
+
+REQUIREMENTS:
+1. Generate EXACTLY {instance_count} instances
+2. Each instance must have ALL slots filled
+3. Content must be DIFFERENT across instances (no repetition)
+4. Stay within character limits strictly
+5. Content should be coherent and professional
+
+OUTPUT FORMAT:
+Return a JSON object:
+{{
+  "instances": [
+    {{
+      "slot_id_1": "content for slot 1",
+      "slot_id_2": "content for slot 2",
+      ...
+    }},
+    ...repeat for {instance_count} instances...
+  ]
+}}
+
+Generate the content now:"""
+
+        # Call LLM
+        logger.info(f"[ATOMIC-LLM] Calling LLM for {component_type} x{instance_count}")
+        llm_response = await self.llm_service(llm_prompt)
+        logger.info(f"[ATOMIC-LLM] Response received, {len(llm_response)} chars")
+
+        # Parse response
+        return self._parse_llm_response(llm_response, instance_count, slots)
+
+    def _parse_llm_response(
+        self,
+        llm_response: str,
+        instance_count: int,
+        slots: Dict[str, SlotSpec]
+    ) -> List[GeneratedContent]:
+        """Parse LLM response into GeneratedContent list."""
+        # Try to extract JSON
+        try:
+            data = json.loads(llm_response)
+        except json.JSONDecodeError:
+            # Try to find JSON in markdown code block
+            json_match = re.search(r'```json\s*(\{.*?\})\s*```', llm_response, re.DOTALL)
+            if json_match:
+                data = json.loads(json_match.group(1))
+            else:
+                # Try to find raw JSON
+                json_match = re.search(r'\{.*\}', llm_response, re.DOTALL)
+                if json_match:
+                    data = json.loads(json_match.group(0))
+                else:
+                    raise ValueError(f"Could not parse LLM response as JSON: {llm_response[:300]}")
+
+        if not isinstance(data, dict) or "instances" not in data:
+            raise ValueError(f"Invalid response structure: {type(data)}")
+
+        instances = data.get("instances", [])
+
+        # Build GeneratedContent list
+        contents = []
+        for i, instance_data in enumerate(instances[:instance_count]):
+            char_counts = {
+                slot_id: len(str(value))
+                for slot_id, value in instance_data.items()
+            }
+            contents.append(GeneratedContent(
+                instance_index=i,
+                slot_values=instance_data,
+                character_counts=char_counts
+            ))
+
+        return contents
+
+    def _assemble_html(
+        self,
+        component: ComponentDefinition,
+        layout: LayoutSelection,
+        contents: List[GeneratedContent],
+        items_per_instance: Optional[int]
+    ) -> tuple[str, Dict[str, List[int]]]:
+        """
+        Assemble final HTML with optional dynamic template generation.
+
+        Returns tuple of (html_string, character_counts_per_slot)
+        """
+        char_counts: Dict[str, List[int]] = {}
+        instance_htmls = []
+
+        for i, gen_content in enumerate(contents):
+            # Get variant for this instance
+            variant_id = layout.variant_assignments[i] if i < len(layout.variant_assignments) else list(component.variants.keys())[0]
+            variant = component.variants.get(variant_id)
+
+            # Generate dynamic template if needed
+            if items_per_instance:
+                template = self._generate_dynamic_template(
+                    component, items_per_instance
+                )
+            else:
+                template = component.template
+
+            html = template
+
+            # Replace content placeholders
+            for slot_id, value in gen_content.slot_values.items():
+                html = html.replace(f"{{{slot_id}}}", str(value))
+
+                # Track character counts
+                if slot_id not in char_counts:
+                    char_counts[slot_id] = []
+                char_counts[slot_id].append(len(str(value)))
+
+            # Replace variant placeholders
+            if variant:
+                if variant.gradient:
+                    html = html.replace("{gradient}", variant.gradient)
+                if variant.background:
+                    html = html.replace("{background}", variant.background)
+                if variant.shadow:
+                    html = html.replace("{shadow}", variant.shadow)
+                if variant.accent_color:
+                    html = html.replace("{accent_color}", variant.accent_color)
+                if variant.text_color:
+                    html = html.replace("{text_color}", variant.text_color)
+
+                # Handle variant-specific placeholders
+                for attr in ["number_color", "heading_color"]:
+                    attr_value = getattr(variant, attr, None)
+                    if attr_value is None and hasattr(variant, 'model_extra') and variant.model_extra is not None:
+                        attr_value = variant.model_extra.get(attr)
+                    if attr_value:
+                        html = html.replace(f"{{{attr}}}", attr_value)
+
+            # Handle padding placeholder
+            html = html.replace("{padding}", f"{component.space_requirements.padding_px}px")
+
+            # Handle margin_bottom for stacked layouts
+            if i < len(contents) - 1:
+                html = html.replace("{margin_bottom}", f"{component.arrangement_rules.gap_px}px")
+            else:
+                html = html.replace("{margin_bottom}", "0")
+
+            instance_htmls.append(html)
+
+        # Wrap instances if wrapper template exists
+        if component.wrapper_template and len(instance_htmls) > 1:
+            wrapper = component.wrapper_template
+
+            arrangement = layout.arrangement.value if hasattr(layout.arrangement, 'value') else str(layout.arrangement)
+
+            if arrangement in ["row_2", "row_3", "row_4"]:
+                wrapper = wrapper.replace("{column_count}", str(len(instance_htmls)))
+                wrapper = wrapper.replace("{row_count}", "1")
+            elif arrangement == "grid_2x2":
+                wrapper = wrapper.replace("{column_count}", "2")
+                wrapper = wrapper.replace("{row_count}", "2")
+            elif arrangement == "grid_3x2":
+                wrapper = wrapper.replace("{column_count}", "3")
+                wrapper = wrapper.replace("{row_count}", "2")
+            else:
+                wrapper = wrapper.replace("{column_count}", "1")
+                wrapper = wrapper.replace("{row_count}", str(len(instance_htmls)))
+
+            wrapper = wrapper.replace("{gap}", str(component.arrangement_rules.gap_px))
+            wrapper = wrapper.replace("{instances}", "\n".join(instance_htmls))
+
+            final_html = wrapper
+        else:
+            final_html = "\n".join(instance_htmls)
+
+        return final_html, char_counts
+
+    def _generate_dynamic_template(
+        self,
+        component: ComponentDefinition,
+        items_per_instance: int
+    ) -> str:
+        """
+        Generate a dynamic template with the correct number of items.
+
+        Handles colored_section (bullets) and comparison_column/sidebar_box (items).
+        """
+        component_id = component.component_id
+
+        if component_id == "colored_section":
+            # Build bullet list HTML
+            bullets_html = ""
+            for i in range(1, items_per_instance + 1):
+                margin = "0" if i == items_per_instance else "10px"
+                bullets_html += f'<li style="margin-bottom: {margin};">{{bullet_{i}}}</li>'
+
+            return f'''<div style="margin-bottom: {{margin_bottom}};"><h3 style="font-size: 28px; font-weight: 700; color: {{heading_color}}; margin: 0 0 10px 0; line-height: 1.2;">{{section_heading}}</h3><hr style="height: 3px; background: linear-gradient(90deg, {{heading_color}} 0%, transparent 100%); border: none; margin: 0 0 13px 0;"><ul style="font-size: 21px; line-height: 1.28; color: #374151; margin: 0; padding-left: 24px; list-style-type: disc;">{bullets_html}</ul></div>'''
+
+        elif component_id == "comparison_column":
+            # Build items HTML
+            items_html = ""
+            for i in range(1, items_per_instance + 1):
+                margin = "0" if i == items_per_instance else "18px"
+                items_html += f'<p style="margin: 0 0 {margin} 0;">{{item_{i}}}</p>'
+
+            return f'''<div><h3 style="color: {{heading_color}}; font-size: 28px; margin: 0 0 16px 0; font-weight: 700; border-bottom: 3px solid {{heading_color}}; padding-bottom: 10px;">{{column_heading}}</h3><div style="font-size: 18px; line-height: 1.4; color: #1f2937;">{items_html}</div></div>'''
+
+        elif component_id == "sidebar_box":
+            # Build items HTML for sidebar
+            items_html = ""
+            for i in range(1, items_per_instance + 1):
+                margin = "0" if i == items_per_instance else "12px"
+                items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
+
+            return f'''<div style="background: {{gradient}}; border-radius: 16px; padding: {{padding}}; box-shadow: {{shadow}};"><h4 style="font-size: 24px; font-weight: 700; color: white; margin: 0 0 16px 0; line-height: 1.2;">{{sidebar_heading}}</h4><ul style="font-size: 18px; line-height: 1.5; color: rgba(255,255,255,0.95); margin: 0; padding-left: 20px; list-style-type: disc;">{items_html}</ul></div>'''
+
+        else:
+            # Return original template for components without flexible items
+            return component.template
+
+    def _error_result(
+        self,
+        error: str,
+        component_type: str,
+        count: int,
+        start_time: float
+    ) -> AtomicResult:
+        """Create an error result."""
+        elapsed_ms = int((time.time() - start_time) * 1000)
+
+        return AtomicResult(
+            success=False,
+            html="",
+            component_type=component_type,
+            instance_count=count,
+            arrangement="none",
+            variants_used=[],
+            character_counts={},
+            metadata=AtomicMetadata(
+                generation_time_ms=elapsed_ms,
+                model_used="none",
+                grid_dimensions={"width": 0, "height": 0},
+                space_category="unknown",
+                scaling_factor=1.0
+            ),
+            error=error
+        )
+
+
+# =============================================================================
+# Convenience Function
+# =============================================================================
+
+async def generate_atomic_component(
+    component_type: str,
+    prompt: str,
+    count: int,
+    grid_width: int,
+    grid_height: int,
+    llm_service: Callable,
+    items_per_instance: Optional[int] = None,
+    context: Optional[AtomicContext] = None,
+    variant: Optional[str] = None
+) -> AtomicResult:
+    """
+    Convenience function for quick atomic component generation.
+
+    Args:
+        component_type: Internal component ID
+        prompt: Content request
+        count: Number of instances
+        grid_width: Grid width (4-32)
+        grid_height: Grid height (4-18)
+        llm_service: Async LLM service callable
+        items_per_instance: Optional flexible item count
+        context: Optional context
+        variant: Optional color variant
+
+    Returns:
+        AtomicResult with generated HTML
+    """
+    generator = AtomicComponentGenerator(llm_service=llm_service)
+    return await generator.generate(
+        component_type=component_type,
+        prompt=prompt,
+        count=count,
+        grid_width=grid_width,
+        grid_height=grid_height,
+        items_per_instance=items_per_instance,
+        context=context,
+        variant=variant
+    )
