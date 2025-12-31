@@ -403,19 +403,28 @@ Generate the content now:"""
         slots: Dict[str, SlotSpec]
     ) -> List[GeneratedContent]:
         """Parse LLM response into GeneratedContent list."""
+
+        def clean_json(text: str) -> str:
+            """Clean common LLM JSON errors like trailing commas."""
+            # Remove trailing commas before } or ]
+            text = re.sub(r',(\s*[}\]])', r'\1', text)
+            # Remove any control characters
+            text = re.sub(r'[\x00-\x1f\x7f-\x9f]', '', text)
+            return text
+
         # Try to extract JSON
         try:
-            data = json.loads(llm_response)
+            data = json.loads(clean_json(llm_response))
         except json.JSONDecodeError:
             # Try to find JSON in markdown code block
             json_match = re.search(r'```json\s*(\{.*?\})\s*```', llm_response, re.DOTALL)
             if json_match:
-                data = json.loads(json_match.group(1))
+                data = json.loads(clean_json(json_match.group(1)))
             else:
                 # Try to find raw JSON
                 json_match = re.search(r'\{.*\}', llm_response, re.DOTALL)
                 if json_match:
-                    data = json.loads(json_match.group(0))
+                    data = json.loads(clean_json(json_match.group(0)))
                 else:
                     raise ValueError(f"Could not parse LLM response as JSON: {llm_response[:300]}")
 
