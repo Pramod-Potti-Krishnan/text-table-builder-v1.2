@@ -10,12 +10,13 @@ Unlike ComponentAssemblyAgent, this class:
 - Provides faster, more deterministic output
 
 Supports 5 atomic component types:
-- METRICS (metrics_card): 2-4 metric cards
-- SEQUENTIAL (numbered_card): 2-6 numbered steps
-- COMPARISON (comparison_column): 2-4 columns with 1-7 items each
-- SECTIONS (colored_section): 2-5 sections with 1-5 bullets each
+- METRICS (metrics_card): 1-4 metric cards
+- SEQUENTIAL (numbered_card): 1-6 numbered steps
+- COMPARISON (comparison_column): 1-4 columns with 1-7 items each
+- SECTIONS (colored_section): 1-5 sections with 1-5 bullets each
 - CALLOUT (sidebar_box): 1-2 callout boxes with 1-7 items each
 
+v1.1.0: Added count=1 support for all types + placeholder_mode
 v1.0.0: Initial atomic component endpoints
 """
 
@@ -104,7 +105,8 @@ class AtomicComponentGenerator:
         grid_height: int,
         items_per_instance: Optional[int] = None,
         context: Optional[AtomicContext] = None,
-        variant: Optional[str] = None
+        variant: Optional[str] = None,
+        placeholder_mode: bool = False
     ) -> AtomicResult:
         """
         Generate atomic component with explicit parameters.
@@ -118,6 +120,7 @@ class AtomicComponentGenerator:
             items_per_instance: Number of bullets/items per instance (for flexible components)
             context: Optional slide/presentation context
             variant: Optional specific color variant to use
+            placeholder_mode: If True, generate placeholder content without LLM call
 
         Returns:
             AtomicResult with HTML, metadata, and character counts
@@ -150,17 +153,27 @@ class AtomicComponentGenerator:
                 component, count, grid_width, grid_height, dynamic_slots, variant
             )
 
-            # Step 4: Generate content via LLM
-            contents = await self._generate_content(
-                component_type=component_type,
-                component_description=component.description,
-                slots=dynamic_slots,
-                char_limits=layout.scaled_char_limits,
-                prompt=prompt,
-                instance_count=count,
-                items_per_instance=items_per_instance,
-                context=context
-            )
+            # Step 4: Generate content (placeholder or LLM)
+            if placeholder_mode:
+                # Generate placeholder content without LLM call
+                contents = self._generate_placeholder_content(
+                    component_type=component_type,
+                    slots=dynamic_slots,
+                    instance_count=count
+                )
+                logger.info(f"[ATOMIC-{component_type.upper()}] Placeholder mode - no LLM call")
+            else:
+                # Generate content via LLM
+                contents = await self._generate_content(
+                    component_type=component_type,
+                    component_description=component.description,
+                    slots=dynamic_slots,
+                    char_limits=layout.scaled_char_limits,
+                    prompt=prompt,
+                    instance_count=count,
+                    items_per_instance=items_per_instance,
+                    context=context
+                )
 
             if not contents:
                 return self._error_result(
@@ -195,7 +208,7 @@ class AtomicComponentGenerator:
 
             metadata = AtomicMetadata(
                 generation_time_ms=elapsed_ms,
-                model_used="gemini-1.5-flash",
+                model_used="placeholder" if placeholder_mode else "gemini-1.5-flash",
                 grid_dimensions={"width": grid_width, "height": grid_height},
                 space_category=space_analysis.space_category,
                 scaling_factor=round(scaling_factor, 2)
@@ -277,6 +290,80 @@ class AtomicComponentGenerator:
                 )
 
         return dynamic_slots
+
+    def _generate_placeholder_content(
+        self,
+        component_type: str,
+        slots: Dict[str, SlotSpec],
+        instance_count: int
+    ) -> List[GeneratedContent]:
+        """
+        Generate placeholder content without LLM call.
+
+        Returns static placeholder content that can be replaced later
+        when user triggers content generation with full context.
+        """
+        PLACEHOLDER_TEMPLATES = {
+            "metrics_card": {
+                "metric_number": ["$X.XM", "$XX%", "XX.X", "$XXK"],
+                "metric_label": ["METRIC LABEL", "KEY METRIC", "PERFORMANCE", "GROWTH"],
+                "metric_description": ["Description of this metric and its significance to the presentation"]
+            },
+            "numbered_card": {
+                "card_number": ["1", "2", "3", "4", "5", "6"],
+                "card_title": ["Step Title", "Phase Name", "Stage Title", "Action Item"],
+                "card_description": ["Description of this step in the process and what it accomplishes"]
+            },
+            "colored_section": {
+                "section_heading": ["Section Heading"],
+                "bullet_1": ["First key point for this section"],
+                "bullet_2": ["Second key point for this section"],
+                "bullet_3": ["Third key point for this section"],
+                "bullet_4": ["Fourth key point for this section"],
+                "bullet_5": ["Fifth key point for this section"]
+            },
+            "comparison_column": {
+                "column_heading": ["Column Title"],
+                "item_1": ["First comparison point for this column"],
+                "item_2": ["Second comparison point for this column"],
+                "item_3": ["Third comparison point for this column"],
+                "item_4": ["Fourth comparison point for this column"],
+                "item_5": ["Fifth comparison point for this column"],
+                "item_6": ["Sixth comparison point for this column"],
+                "item_7": ["Seventh comparison point for this column"]
+            },
+            "sidebar_box": {
+                "sidebar_heading": ["Callout Title"],
+                "item_1": ["Key highlight or important note"],
+                "item_2": ["Additional detail or context"],
+                "item_3": ["Third key point"],
+                "item_4": ["Fourth key point"],
+                "item_5": ["Fifth key point"],
+                "item_6": ["Sixth key point"],
+                "item_7": ["Seventh key point"]
+            }
+        }
+
+        templates = PLACEHOLDER_TEMPLATES.get(component_type, {})
+        contents = []
+
+        for i in range(instance_count):
+            slot_values = {}
+            for slot_id in slots:
+                if slot_id in templates:
+                    values = templates[slot_id]
+                    slot_values[slot_id] = values[i % len(values)]
+                else:
+                    # Generic placeholder for dynamic slots
+                    slot_values[slot_id] = f"[{slot_id.replace('_', ' ').title()}]"
+
+            contents.append(GeneratedContent(
+                instance_index=i,
+                slot_values=slot_values,
+                character_counts={k: len(v) for k, v in slot_values.items()}
+            ))
+
+        return contents
 
     def _build_layout(
         self,
@@ -639,7 +726,8 @@ async def generate_atomic_component(
     llm_service: Callable,
     items_per_instance: Optional[int] = None,
     context: Optional[AtomicContext] = None,
-    variant: Optional[str] = None
+    variant: Optional[str] = None,
+    placeholder_mode: bool = False
 ) -> AtomicResult:
     """
     Convenience function for quick atomic component generation.
@@ -654,6 +742,7 @@ async def generate_atomic_component(
         items_per_instance: Optional flexible item count
         context: Optional context
         variant: Optional color variant
+        placeholder_mode: If True, use placeholder content (no LLM call)
 
     Returns:
         AtomicResult with generated HTML
@@ -667,5 +756,6 @@ async def generate_atomic_component(
         grid_height=grid_height,
         items_per_instance=items_per_instance,
         context=context,
-        variant=variant
+        variant=variant,
+        placeholder_mode=placeholder_mode
     )

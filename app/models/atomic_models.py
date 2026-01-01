@@ -6,11 +6,13 @@ Pydantic models for the /v1.2/atomic/{TYPE} endpoints that provide
 direct access to atomic component generation without CoT reasoning.
 
 Supports 5 atomic component types:
-- METRICS (metrics_card): 2-4 metric cards
-- SEQUENTIAL (numbered_card): 2-6 numbered steps
-- COMPARISON (comparison_column): 2-4 columns with flexible items
-- SECTIONS (colored_section): 2-5 sections with flexible bullets
+- METRICS (metrics_card): 1-4 metric cards
+- SEQUENTIAL (numbered_card): 1-6 numbered steps
+- COMPARISON (comparison_column): 1-4 columns with flexible items
+- SECTIONS (colored_section): 1-5 sections with flexible bullets
 - CALLOUT (sidebar_box): 1-2 callout boxes with flexible items
+
+v1.1.0: Added count=1 support for all types + placeholder_mode
 
 v1.0.0: Initial atomic component endpoints
 """
@@ -137,6 +139,10 @@ class AtomicComponentRequest(BaseModel):
         None,
         description="Specific color variant to use (or auto-assign if null)"
     )
+    placeholder_mode: bool = Field(
+        default=False,
+        description="If true, generate placeholder content without LLM call"
+    )
 
     class Config:
         json_schema_extra = {
@@ -160,13 +166,14 @@ class MetricsAtomicRequest(AtomicComponentRequest):
     """
     Request model for POST /v1.2/atomic/METRICS
 
-    Generates 2-4 metric cards with number, label, and description.
+    Generates 1-4 metric cards with number, label, and description.
+    Supports unitary elements (count=1) for modular composition.
     """
     count: int = Field(
         default=3,
-        ge=2,
+        ge=1,
         le=4,
-        description="Number of metric cards to generate (2-4)"
+        description="Number of metric cards to generate (1-4)"
     )
 
     class Config:
@@ -184,13 +191,14 @@ class SequentialAtomicRequest(AtomicComponentRequest):
     """
     Request model for POST /v1.2/atomic/SEQUENTIAL
 
-    Generates 2-6 numbered cards for steps, phases, or sequential items.
+    Generates 1-6 numbered cards for steps, phases, or sequential items.
+    Supports unitary elements (count=1) for modular composition.
     """
     count: int = Field(
         default=4,
-        ge=2,
+        ge=1,
         le=6,
-        description="Number of sequential steps to generate (2-6)"
+        description="Number of sequential steps to generate (1-6)"
     )
 
     class Config:

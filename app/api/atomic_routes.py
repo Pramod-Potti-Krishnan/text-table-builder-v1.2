@@ -7,10 +7,10 @@ at /v1.2/atomic/{TYPE} paths. These endpoints bypass the Chain of Thought
 reasoning layer for deterministic, fast generation with explicit parameterization.
 
 Endpoints:
-- POST /v1.2/atomic/METRICS - Generate 2-4 metric cards
-- POST /v1.2/atomic/SEQUENTIAL - Generate 2-6 numbered steps
-- POST /v1.2/atomic/COMPARISON - Generate 2-4 comparison columns
-- POST /v1.2/atomic/SECTIONS - Generate 2-5 colored sections
+- POST /v1.2/atomic/METRICS - Generate 1-4 metric cards
+- POST /v1.2/atomic/SEQUENTIAL - Generate 1-6 numbered steps
+- POST /v1.2/atomic/COMPARISON - Generate 1-4 comparison columns
+- POST /v1.2/atomic/SECTIONS - Generate 1-5 colored sections
 - POST /v1.2/atomic/CALLOUT - Generate 1-2 callout boxes
 
 Features:
@@ -18,7 +18,9 @@ Features:
 - Flexible bullet/item counts for SECTIONS, COMPARISON, CALLOUT
 - Grid-based space calculation (32x18 system)
 - Context-aware content generation
+- Placeholder mode for instant generation without LLM
 
+v1.1.0: Added count=1 support for all types + placeholder_mode
 v1.0.0: Initial atomic component endpoints
 """
 
@@ -100,7 +102,7 @@ async def generate_metrics(
     generator: AtomicComponentGenerator = Depends(get_atomic_generator)
 ) -> AtomicComponentResponse:
     """
-    Generate METRICS atomic component (2-4 gradient metric cards).
+    Generate METRICS atomic component (1-4 gradient metric cards).
 
     Each metric card contains:
     - metric_number: The main value (e.g., "95%", "$2.4M", "1.2x")
@@ -109,11 +111,12 @@ async def generate_metrics(
 
     **Request Body**:
     - prompt: Content request describing metrics to generate
-    - count: Number of metric cards (2-4, default: 3)
+    - count: Number of metric cards (1-4, default: 3)
     - gridWidth: Available width in grid units (4-32)
     - gridHeight: Available height in grid units (4-18)
     - context: Optional slide/presentation context
     - variant: Optional specific color variant
+    - placeholder_mode: If true, use placeholder content (no LLM call)
 
     **Example Request**:
     ```json
@@ -136,7 +139,8 @@ async def generate_metrics(
             grid_height=request.gridHeight,
             items_per_instance=None,  # Metrics don't have flexible items
             context=request.context,
-            variant=request.variant
+            variant=request.variant,
+            placeholder_mode=request.placeholder_mode
         )
         return _build_response(result)
 
@@ -159,7 +163,7 @@ async def generate_sequential(
     generator: AtomicComponentGenerator = Depends(get_atomic_generator)
 ) -> AtomicComponentResponse:
     """
-    Generate SEQUENTIAL atomic component (2-6 numbered step cards).
+    Generate SEQUENTIAL atomic component (1-6 numbered step cards).
 
     Each numbered card contains:
     - card_number: Step number (1-6)
@@ -168,11 +172,12 @@ async def generate_sequential(
 
     **Request Body**:
     - prompt: Content request describing the process/steps
-    - count: Number of steps (2-6, default: 4)
+    - count: Number of steps (1-6, default: 4)
     - gridWidth: Available width in grid units (4-32)
     - gridHeight: Available height in grid units (4-18)
     - context: Optional slide/presentation context
     - variant: Optional specific color variant
+    - placeholder_mode: If true, use placeholder content (no LLM call)
 
     **Example Request**:
     ```json
@@ -195,7 +200,8 @@ async def generate_sequential(
             grid_height=request.gridHeight,
             items_per_instance=None,  # Sequential cards don't have flexible items
             context=request.context,
-            variant=request.variant
+            variant=request.variant,
+            placeholder_mode=request.placeholder_mode
         )
         return _build_response(result)
 
@@ -218,7 +224,7 @@ async def generate_comparison(
     generator: AtomicComponentGenerator = Depends(get_atomic_generator)
 ) -> AtomicComponentResponse:
     """
-    Generate COMPARISON atomic component (2-4 comparison columns).
+    Generate COMPARISON atomic component (1-4 comparison columns).
 
     Each comparison column contains:
     - column_heading: Column title (e.g., "Option A", "Pros", "Before")
@@ -226,12 +232,13 @@ async def generate_comparison(
 
     **Request Body**:
     - prompt: Content request describing comparison
-    - count: Number of columns (2-4, default: 3)
+    - count: Number of columns (1-4, default: 3)
     - items_per_column: Items per column (1-7, default: 5)
     - gridWidth: Available width in grid units (4-32)
     - gridHeight: Available height in grid units (4-18)
     - context: Optional slide/presentation context
     - variant: Optional specific color variant
+    - placeholder_mode: If true, use placeholder content (no LLM call)
 
     **Example Request**:
     ```json
@@ -255,7 +262,8 @@ async def generate_comparison(
             grid_height=request.gridHeight,
             items_per_instance=request.items_per_column,
             context=request.context,
-            variant=request.variant
+            variant=request.variant,
+            placeholder_mode=request.placeholder_mode
         )
         return _build_response(result)
 
@@ -278,7 +286,7 @@ async def generate_sections(
     generator: AtomicComponentGenerator = Depends(get_atomic_generator)
 ) -> AtomicComponentResponse:
     """
-    Generate SECTIONS atomic component (2-5 colored sections with bullets).
+    Generate SECTIONS atomic component (1-5 colored sections with bullets).
 
     Each section contains:
     - section_heading: Section title (e.g., "Key Benefits", "Phase 1")
@@ -286,12 +294,13 @@ async def generate_sections(
 
     **Request Body**:
     - prompt: Content request describing sections
-    - count: Number of sections (2-5, default: 3)
+    - count: Number of sections (1-5, default: 3)
     - bullets_per_section: Bullets per section (1-5, default: 3)
     - gridWidth: Available width in grid units (4-32)
     - gridHeight: Available height in grid units (4-18)
     - context: Optional slide/presentation context
     - variant: Optional specific color variant
+    - placeholder_mode: If true, use placeholder content (no LLM call)
 
     **Example Request**:
     ```json
@@ -315,7 +324,8 @@ async def generate_sections(
             grid_height=request.gridHeight,
             items_per_instance=request.bullets_per_section,
             context=request.context,
-            variant=request.variant
+            variant=request.variant,
+            placeholder_mode=request.placeholder_mode
         )
         return _build_response(result)
 
@@ -352,6 +362,7 @@ async def generate_callout(
     - gridHeight: Available height in grid units (4-18)
     - context: Optional slide/presentation context
     - variant: Optional specific color variant
+    - placeholder_mode: If true, use placeholder content (no LLM call)
 
     **Example Request**:
     ```json
@@ -375,7 +386,8 @@ async def generate_callout(
             grid_height=request.gridHeight,
             items_per_instance=request.items_per_box,
             context=request.context,
-            variant=request.variant
+            variant=request.variant,
+            placeholder_mode=request.placeholder_mode
         )
         return _build_response(result)
 
@@ -402,31 +414,35 @@ async def atomic_health():
     return {
         "status": "healthy",
         "service": "atomic-components",
-        "version": "1.0.0",
+        "version": "1.1.0",
+        "features": {
+            "placeholder_mode": True,
+            "single_element_support": True
+        },
         "endpoints": {
             "METRICS": {
                 "path": "/v1.2/atomic/METRICS",
                 "component_id": "metrics_card",
-                "count_range": "2-4",
+                "count_range": "1-4",
                 "flexible_items": False
             },
             "SEQUENTIAL": {
                 "path": "/v1.2/atomic/SEQUENTIAL",
                 "component_id": "numbered_card",
-                "count_range": "2-6",
+                "count_range": "1-6",
                 "flexible_items": False
             },
             "COMPARISON": {
                 "path": "/v1.2/atomic/COMPARISON",
                 "component_id": "comparison_column",
-                "count_range": "2-4",
+                "count_range": "1-4",
                 "flexible_items": True,
                 "items_range": "1-7 items per column"
             },
             "SECTIONS": {
                 "path": "/v1.2/atomic/SECTIONS",
                 "component_id": "colored_section",
-                "count_range": "2-5",
+                "count_range": "1-5",
                 "flexible_items": True,
                 "items_range": "1-5 bullets per section"
             },
@@ -466,9 +482,10 @@ async def list_atomic_components():
                 "description": "Gradient-filled metric cards with large numbers, labels, and descriptions",
                 "use_cases": ["KPIs", "statistics", "performance metrics", "data points"],
                 "slots": ["metric_number", "metric_label", "metric_description"],
-                "instance_range": {"min": 2, "max": 4},
+                "instance_range": {"min": 1, "max": 4},
                 "variants": ["purple", "pink", "cyan", "green"],
-                "flexible_items": False
+                "flexible_items": False,
+                "supports_placeholder_mode": True
             },
             {
                 "type": "SEQUENTIAL",
@@ -476,9 +493,10 @@ async def list_atomic_components():
                 "description": "Numbered step cards for processes, phases, or sequential items",
                 "use_cases": ["steps", "phases", "workflows", "processes"],
                 "slots": ["card_number", "card_title", "card_description"],
-                "instance_range": {"min": 2, "max": 6},
+                "instance_range": {"min": 1, "max": 6},
                 "variants": ["blue", "green", "yellow", "pink"],
-                "flexible_items": False
+                "flexible_items": False,
+                "supports_placeholder_mode": True
             },
             {
                 "type": "COMPARISON",
@@ -486,10 +504,11 @@ async def list_atomic_components():
                 "description": "Comparison columns with headings and flexible item lists",
                 "use_cases": ["comparisons", "pros/cons", "options", "alternatives"],
                 "slots": ["column_heading", "item_1..item_N"],
-                "instance_range": {"min": 2, "max": 4},
+                "instance_range": {"min": 1, "max": 4},
                 "items_per_instance_range": {"min": 1, "max": 7},
                 "variants": ["blue", "red", "green", "purple", "orange"],
-                "flexible_items": True
+                "flexible_items": True,
+                "supports_placeholder_mode": True
             },
             {
                 "type": "SECTIONS",
@@ -497,10 +516,11 @@ async def list_atomic_components():
                 "description": "Colored sections with headings and flexible bullet lists",
                 "use_cases": ["categories", "topics", "grouped content", "key points"],
                 "slots": ["section_heading", "bullet_1..bullet_N"],
-                "instance_range": {"min": 2, "max": 5},
+                "instance_range": {"min": 1, "max": 5},
                 "items_per_instance_range": {"min": 1, "max": 5},
                 "variants": ["blue", "red", "green", "amber", "purple"],
-                "flexible_items": True
+                "flexible_items": True,
+                "supports_placeholder_mode": True
             },
             {
                 "type": "CALLOUT",
@@ -511,7 +531,8 @@ async def list_atomic_components():
                 "instance_range": {"min": 1, "max": 2},
                 "items_per_instance_range": {"min": 1, "max": 7},
                 "variants": ["blue", "green", "purple", "amber"],
-                "flexible_items": True
+                "flexible_items": True,
+                "supports_placeholder_mode": True
             }
         ]
     }

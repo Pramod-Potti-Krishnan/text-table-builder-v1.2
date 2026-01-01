@@ -67,9 +67,9 @@
   },
 
   "arrangement_rules": {
-    "min_instances": 2,
+    "min_instances": 1,
     "max_instances": 6,
-    "valid_arrangements": ["grid_2x2", "grid_3x2", "row_2", "row_3"],
+    "valid_arrangements": ["single", "grid_2x2", "grid_3x2", "row_2", "row_3"],
     "gap_px": 40,
     "prefer_row": false
   },
