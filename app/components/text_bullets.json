@@ -1,0 +1,93 @@
+{
+  "component_id": "text_bullets",
+  "description": "Simple text box with subtitle and bullet points. Clean, minimal design for straightforward content presentation.",
+  "use_cases": [
+    "key points",
+    "features",
+    "benefits",
+    "summary items",
+    "bullet lists",
+    "simple content"
+  ],
+
+  "template": "<div style=\"padding: 24px; background: {background}; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);\"><h4 style=\"font-size: 28px; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2;\">{subtitle}</h4><ul style=\"list-style-type: disc; margin: 0; padding-left: 20px; font-size: 21px; line-height: 1.5; color: #374151;\"><li style=\"margin-bottom: 10px;\">{bullet_1}</li><li style=\"margin-bottom: 10px;\">{bullet_2}</li><li style=\"margin-bottom: 10px;\">{bullet_3}</li><li style=\"margin-bottom: 0;\">{bullet_4}</li></ul></div>",
+
+  "wrapper_template": "<div style=\"display: grid; grid-template-columns: repeat({column_count}, 1fr); gap: 24px; padding: 0;\">{instances}</div>",
+
+  "slots": {
+    "subtitle": {
+      "min_chars": 10,
+      "max_chars": 40,
+      "baseline_chars": 25,
+      "description": "Subtitle for the bullet list section",
+      "format_hint": "title_case"
+    },
+    "bullet_1": {
+      "min_chars": 30,
+      "max_chars": 80,
+      "baseline_chars": 55,
+      "description": "First bullet point",
+      "format_hint": "sentence"
+    },
+    "bullet_2": {
+      "min_chars": 30,
+      "max_chars": 80,
+      "baseline_chars": 55,
+      "description": "Second bullet point",
+      "format_hint": "sentence"
+    },
+    "bullet_3": {
+      "min_chars": 30,
+      "max_chars": 80,
+      "baseline_chars": 55,
+      "description": "Third bullet point",
+      "format_hint": "sentence"
+    },
+    "bullet_4": {
+      "min_chars": 30,
+      "max_chars": 80,
+      "baseline_chars": 55,
+      "description": "Fourth bullet point",
+      "format_hint": "sentence"
+    }
+  },
+
+  "variants": {
+    "white": {
+      "background": "#ffffff"
+    },
+    "light_gray": {
+      "background": "#f9fafb"
+    },
+    "light_blue": {
+      "background": "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)"
+    },
+    "light_purple": {
+      "background": "linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)"
+    }
+  },
+
+  "space_requirements": {
+    "min_grid_width": 10,
+    "min_grid_height": 6,
+    "ideal_grid_width": 14,
+    "ideal_grid_height": 8,
+    "padding_px": 24
+  },
+
+  "arrangement_rules": {
+    "min_instances": 1,
+    "max_instances": 4,
+    "valid_arrangements": ["single", "row_2", "row_3", "row_4", "stacked_2", "stacked_3", "grid_2x2"],
+    "gap_px": 24,
+    "prefer_row": true
+  },
+
+  "scaling_rules": {
+    "compress_slot": "bullet_4",
+    "min_scale": 0.75,
+    "expand_slot": "bullet_1",
+    "max_scale": 1.15,
+    "preserve_slots": ["subtitle"]
+  }
+}

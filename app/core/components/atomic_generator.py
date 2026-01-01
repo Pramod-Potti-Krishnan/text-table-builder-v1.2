@@ -35,6 +35,15 @@ from .constraints import (
     LayoutBuilder,
     CELL_SIZE_PX
 )
+from .style_config import (
+    HEADING_FONT_SIZE,
+    BODY_FONT_SIZE,
+    BODY_LINE_HEIGHT,
+    TEXT_SECONDARY,
+    BOX_OPACITY_DEFAULT,
+    BOX_OPACITY_SOLID,
+    get_default_transparency
+)
 from ...models.component_models import (
     ComponentDefinition,
     SlotSpec,
@@ -47,6 +56,7 @@ from ...models.atomic_models import (
     AtomicContext,
     AtomicMetadata,
     AtomicComponentResponse,
+    LayoutType,
     ATOMIC_TYPE_MAP
 )
 
@@ -106,7 +116,10 @@ class AtomicComponentGenerator:
         items_per_instance: Optional[int] = None,
         context: Optional[AtomicContext] = None,
         variant: Optional[str] = None,
-        placeholder_mode: bool = False
+        placeholder_mode: bool = False,
+        transparency: Optional[float] = None,
+        layout: LayoutType = LayoutType.HORIZONTAL,
+        grid_cols: Optional[int] = None
     ) -> AtomicResult:
         """
         Generate atomic component with explicit parameters.
@@ -121,6 +134,11 @@ class AtomicComponentGenerator:
             context: Optional slide/presentation context
             variant: Optional specific color variant to use
             placeholder_mode: If True, generate placeholder content without LLM call
+            transparency: Box opacity (0.0-1.0). If None, uses default:
+                          - metrics_card: 1.0 (solid - gradient backgrounds)
+                          - all others: 0.6 (60% transparent)
+            layout: Layout arrangement (horizontal, vertical, or grid)
+            grid_cols: Number of columns for grid layout (auto-calculated if None)
 
         Returns:
             AtomicResult with HTML, metadata, and character counts
@@ -150,7 +168,8 @@ class AtomicComponentGenerator:
 
             # Step 3: Build layout (arrangement, character limits, variants)
             layout = self._build_layout(
-                component, count, grid_width, grid_height, dynamic_slots, variant
+                component, count, grid_width, grid_height, dynamic_slots, variant,
+                layout_type=layout, grid_cols=grid_cols
             )
 
             # Step 4: Generate content (placeholder or LLM)
@@ -183,12 +202,18 @@ class AtomicComponentGenerator:
                     start_time
                 )
 
-            # Step 5: Assemble HTML with dynamic template
+            # Step 5: Determine transparency (default varies by component type)
+            actual_transparency = transparency
+            if actual_transparency is None:
+                actual_transparency = get_default_transparency(component_type)
+
+            # Step 6: Assemble HTML with dynamic template and transparency
             html, char_counts = self._assemble_html(
                 component=component,
                 layout=layout,
                 contents=contents,
-                items_per_instance=items_per_instance
+                items_per_instance=items_per_instance,
+                transparency=actual_transparency
             )
 
             # Calculate metadata
@@ -341,6 +366,56 @@ class AtomicComponentGenerator:
                 "item_5": ["Fifth key point"],
                 "item_6": ["Sixth key point"],
                 "item_7": ["Seventh key point"]
+            },
+            "text_bullets": {
+                "subtitle": ["Section Subtitle"],
+                "bullet_1": ["First bullet point for this section"],
+                "bullet_2": ["Second bullet point for this section"],
+                "bullet_3": ["Third bullet point for this section"],
+                "bullet_4": ["Fourth bullet point for this section"],
+                "bullet_5": ["Fifth bullet point for this section"],
+                "bullet_6": ["Sixth bullet point for this section"],
+                "bullet_7": ["Seventh bullet point for this section"]
+            },
+            "bullet_box": {
+                "box_heading": ["Box Heading"],
+                "item_1": ["First item in this box"],
+                "item_2": ["Second item in this box"],
+                "item_3": ["Third item in this box"],
+                "item_4": ["Fourth item in this box"],
+                "item_5": ["Fifth item in this box"],
+                "item_6": ["Sixth item in this box"],
+                "item_7": ["Seventh item in this box"]
+            },
+            "table_basic": {
+                "header_1": ["Column 1"],
+                "header_2": ["Column 2"],
+                "header_3": ["Column 3"],
+                "row1_col1": ["Row 1 Data"],
+                "row1_col2": ["Row 1 Data"],
+                "row1_col3": ["Row 1 Data"],
+                "row2_col1": ["Row 2 Data"],
+                "row2_col2": ["Row 2 Data"],
+                "row2_col3": ["Row 2 Data"],
+                "row3_col1": ["Row 3 Data"],
+                "row3_col2": ["Row 3 Data"],
+                "row3_col3": ["Row 3 Data"],
+                "row4_col1": ["Row 4 Data"],
+                "row4_col2": ["Row 4 Data"],
+                "row4_col3": ["Row 4 Data"]
+            },
+            "numbered_list": {
+                "list_title": ["List Title"],
+                "item_1": ["First numbered item in the list"],
+                "item_2": ["Second numbered item in the list"],
+                "item_3": ["Third numbered item in the list"],
+                "item_4": ["Fourth numbered item in the list"],
+                "item_5": ["Fifth numbered item in the list"],
+                "item_6": ["Sixth numbered item in the list"],
+                "item_7": ["Seventh numbered item in the list"],
+                "item_8": ["Eighth numbered item in the list"],
+                "item_9": ["Ninth numbered item in the list"],
+                "item_10": ["Tenth numbered item in the list"]
             }
         }
 
@@ -372,11 +447,19 @@ class AtomicComponentGenerator:
         grid_width: int,
         grid_height: int,
         dynamic_slots: Dict[str, SlotSpec],
-        variant: Optional[str] = None
+        variant: Optional[str] = None,
+        layout_type: LayoutType = LayoutType.HORIZONTAL,
+        grid_cols: Optional[int] = None
     ) -> LayoutSelection:
         """
-        Build layout configuration with dynamic slots.
+        Build layout configuration with dynamic slots and layout type.
+
+        Args:
+            layout_type: Layout arrangement (horizontal, vertical, or grid)
+            grid_cols: Number of columns for grid layout (auto-calculated if None)
         """
+        import math
+
         # Create a modified component with dynamic slots for layout building
         modified_component = deepcopy(component)
         modified_component.slots = dynamic_slots
@@ -388,6 +471,19 @@ class AtomicComponentGenerator:
             grid_width,
             grid_height
         )
+
+        # Override arrangement based on layout_type
+        if layout_type == LayoutType.VERTICAL:
+            # Stacked in a column
+            layout.arrangement = f"stacked_{instance_count}"
+        elif layout_type == LayoutType.GRID:
+            # Grid layout with specified or auto-calculated columns
+            cols = grid_cols if grid_cols else min(instance_count, 3)
+            rows = math.ceil(instance_count / cols)
+            layout.arrangement = f"grid_{rows}x{cols}"
+        else:
+            # HORIZONTAL - side by side in a row (default behavior)
+            layout.arrangement = f"row_{instance_count}"
 
         # Override variant if specified
         if variant and variant in component.variants:
@@ -540,15 +636,26 @@ Generate the content now:"""
         component: ComponentDefinition,
         layout: LayoutSelection,
         contents: List[GeneratedContent],
-        items_per_instance: Optional[int]
+        items_per_instance: Optional[int],
+        transparency: float = 1.0
     ) -> tuple[str, Dict[str, List[int]]]:
         """
         Assemble final HTML with optional dynamic template generation.
+
+        Args:
+            component: Component definition
+            layout: Layout selection with arrangements and variants
+            contents: Generated content for each instance
+            items_per_instance: Optional flexible item count
+            transparency: Box opacity (0.0-1.0). Values < 1.0 add opacity CSS.
 
         Returns tuple of (html_string, character_counts_per_slot)
         """
         char_counts: Dict[str, List[int]] = {}
         instance_htmls = []
+
+        # Determine if opacity should be applied (for non-solid transparency)
+        apply_opacity = transparency < 1.0
 
         for i, gen_content in enumerate(contents):
             # Get variant for this instance
@@ -608,6 +715,10 @@ Generate the content now:"""
             else:
                 html = html.replace("{margin_bottom}", "0")
 
+            # Apply transparency for non-METRICS components (opacity < 1.0)
+            if apply_opacity:
+                html = f'<div style="opacity: {transparency};">{html}</div>'
+
             instance_htmls.append(html)
 
         # Wrap instances if wrapper template exists
@@ -616,19 +727,32 @@ Generate the content now:"""
 
             arrangement = layout.arrangement.value if hasattr(layout.arrangement, 'value') else str(layout.arrangement)
 
-            if arrangement in ["row_2", "row_3", "row_4"]:
-                wrapper = wrapper.replace("{column_count}", str(len(instance_htmls)))
-                wrapper = wrapper.replace("{row_count}", "1")
-            elif arrangement == "grid_2x2":
-                wrapper = wrapper.replace("{column_count}", "2")
-                wrapper = wrapper.replace("{row_count}", "2")
-            elif arrangement == "grid_3x2":
-                wrapper = wrapper.replace("{column_count}", "3")
-                wrapper = wrapper.replace("{row_count}", "2")
+            # Parse arrangement to determine grid dimensions
+            import re
+            if arrangement.startswith("row_"):
+                # Horizontal: row_N means N columns, 1 row
+                cols = len(instance_htmls)
+                rows = 1
+            elif arrangement.startswith("stacked_"):
+                # Vertical: stacked_N means 1 column, N rows
+                cols = 1
+                rows = len(instance_htmls)
+            elif arrangement.startswith("grid_"):
+                # Grid: grid_RxC means C columns, R rows
+                match = re.match(r'grid_(\d+)x(\d+)', arrangement)
+                if match:
+                    rows = int(match.group(1))
+                    cols = int(match.group(2))
+                else:
+                    cols = min(len(instance_htmls), 3)
+                    rows = (len(instance_htmls) + cols - 1) // cols
             else:
-                wrapper = wrapper.replace("{column_count}", "1")
-                wrapper = wrapper.replace("{row_count}", str(len(instance_htmls)))
+                # Default to vertical stacking
+                cols = 1
+                rows = len(instance_htmls)
 
+            wrapper = wrapper.replace("{column_count}", str(cols))
+            wrapper = wrapper.replace("{row_count}", str(rows))
             wrapper = wrapper.replace("{gap}", str(component.arrangement_rules.gap_px))
             wrapper = wrapper.replace("{instances}", "\n".join(instance_htmls))
 
@@ -652,33 +776,61 @@ Generate the content now:"""
         component_id = component.component_id
 
         if component_id == "colored_section":
-            # Build styled bullet list HTML with arrow markers
+            # Build styled bullet list HTML with black disc bullets (21px body text)
             bullets_html = ""
             for i in range(1, items_per_instance + 1):
                 margin = "0" if i == items_per_instance else "8px"
-                bullets_html += f'<li style="display: flex; align-items: flex-start; margin-bottom: {margin}; font-size: 18px; line-height: 1.5; color: #374151;"><span style="color: {{heading_color}}; font-size: 16px; margin-right: 10px; margin-top: 2px;">▸</span><span>{{bullet_{i}}}</span></li>'
+                bullets_html += f'<li style="margin-bottom: {margin}; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{{bullet_{i}}}</li>'
 
-            # Enhanced template with gradient background, left border, numbered badge
-            return f'''<div style="background: {{background}}; border-left: 5px solid {{heading_color}}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: {{margin_bottom}}; box-shadow: 0 4px 12px {{shadow}};"><h3 style="font-size: 24px; font-weight: 700; color: {{heading_color}}; margin: 0 0 14px 0; line-height: 1.2; display: flex; align-items: center;"><span style="background: {{heading_color}}; color: white; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-right: 12px;">{{section_number}}</span>{{section_heading}}</h3><ul style="list-style: none; margin: 0; padding: 0;">{bullets_html}</ul></div>'''
+            # Enhanced template with gradient background, left border, numbered badge (28px heading)
+            return f'''<div style="background: {{background}}; border-left: 5px solid {{heading_color}}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: {{margin_bottom}}; box-shadow: 0 4px 12px {{shadow}};"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{heading_color}}; margin: 0 0 14px 0; line-height: 1.2; display: flex; align-items: center;"><span style="background: {{heading_color}}; color: white; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-right: 12px;">{{section_number}}</span>{{section_heading}}</h3><ul style="list-style-type: disc; margin: 0; padding-left: 20px;">{bullets_html}</ul></div>'''
 
         elif component_id == "comparison_column":
-            # Build styled bullet list HTML with dot markers
+            # Build styled bullet list HTML with black disc bullets (21px body text)
             items_html = ""
             for i in range(1, items_per_instance + 1):
                 margin = "0" if i == items_per_instance else "12px"
-                items_html += f'<li style="margin-bottom: {margin}; padding-left: 20px; position: relative; font-size: 17px; line-height: 1.5; color: #374151;"><span style="position: absolute; left: 0; color: {{accent_color}}; font-size: 10px; top: 6px;">●</span>{{item_{i}}}</li>'
+                items_html += f'<li style="margin-bottom: {margin}; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{{item_{i}}}</li>'
 
-            # Enhanced template with gradient header, card styling
-            return f'''<div style="background: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 6px 20px {{shadow}};"><div style="background: {{gradient}}; padding: 16px 20px;"><h3 style="font-size: 22px; font-weight: 700; color: white; margin: 0;">{{column_heading}}</h3></div><div style="padding: 18px; background: {{content_background}};"><ul style="list-style: none; margin: 0; padding: 0;">{items_html}</ul></div></div>'''
+            # Enhanced template with gradient header, card styling (28px heading)
+            return f'''<div style="background: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 6px 20px {{shadow}};"><div style="background: {{gradient}}; padding: 16px 20px;"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: white; margin: 0;">{{column_heading}}</h3></div><div style="padding: 18px; background: {{content_background}};"><ul style="list-style-type: disc; margin: 0; padding-left: 20px;">{items_html}</ul></div></div>'''
 
         elif component_id == "sidebar_box":
-            # Build items HTML for sidebar
+            # Build items HTML for sidebar with black disc bullets
             items_html = ""
             for i in range(1, items_per_instance + 1):
-                margin = "0" if i == items_per_instance else "12px"
+                margin = "0" if i == items_per_instance else "14px"
                 items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
 
-            return f'''<div style="background: {{gradient}}; border-radius: 16px; padding: {{padding}}; box-shadow: {{shadow}};"><h4 style="font-size: 24px; font-weight: 700; color: white; margin: 0 0 16px 0; line-height: 1.2;">{{sidebar_heading}}</h4><ul style="font-size: 18px; line-height: 1.5; color: rgba(255,255,255,0.95); margin: 0; padding-left: 20px; list-style-type: disc;">{items_html}</ul></div>'''
+            # Use dark text colors for light gradient backgrounds with black disc bullets
+            return f'''<div style="padding: 32px; border-radius: 12px; background: {{gradient}}; border-left: 4px solid {{accent_color}}; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{accent_color}}; margin: 0 0 20px 0; line-height: 1.2;">{{sidebar_heading}}</h4><ul style="list-style-type: disc; padding-left: 20px; margin: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{items_html}</ul></div>'''
+
+        elif component_id == "text_bullets":
+            # Build bullet list HTML for text_bullets
+            bullets_html = ""
+            for i in range(1, items_per_instance + 1):
+                margin = "0" if i == items_per_instance else "10px"
+                bullets_html += f'<li style="margin-bottom: {margin};">{{bullet_{i}}}</li>'
+
+            return f'''<div style="padding: 24px; background: {{background}}; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2;">{{subtitle}}</h4><ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{bullets_html}</ul></div>'''
+
+        elif component_id == "bullet_box":
+            # Build items HTML for bullet_box with sharp corners and border
+            items_html = ""
+            for i in range(1, items_per_instance + 1):
+                margin = "0" if i == items_per_instance else "10px"
+                items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
+
+            return f'''<div style="padding: 24px; background: {{background}}; border: 2px solid {{border_color}}; border-radius: 0;"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2; padding-bottom: 12px; border-bottom: 1px solid {{border_color}};">{{box_heading}}</h4><ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{items_html}</ul></div>'''
+
+        elif component_id == "numbered_list":
+            # Build numbered list HTML
+            items_html = ""
+            for i in range(1, items_per_instance + 1):
+                margin = "0" if i == items_per_instance else "10px"
+                items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
+
+            return f'''<div style="padding: 24px; background: {{background}}; border-radius: 12px; border-left: 4px solid {{accent_color}}; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2;">{{list_title}}</h4><ol style="margin: 0; padding-left: 24px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY}; counter-reset: item;">{items_html}</ol></div>'''
 
         else:
             # Return original template for components without flexible items
@@ -727,7 +879,10 @@ async def generate_atomic_component(
     items_per_instance: Optional[int] = None,
     context: Optional[AtomicContext] = None,
     variant: Optional[str] = None,
-    placeholder_mode: bool = False
+    placeholder_mode: bool = False,
+    transparency: Optional[float] = None,
+    layout: LayoutType = LayoutType.HORIZONTAL,
+    grid_cols: Optional[int] = None
 ) -> AtomicResult:
     """
     Convenience function for quick atomic component generation.
@@ -743,6 +898,9 @@ async def generate_atomic_component(
         context: Optional context
         variant: Optional color variant
         placeholder_mode: If True, use placeholder content (no LLM call)
+        transparency: Box opacity (0.0-1.0). If None, uses component default
+        layout: Layout arrangement (horizontal, vertical, or grid)
+        grid_cols: Number of columns for grid layout (auto-calculated if None)
 
     Returns:
         AtomicResult with generated HTML
@@ -757,5 +915,8 @@ async def generate_atomic_component(
         items_per_instance=items_per_instance,
         context=context,
         variant=variant,
-        placeholder_mode=placeholder_mode
+        placeholder_mode=placeholder_mode,
+        transparency=transparency,
+        layout=layout,
+        grid_cols=grid_cols
     )

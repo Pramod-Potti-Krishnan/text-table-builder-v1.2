@@ -33,6 +33,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.core.components.atomic_generator import AtomicComponentGenerator
 from app.models.atomic_models import (
     AtomicType,
+    LayoutType,
     ATOMIC_TYPE_MAP,
     AtomicComponentResponse,
     AtomicMetadata,
@@ -40,7 +41,11 @@ from app.models.atomic_models import (
     SequentialAtomicRequest,
     ComparisonAtomicRequest,
     SectionsAtomicRequest,
-    CalloutAtomicRequest
+    CalloutAtomicRequest,
+    TextBulletsAtomicRequest,
+    BulletBoxAtomicRequest,
+    TableAtomicRequest,
+    NumberedListAtomicRequest
 )
 from app.services import create_llm_callable_async
 
@@ -140,7 +145,10 @@ async def generate_metrics(
             items_per_instance=None,  # Metrics don't have flexible items
             context=request.context,
             variant=request.variant,
-            placeholder_mode=request.placeholder_mode
+            placeholder_mode=request.placeholder_mode,
+            transparency=request.transparency,
+            layout=request.layout,
+            grid_cols=request.grid_cols
         )
         return _build_response(result)
 
@@ -201,7 +209,10 @@ async def generate_sequential(
             items_per_instance=None,  # Sequential cards don't have flexible items
             context=request.context,
             variant=request.variant,
-            placeholder_mode=request.placeholder_mode
+            placeholder_mode=request.placeholder_mode,
+            transparency=request.transparency,
+            layout=request.layout,
+            grid_cols=request.grid_cols
         )
         return _build_response(result)
 
@@ -263,7 +274,10 @@ async def generate_comparison(
             items_per_instance=request.items_per_column,
             context=request.context,
             variant=request.variant,
-            placeholder_mode=request.placeholder_mode
+            placeholder_mode=request.placeholder_mode,
+            transparency=request.transparency,
+            layout=request.layout,
+            grid_cols=request.grid_cols
         )
         return _build_response(result)
 
@@ -325,7 +339,10 @@ async def generate_sections(
             items_per_instance=request.bullets_per_section,
             context=request.context,
             variant=request.variant,
-            placeholder_mode=request.placeholder_mode
+            placeholder_mode=request.placeholder_mode,
+            transparency=request.transparency,
+            layout=request.layout,
+            grid_cols=request.grid_cols
         )
         return _build_response(result)
 
@@ -387,7 +404,10 @@ async def generate_callout(
             items_per_instance=request.items_per_box,
             context=request.context,
             variant=request.variant,
-            placeholder_mode=request.placeholder_mode
+            placeholder_mode=request.placeholder_mode,
+            transparency=request.transparency,
+            layout=request.layout,
+            grid_cols=request.grid_cols
         )
         return _build_response(result)
 
@@ -397,6 +417,272 @@ async def generate_callout(
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         logger.error(f"[ATOMIC-CALLOUT-ERROR] {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
+# POST /v1.2/atomic/TEXT_BULLETS
+# =============================================================================
+
+@router.post("/TEXT_BULLETS", response_model=AtomicComponentResponse)
+async def generate_text_bullets(
+    request: TextBulletsAtomicRequest,
+    generator: AtomicComponentGenerator = Depends(get_atomic_generator)
+) -> AtomicComponentResponse:
+    """
+    Generate TEXT_BULLETS atomic component (1-4 simple text boxes with bullets).
+
+    Each text box contains:
+    - subtitle: Section subtitle/heading
+    - bullet_1 through bullet_N: Bullet points (1-7 bullets per box)
+
+    **Request Body**:
+    - prompt: Content request describing the bullet content
+    - count: Number of text boxes (1-4, default: 2)
+    - bullets_per_box: Bullets per box (1-7, default: 4)
+    - gridWidth: Available width in grid units (4-32)
+    - gridHeight: Available height in grid units (4-18)
+    - context: Optional slide/presentation context
+    - variant: Optional specific color variant
+    - placeholder_mode: If true, use placeholder content (no LLM call)
+
+    **Example Request**:
+    ```json
+    {
+        "prompt": "Key features of our new product: performance, reliability, ease of use",
+        "count": 2,
+        "bullets_per_box": 4,
+        "gridWidth": 24,
+        "gridHeight": 10
+    }
+    ```
+
+    **Color Variants**: white, light_gray, light_blue, light_purple
+    """
+    try:
+        result = await generator.generate(
+            component_type=ATOMIC_TYPE_MAP[AtomicType.TEXT_BULLETS],
+            prompt=request.prompt,
+            count=request.count,
+            grid_width=request.gridWidth,
+            grid_height=request.gridHeight,
+            items_per_instance=request.bullets_per_box,
+            context=request.context,
+            variant=request.variant,
+            placeholder_mode=request.placeholder_mode,
+            transparency=request.transparency,
+            layout=request.layout,
+            grid_cols=request.grid_cols
+        )
+        return _build_response(result)
+
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="LLM request timed out")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"[ATOMIC-TEXT_BULLETS-ERROR] {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
+# POST /v1.2/atomic/BULLET_BOX
+# =============================================================================
+
+@router.post("/BULLET_BOX", response_model=AtomicComponentResponse)
+async def generate_bullet_box(
+    request: BulletBoxAtomicRequest,
+    generator: AtomicComponentGenerator = Depends(get_atomic_generator)
+) -> AtomicComponentResponse:
+    """
+    Generate BULLET_BOX atomic component (1-4 rectangular bordered boxes).
+
+    Each bullet box contains:
+    - box_heading: Box heading/title
+    - item_1 through item_N: Bullet items (1-7 items per box)
+
+    **Request Body**:
+    - prompt: Content request describing the box content
+    - count: Number of boxes (1-4, default: 2)
+    - items_per_box: Items per box (1-7, default: 5)
+    - gridWidth: Available width in grid units (4-32)
+    - gridHeight: Available height in grid units (4-18)
+    - context: Optional slide/presentation context
+    - variant: Optional specific color variant
+    - placeholder_mode: If true, use placeholder content (no LLM call)
+
+    **Example Request**:
+    ```json
+    {
+        "prompt": "Project deliverables for Phase 1 and Phase 2",
+        "count": 2,
+        "items_per_box": 5,
+        "gridWidth": 24,
+        "gridHeight": 12
+    }
+    ```
+
+    **Color Variants**: gray, blue, green, purple, amber
+    """
+    try:
+        result = await generator.generate(
+            component_type=ATOMIC_TYPE_MAP[AtomicType.BULLET_BOX],
+            prompt=request.prompt,
+            count=request.count,
+            grid_width=request.gridWidth,
+            grid_height=request.gridHeight,
+            items_per_instance=request.items_per_box,
+            context=request.context,
+            variant=request.variant,
+            placeholder_mode=request.placeholder_mode,
+            transparency=request.transparency,
+            layout=request.layout,
+            grid_cols=request.grid_cols
+        )
+        return _build_response(result)
+
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="LLM request timed out")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"[ATOMIC-BULLET_BOX-ERROR] {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
+# POST /v1.2/atomic/TABLE
+# =============================================================================
+
+@router.post("/TABLE", response_model=AtomicComponentResponse)
+async def generate_table(
+    request: TableAtomicRequest,
+    generator: AtomicComponentGenerator = Depends(get_atomic_generator)
+) -> AtomicComponentResponse:
+    """
+    Generate TABLE atomic component (1-2 HTML tables).
+
+    Each table contains:
+    - header_1 through header_N: Column headers
+    - rowX_colY: Cell content for each row/column
+
+    **Request Body**:
+    - prompt: Content request describing the table data
+    - count: Number of tables (1-2, default: 1)
+    - columns: Columns per table (2-6, default: 3)
+    - rows: Data rows per table (2-10, default: 4)
+    - gridWidth: Available width in grid units (4-32)
+    - gridHeight: Available height in grid units (4-18)
+    - context: Optional slide/presentation context
+    - variant: Optional specific color variant
+    - placeholder_mode: If true, use placeholder content (no LLM call)
+
+    **Example Request**:
+    ```json
+    {
+        "prompt": "Compare pricing plans: Basic, Pro, Enterprise with features and pricing",
+        "count": 1,
+        "columns": 3,
+        "rows": 4,
+        "gridWidth": 28,
+        "gridHeight": 10
+    }
+    ```
+
+    **Color Variants**: gray, blue, green, purple
+    """
+    try:
+        # For TABLE, we need special handling since it has columns AND rows
+        # items_per_instance will represent the structure as columns * rows
+        table_config = {"columns": request.columns, "rows": request.rows}
+
+        result = await generator.generate(
+            component_type=ATOMIC_TYPE_MAP[AtomicType.TABLE],
+            prompt=request.prompt,
+            count=request.count,
+            grid_width=request.gridWidth,
+            grid_height=request.gridHeight,
+            items_per_instance=request.rows,  # Pass rows as items_per_instance
+            context=request.context,
+            variant=request.variant,
+            placeholder_mode=request.placeholder_mode,
+            transparency=request.transparency,
+            layout=request.layout,
+            grid_cols=request.grid_cols
+        )
+        return _build_response(result)
+
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="LLM request timed out")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"[ATOMIC-TABLE-ERROR] {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
+# POST /v1.2/atomic/NUMBERED_LIST
+# =============================================================================
+
+@router.post("/NUMBERED_LIST", response_model=AtomicComponentResponse)
+async def generate_numbered_list(
+    request: NumberedListAtomicRequest,
+    generator: AtomicComponentGenerator = Depends(get_atomic_generator)
+) -> AtomicComponentResponse:
+    """
+    Generate NUMBERED_LIST atomic component (1-4 numbered lists).
+
+    Each numbered list contains:
+    - list_title: List title/heading
+    - item_1 through item_N: Numbered items (1-10 items per list)
+
+    **Request Body**:
+    - prompt: Content request describing the list content
+    - count: Number of lists (1-4, default: 2)
+    - items_per_list: Items per list (1-10, default: 5)
+    - gridWidth: Available width in grid units (4-32)
+    - gridHeight: Available height in grid units (4-18)
+    - context: Optional slide/presentation context
+    - variant: Optional specific color variant
+    - placeholder_mode: If true, use placeholder content (no LLM call)
+
+    **Example Request**:
+    ```json
+    {
+        "prompt": "Top 5 priorities for Q1: hiring, product launch, market expansion...",
+        "count": 2,
+        "items_per_list": 5,
+        "gridWidth": 24,
+        "gridHeight": 12
+    }
+    ```
+
+    **Color Variants**: blue, green, purple, amber, gray
+    """
+    try:
+        result = await generator.generate(
+            component_type=ATOMIC_TYPE_MAP[AtomicType.NUMBERED_LIST],
+            prompt=request.prompt,
+            count=request.count,
+            grid_width=request.gridWidth,
+            grid_height=request.gridHeight,
+            items_per_instance=request.items_per_list,
+            context=request.context,
+            variant=request.variant,
+            placeholder_mode=request.placeholder_mode,
+            transparency=request.transparency,
+            layout=request.layout,
+            grid_cols=request.grid_cols
+        )
+        return _build_response(result)
+
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="LLM request timed out")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"[ATOMIC-NUMBERED_LIST-ERROR] {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -414,10 +700,12 @@ async def atomic_health():
     return {
         "status": "healthy",
         "service": "atomic-components",
-        "version": "1.1.0",
+        "version": "1.2.0",
         "features": {
             "placeholder_mode": True,
-            "single_element_support": True
+            "single_element_support": True,
+            "layout_options": ["horizontal", "vertical", "grid"],
+            "transparency_control": True
         },
         "endpoints": {
             "METRICS": {
@@ -452,6 +740,35 @@ async def atomic_health():
                 "count_range": "1-2",
                 "flexible_items": True,
                 "items_range": "1-7 items per box"
+            },
+            "TEXT_BULLETS": {
+                "path": "/v1.2/atomic/TEXT_BULLETS",
+                "component_id": "text_bullets",
+                "count_range": "1-4",
+                "flexible_items": True,
+                "items_range": "1-7 bullets per box"
+            },
+            "BULLET_BOX": {
+                "path": "/v1.2/atomic/BULLET_BOX",
+                "component_id": "bullet_box",
+                "count_range": "1-4",
+                "flexible_items": True,
+                "items_range": "1-7 items per box"
+            },
+            "TABLE": {
+                "path": "/v1.2/atomic/TABLE",
+                "component_id": "table_basic",
+                "count_range": "1-2",
+                "flexible_items": True,
+                "columns_range": "2-6",
+                "rows_range": "2-10"
+            },
+            "NUMBERED_LIST": {
+                "path": "/v1.2/atomic/NUMBERED_LIST",
+                "component_id": "numbered_list",
+                "count_range": "1-4",
+                "flexible_items": True,
+                "items_range": "1-10 items per list"
             }
         },
         "grid_system": {
@@ -485,7 +802,8 @@ async def list_atomic_components():
                 "instance_range": {"min": 1, "max": 4},
                 "variants": ["purple", "pink", "cyan", "green"],
                 "flexible_items": False,
-                "supports_placeholder_mode": True
+                "supports_placeholder_mode": True,
+                "default_transparency": 1.0
             },
             {
                 "type": "SEQUENTIAL",
@@ -496,7 +814,8 @@ async def list_atomic_components():
                 "instance_range": {"min": 1, "max": 6},
                 "variants": ["blue", "green", "yellow", "pink"],
                 "flexible_items": False,
-                "supports_placeholder_mode": True
+                "supports_placeholder_mode": True,
+                "default_transparency": 0.6
             },
             {
                 "type": "COMPARISON",
@@ -508,7 +827,8 @@ async def list_atomic_components():
                 "items_per_instance_range": {"min": 1, "max": 7},
                 "variants": ["blue", "red", "green", "purple", "orange"],
                 "flexible_items": True,
-                "supports_placeholder_mode": True
+                "supports_placeholder_mode": True,
+                "default_transparency": 0.6
             },
             {
                 "type": "SECTIONS",
@@ -520,7 +840,8 @@ async def list_atomic_components():
                 "items_per_instance_range": {"min": 1, "max": 5},
                 "variants": ["blue", "red", "green", "amber", "purple"],
                 "flexible_items": True,
-                "supports_placeholder_mode": True
+                "supports_placeholder_mode": True,
+                "default_transparency": 0.6
             },
             {
                 "type": "CALLOUT",
@@ -532,7 +853,61 @@ async def list_atomic_components():
                 "items_per_instance_range": {"min": 1, "max": 7},
                 "variants": ["blue", "green", "purple", "amber"],
                 "flexible_items": True,
-                "supports_placeholder_mode": True
+                "supports_placeholder_mode": True,
+                "default_transparency": 0.6
+            },
+            {
+                "type": "TEXT_BULLETS",
+                "component_id": "text_bullets",
+                "description": "Simple text boxes with subtitle and bullet points",
+                "use_cases": ["key points", "features", "benefits", "summary items"],
+                "slots": ["subtitle", "bullet_1..bullet_N"],
+                "instance_range": {"min": 1, "max": 4},
+                "items_per_instance_range": {"min": 1, "max": 7},
+                "variants": ["white", "light_gray", "light_blue", "light_purple"],
+                "flexible_items": True,
+                "supports_placeholder_mode": True,
+                "default_transparency": 0.6
+            },
+            {
+                "type": "BULLET_BOX",
+                "component_id": "bullet_box",
+                "description": "Rectangular boxes with sharp corners and borders for formal content",
+                "use_cases": ["formal lists", "structured content", "boxed information"],
+                "slots": ["box_heading", "item_1..item_N"],
+                "instance_range": {"min": 1, "max": 4},
+                "items_per_instance_range": {"min": 1, "max": 7},
+                "variants": ["gray", "blue", "green", "purple", "amber"],
+                "flexible_items": True,
+                "supports_placeholder_mode": True,
+                "default_transparency": 0.6
+            },
+            {
+                "type": "TABLE",
+                "component_id": "table_basic",
+                "description": "Clean HTML tables with header row and data rows",
+                "use_cases": ["data tables", "comparison tables", "feature matrices", "schedules"],
+                "slots": ["header_1..header_N", "rowX_colY"],
+                "instance_range": {"min": 1, "max": 2},
+                "columns_range": {"min": 2, "max": 6},
+                "rows_range": {"min": 2, "max": 10},
+                "variants": ["gray", "blue", "green", "purple"],
+                "flexible_items": True,
+                "supports_placeholder_mode": True,
+                "default_transparency": 0.6
+            },
+            {
+                "type": "NUMBERED_LIST",
+                "component_id": "numbered_list",
+                "description": "Numbered lists with title and ordered items",
+                "use_cases": ["ordered lists", "priorities", "rankings", "step-by-step"],
+                "slots": ["list_title", "item_1..item_N"],
+                "instance_range": {"min": 1, "max": 4},
+                "items_per_instance_range": {"min": 1, "max": 10},
+                "variants": ["blue", "green", "purple", "amber", "gray"],
+                "flexible_items": True,
+                "supports_placeholder_mode": True,
+                "default_transparency": 0.6
             }
         ]
     }

@@ -33,6 +33,17 @@ class AtomicType(str, Enum):
     COMPARISON = "COMPARISON"
     SECTIONS = "SECTIONS"
     CALLOUT = "CALLOUT"
+    TEXT_BULLETS = "TEXT_BULLETS"
+    BULLET_BOX = "BULLET_BOX"
+    TABLE = "TABLE"
+    NUMBERED_LIST = "NUMBERED_LIST"
+
+
+class LayoutType(str, Enum):
+    """Layout arrangement options for atomic components."""
+    HORIZONTAL = "horizontal"   # Side by side in a row
+    VERTICAL = "vertical"       # Stacked in a column
+    GRID = "grid"              # Grid layout (rows x cols)
 
 
 # Map from atomic type to internal component_id
@@ -41,7 +52,11 @@ ATOMIC_TYPE_MAP = {
     AtomicType.SEQUENTIAL: "numbered_card",
     AtomicType.COMPARISON: "comparison_column",
     AtomicType.SECTIONS: "colored_section",
-    AtomicType.CALLOUT: "sidebar_box"
+    AtomicType.CALLOUT: "sidebar_box",
+    AtomicType.TEXT_BULLETS: "text_bullets",
+    AtomicType.BULLET_BOX: "bullet_box",
+    AtomicType.TABLE: "table_basic",
+    AtomicType.NUMBERED_LIST: "numbered_list"
 }
 
 
@@ -143,6 +158,22 @@ class AtomicComponentRequest(BaseModel):
         default=False,
         description="If true, generate placeholder content without LLM call"
     )
+    layout: LayoutType = Field(
+        default=LayoutType.HORIZONTAL,
+        description="Layout arrangement: horizontal (row), vertical (column), or grid"
+    )
+    grid_cols: Optional[int] = Field(
+        default=None,
+        ge=1,
+        le=6,
+        description="Number of columns for grid layout (auto-calculated if null)"
+    )
+    transparency: Optional[float] = Field(
+        default=None,
+        ge=0.0,
+        le=1.0,
+        description="Box opacity (0.0-1.0). Uses component default if null"
+    )
 
     class Config:
         json_schema_extra = {
@@ -150,6 +181,7 @@ class AtomicComponentRequest(BaseModel):
                 "prompt": "Key performance metrics for Q4 2024",
                 "gridWidth": 24,
                 "gridHeight": 10,
+                "layout": "horizontal",
                 "context": {
                     "audience": "executive",
                     "tone": "professional"
@@ -302,6 +334,141 @@ class CalloutAtomicRequest(AtomicComponentRequest):
                 "count": 1,
                 "items_per_box": 5,
                 "gridWidth": 10,
+                "gridHeight": 12
+            }
+        }
+
+
+class TextBulletsAtomicRequest(AtomicComponentRequest):
+    """
+    Request model for POST /v1.2/atomic/TEXT_BULLETS
+
+    Generates 1-4 simple text boxes with subtitle and bullet points.
+    Clean, minimal design for straightforward content presentation.
+    """
+    count: int = Field(
+        default=2,
+        ge=1,
+        le=4,
+        description="Number of text bullet boxes (1-4)"
+    )
+    bullets_per_box: int = Field(
+        default=4,
+        ge=1,
+        le=7,
+        description="Number of bullet points per box (1-7)"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "prompt": "Key benefits and features of our new product line",
+                "count": 2,
+                "bullets_per_box": 4,
+                "gridWidth": 24,
+                "gridHeight": 10
+            }
+        }
+
+
+class BulletBoxAtomicRequest(AtomicComponentRequest):
+    """
+    Request model for POST /v1.2/atomic/BULLET_BOX
+
+    Generates 1-4 rectangular boxes with sharp corners and borders.
+    Professional, structured appearance for formal content.
+    """
+    count: int = Field(
+        default=2,
+        ge=1,
+        le=4,
+        description="Number of bullet boxes (1-4)"
+    )
+    items_per_box: int = Field(
+        default=5,
+        ge=1,
+        le=7,
+        description="Number of items per box (1-7)"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "prompt": "Project requirements and deliverables for Q1",
+                "count": 2,
+                "items_per_box": 5,
+                "gridWidth": 24,
+                "gridHeight": 12
+            }
+        }
+
+
+class TableAtomicRequest(AtomicComponentRequest):
+    """
+    Request model for POST /v1.2/atomic/TABLE
+
+    Generates 1-2 HTML tables with header row and data rows.
+    Professional styling with alternating row colors.
+    """
+    count: int = Field(
+        default=1,
+        ge=1,
+        le=2,
+        description="Number of tables (1-2)"
+    )
+    columns: int = Field(
+        default=3,
+        ge=2,
+        le=6,
+        description="Number of columns per table (2-6)"
+    )
+    rows: int = Field(
+        default=4,
+        ge=2,
+        le=10,
+        description="Number of data rows per table (2-10)"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "prompt": "Product comparison table: features, pricing, availability",
+                "count": 1,
+                "columns": 3,
+                "rows": 4,
+                "gridWidth": 28,
+                "gridHeight": 10
+            }
+        }
+
+
+class NumberedListAtomicRequest(AtomicComponentRequest):
+    """
+    Request model for POST /v1.2/atomic/NUMBERED_LIST
+
+    Generates 1-4 numbered lists with title and ordered items.
+    Clean numbered format for sequential or prioritized content.
+    """
+    count: int = Field(
+        default=2,
+        ge=1,
+        le=4,
+        description="Number of numbered lists (1-4)"
+    )
+    items_per_list: int = Field(
+        default=5,
+        ge=1,
+        le=10,
+        description="Number of items per list (1-10)"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "prompt": "Top priorities and action items for the quarter",
+                "count": 2,
+                "items_per_list": 5,
+                "gridWidth": 24,
                 "gridHeight": 12
             }
         }

@@ -1,0 +1,108 @@
+{
+  "component_id": "numbered_list",
+  "description": "Numbered list with title and ordered items. Clean, simple numbered format for sequential or prioritized content.",
+  "use_cases": [
+    "ordered lists",
+    "priorities",
+    "rankings",
+    "step-by-step",
+    "top items",
+    "numbered points"
+  ],
+
+  "template": "<div style=\"padding: 24px; background: {background}; border-radius: 12px; border-left: 4px solid {accent_color}; box-shadow: 0 2px 8px rgba(0,0,0,0.05);\"><h4 style=\"font-size: 28px; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2;\">{list_title}</h4><ol style=\"margin: 0; padding-left: 24px; font-size: 21px; line-height: 1.5; color: #374151; counter-reset: item;\"><li style=\"margin-bottom: 10px;\">{item_1}</li><li style=\"margin-bottom: 10px;\">{item_2}</li><li style=\"margin-bottom: 10px;\">{item_3}</li><li style=\"margin-bottom: 10px;\">{item_4}</li><li style=\"margin-bottom: 0;\">{item_5}</li></ol></div>",
+
+  "wrapper_template": "<div style=\"display: grid; grid-template-columns: repeat({column_count}, 1fr); gap: 24px; padding: 0;\">{instances}</div>",
+
+  "slots": {
+    "list_title": {
+      "min_chars": 10,
+      "max_chars": 40,
+      "baseline_chars": 25,
+      "description": "Title for the numbered list",
+      "format_hint": "title_case"
+    },
+    "item_1": {
+      "min_chars": 25,
+      "max_chars": 80,
+      "baseline_chars": 52,
+      "description": "First numbered item",
+      "format_hint": "sentence"
+    },
+    "item_2": {
+      "min_chars": 25,
+      "max_chars": 80,
+      "baseline_chars": 52,
+      "description": "Second numbered item",
+      "format_hint": "sentence"
+    },
+    "item_3": {
+      "min_chars": 25,
+      "max_chars": 80,
+      "baseline_chars": 52,
+      "description": "Third numbered item",
+      "format_hint": "sentence"
+    },
+    "item_4": {
+      "min_chars": 25,
+      "max_chars": 80,
+      "baseline_chars": 52,
+      "description": "Fourth numbered item",
+      "format_hint": "sentence"
+    },
+    "item_5": {
+      "min_chars": 25,
+      "max_chars": 80,
+      "baseline_chars": 52,
+      "description": "Fifth numbered item",
+      "format_hint": "sentence"
+    }
+  },
+
+  "variants": {
+    "blue": {
+      "background": "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+      "accent_color": "#3b82f6"
+    },
+    "green": {
+      "background": "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)",
+      "accent_color": "#10b981"
+    },
+    "purple": {
+      "background": "linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%)",
+      "accent_color": "#8b5cf6"
+    },
+    "amber": {
+      "background": "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
+      "accent_color": "#f59e0b"
+    },
+    "gray": {
+      "background": "#f9fafb",
+      "accent_color": "#6b7280"
+    }
+  },
+
+  "space_requirements": {
+    "min_grid_width": 10,
+    "min_grid_height": 8,
+    "ideal_grid_width": 14,
+    "ideal_grid_height": 10,
+    "padding_px": 24
+  },
+
+  "arrangement_rules": {
+    "min_instances": 1,
+    "max_instances": 4,
+    "valid_arrangements": ["single", "row_2", "row_3", "stacked_2", "stacked_3", "grid_2x2"],
+    "gap_px": 24,
+    "prefer_row": true
+  },
+
+  "scaling_rules": {
+    "compress_slot": "item_5",
+    "min_scale": 0.75,
+    "expand_slot": "item_1",
+    "max_scale": 1.15,
+    "preserve_slots": ["list_title"]
+  }
+}

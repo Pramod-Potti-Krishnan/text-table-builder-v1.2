@@ -1,0 +1,171 @@
+{
+  "component_id": "table_basic",
+  "description": "Clean HTML table with header row and data rows. Professional styling with alternating row colors option.",
+  "use_cases": [
+    "data tables",
+    "comparison tables",
+    "feature matrices",
+    "schedules",
+    "specifications",
+    "tabular data"
+  ],
+
+  "template": "<div style=\"overflow: hidden; border-radius: 8px; border: 1px solid #e5e7eb;\"><table style=\"width: 100%; border-collapse: collapse; font-size: 21px;\"><thead><tr style=\"background: {header_bg};\"><th style=\"padding: 14px 16px; text-align: left; font-weight: 700; color: {header_text}; border-bottom: 2px solid {border_color};\">{header_1}</th><th style=\"padding: 14px 16px; text-align: left; font-weight: 700; color: {header_text}; border-bottom: 2px solid {border_color};\">{header_2}</th><th style=\"padding: 14px 16px; text-align: left; font-weight: 700; color: {header_text}; border-bottom: 2px solid {border_color};\">{header_3}</th></tr></thead><tbody><tr style=\"background: #ffffff;\"><td style=\"padding: 12px 16px; color: #374151; border-bottom: 1px solid #e5e7eb;\">{row1_col1}</td><td style=\"padding: 12px 16px; color: #374151; border-bottom: 1px solid #e5e7eb;\">{row1_col2}</td><td style=\"padding: 12px 16px; color: #374151; border-bottom: 1px solid #e5e7eb;\">{row1_col3}</td></tr><tr style=\"background: #f9fafb;\"><td style=\"padding: 12px 16px; color: #374151; border-bottom: 1px solid #e5e7eb;\">{row2_col1}</td><td style=\"padding: 12px 16px; color: #374151; border-bottom: 1px solid #e5e7eb;\">{row2_col2}</td><td style=\"padding: 12px 16px; color: #374151; border-bottom: 1px solid #e5e7eb;\">{row2_col3}</td></tr><tr style=\"background: #ffffff;\"><td style=\"padding: 12px 16px; color: #374151; border-bottom: 1px solid #e5e7eb;\">{row3_col1}</td><td style=\"padding: 12px 16px; color: #374151; border-bottom: 1px solid #e5e7eb;\">{row3_col2}</td><td style=\"padding: 12px 16px; color: #374151; border-bottom: 1px solid #e5e7eb;\">{row3_col3}</td></tr><tr style=\"background: #f9fafb;\"><td style=\"padding: 12px 16px; color: #374151;\">{row4_col1}</td><td style=\"padding: 12px 16px; color: #374151;\">{row4_col2}</td><td style=\"padding: 12px 16px; color: #374151;\">{row4_col3}</td></tr></tbody></table></div>",
+
+  "wrapper_template": "<div style=\"display: flex; flex-direction: column; gap: 24px;\">{instances}</div>",
+
+  "slots": {
+    "header_1": {
+      "min_chars": 5,
+      "max_chars": 25,
+      "baseline_chars": 15,
+      "description": "First column header",
+      "format_hint": "title_case"
+    },
+    "header_2": {
+      "min_chars": 5,
+      "max_chars": 25,
+      "baseline_chars": 15,
+      "description": "Second column header",
+      "format_hint": "title_case"
+    },
+    "header_3": {
+      "min_chars": 5,
+      "max_chars": 25,
+      "baseline_chars": 15,
+      "description": "Third column header",
+      "format_hint": "title_case"
+    },
+    "row1_col1": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 1, Column 1 content",
+      "format_hint": "sentence"
+    },
+    "row1_col2": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 1, Column 2 content",
+      "format_hint": "sentence"
+    },
+    "row1_col3": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 1, Column 3 content",
+      "format_hint": "sentence"
+    },
+    "row2_col1": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 2, Column 1 content",
+      "format_hint": "sentence"
+    },
+    "row2_col2": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 2, Column 2 content",
+      "format_hint": "sentence"
+    },
+    "row2_col3": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 2, Column 3 content",
+      "format_hint": "sentence"
+    },
+    "row3_col1": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 3, Column 1 content",
+      "format_hint": "sentence"
+    },
+    "row3_col2": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 3, Column 2 content",
+      "format_hint": "sentence"
+    },
+    "row3_col3": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 3, Column 3 content",
+      "format_hint": "sentence"
+    },
+    "row4_col1": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 4, Column 1 content",
+      "format_hint": "sentence"
+    },
+    "row4_col2": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 4, Column 2 content",
+      "format_hint": "sentence"
+    },
+    "row4_col3": {
+      "min_chars": 5,
+      "max_chars": 40,
+      "baseline_chars": 22,
+      "description": "Row 4, Column 3 content",
+      "format_hint": "sentence"
+    }
+  },
+
+  "variants": {
+    "gray": {
+      "header_bg": "#f3f4f6",
+      "header_text": "#1f2937",
+      "border_color": "#d1d5db"
+    },
+    "blue": {
+      "header_bg": "#3b82f6",
+      "header_text": "#ffffff",
+      "border_color": "#3b82f6"
+    },
+    "green": {
+      "header_bg": "#10b981",
+      "header_text": "#ffffff",
+      "border_color": "#10b981"
+    },
+    "purple": {
+      "header_bg": "#8b5cf6",
+      "header_text": "#ffffff",
+      "border_color": "#8b5cf6"
+    }
+  },
+
+  "space_requirements": {
+    "min_grid_width": 16,
+    "min_grid_height": 8,
+    "ideal_grid_width": 24,
+    "ideal_grid_height": 10,
+    "padding_px": 0
+  },
+
+  "arrangement_rules": {
+    "min_instances": 1,
+    "max_instances": 2,
+    "valid_arrangements": ["single", "stacked_2"],
+    "gap_px": 24,
+    "prefer_row": false
+  },
+
+  "scaling_rules": {
+    "compress_slot": null,
+    "min_scale": 0.8,
+    "expand_slot": null,
+    "max_scale": 1.1,
+    "preserve_slots": ["header_1", "header_2", "header_3"]
+  }
+}
