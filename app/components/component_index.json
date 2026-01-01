@@ -1,16 +1,21 @@
 {
-  "version": "1.0.0",
+  "version": "1.2.0",
   "components": {
     "metrics_card": "metrics_card.json",
     "numbered_card": "numbered_card.json",
     "comparison_column": "comparison_column.json",
     "colored_section": "colored_section.json",
-    "sidebar_box": "sidebar_box.json"
+    "sidebar_box": "sidebar_box.json",
+    "text_bullets": "text_bullets.json",
+    "bullet_box": "bullet_box.json",
+    "table_basic": "table_basic.json",
+    "numbered_list": "numbered_list.json"
   },
   "categories": {
     "evidence": ["metrics_card"],
-    "process": ["numbered_card", "colored_section"],
-    "comparison": ["comparison_column"],
-    "highlight": ["sidebar_box"]
+    "process": ["numbered_card", "colored_section", "numbered_list"],
+    "comparison": ["comparison_column", "table_basic"],
+    "highlight": ["sidebar_box", "bullet_box"],
+    "content": ["text_bullets", "bullet_box", "numbered_list"]
   }
 }
