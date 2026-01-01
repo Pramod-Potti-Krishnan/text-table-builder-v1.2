@@ -487,6 +487,10 @@ Generate the content now:"""
                     char_counts[slot_id] = []
                 char_counts[slot_id].append(len(str(value)))
 
+            # Auto-inject section number for colored_section (1-indexed)
+            if component.component_id == "colored_section":
+                html = html.replace("{section_number}", str(i + 1))
+
             # Replace variant placeholders
             if variant:
                 if variant.gradient:
@@ -500,8 +504,8 @@ Generate the content now:"""
                 if variant.text_color:
                     html = html.replace("{text_color}", variant.text_color)
 
-                # Handle variant-specific placeholders
-                for attr in ["number_color", "heading_color"]:
+                # Handle variant-specific placeholders including content_background
+                for attr in ["number_color", "heading_color", "content_background"]:
                     attr_value = getattr(variant, attr, None)
                     if attr_value is None and hasattr(variant, 'model_extra') and variant.model_extra is not None:
                         attr_value = variant.model_extra.get(attr)
@@ -556,26 +560,29 @@ Generate the content now:"""
         Generate a dynamic template with the correct number of items.
 
         Handles colored_section (bullets) and comparison_column/sidebar_box (items).
+        Enhanced templates with gradient backgrounds, styled bullets, and card layouts.
         """
         component_id = component.component_id
 
         if component_id == "colored_section":
-            # Build bullet list HTML
+            # Build styled bullet list HTML with arrow markers
             bullets_html = ""
             for i in range(1, items_per_instance + 1):
-                margin = "0" if i == items_per_instance else "10px"
-                bullets_html += f'<li style="margin-bottom: {margin};">{{bullet_{i}}}</li>'
+                margin = "0" if i == items_per_instance else "8px"
+                bullets_html += f'<li style="display: flex; align-items: flex-start; margin-bottom: {margin}; font-size: 18px; line-height: 1.5; color: #374151;"><span style="color: {{heading_color}}; font-size: 16px; margin-right: 10px; margin-top: 2px;">▸</span><span>{{bullet_{i}}}</span></li>'
 
-            return f'''<div style="margin-bottom: {{margin_bottom}};"><h3 style="font-size: 28px; font-weight: 700; color: {{heading_color}}; margin: 0 0 10px 0; line-height: 1.2;">{{section_heading}}</h3><hr style="height: 3px; background: linear-gradient(90deg, {{heading_color}} 0%, transparent 100%); border: none; margin: 0 0 13px 0;"><ul style="font-size: 21px; line-height: 1.28; color: #374151; margin: 0; padding-left: 24px; list-style-type: disc;">{bullets_html}</ul></div>'''
+            # Enhanced template with gradient background, left border, numbered badge
+            return f'''<div style="background: {{background}}; border-left: 5px solid {{heading_color}}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: {{margin_bottom}}; box-shadow: 0 4px 12px {{shadow}};"><h3 style="font-size: 24px; font-weight: 700; color: {{heading_color}}; margin: 0 0 14px 0; line-height: 1.2; display: flex; align-items: center;"><span style="background: {{heading_color}}; color: white; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-right: 12px;">{{section_number}}</span>{{section_heading}}</h3><ul style="list-style: none; margin: 0; padding: 0;">{bullets_html}</ul></div>'''
 
         elif component_id == "comparison_column":
-            # Build items HTML
+            # Build styled bullet list HTML with dot markers
             items_html = ""
             for i in range(1, items_per_instance + 1):
-                margin = "0" if i == items_per_instance else "18px"
-                items_html += f'<p style="margin: 0 0 {margin} 0;">{{item_{i}}}</p>'
+                margin = "0" if i == items_per_instance else "12px"
+                items_html += f'<li style="margin-bottom: {margin}; padding-left: 20px; position: relative; font-size: 17px; line-height: 1.5; color: #374151;"><span style="position: absolute; left: 0; color: {{accent_color}}; font-size: 10px; top: 6px;">●</span>{{item_{i}}}</li>'
 
-            return f'''<div><h3 style="color: {{heading_color}}; font-size: 28px; margin: 0 0 16px 0; font-weight: 700; border-bottom: 3px solid {{heading_color}}; padding-bottom: 10px;">{{column_heading}}</h3><div style="font-size: 18px; line-height: 1.4; color: #1f2937;">{items_html}</div></div>'''
+            # Enhanced template with gradient header, card styling
+            return f'''<div style="background: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 6px 20px {{shadow}};"><div style="background: {{gradient}}; padding: 16px 20px;"><h3 style="font-size: 22px; font-weight: 700; color: white; margin: 0;">{{column_heading}}</h3></div><div style="padding: 18px; background: {{content_background}};"><ul style="list-style: none; margin: 0; padding: 0;">{items_html}</ul></div></div>'''
 
         elif component_id == "sidebar_box":
             # Build items HTML for sidebar

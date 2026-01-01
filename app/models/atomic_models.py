@@ -208,13 +208,14 @@ class ComparisonAtomicRequest(AtomicComponentRequest):
     """
     Request model for POST /v1.2/atomic/COMPARISON
 
-    Generates 2-4 comparison columns with flexible item counts.
+    Generates 1-4 comparison columns with flexible item counts.
+    Supports unitary elements (count=1) for modular composition.
     """
     count: int = Field(
         default=3,
-        ge=2,
+        ge=1,
         le=4,
-        description="Number of comparison columns (2-4)"
+        description="Number of comparison columns (1-4)"
     )
     items_per_column: int = Field(
         default=5,
@@ -239,13 +240,14 @@ class SectionsAtomicRequest(AtomicComponentRequest):
     """
     Request model for POST /v1.2/atomic/SECTIONS
 
-    Generates 2-5 colored sections with flexible bullet counts.
+    Generates 1-5 colored sections with flexible bullet counts.
+    Supports unitary elements (count=1) for modular composition.
     """
     count: int = Field(
         default=3,
-        ge=2,
+        ge=1,
         le=5,
-        description="Number of sections to generate (2-5)"
+        description="Number of sections to generate (1-5)"
     )
     bullets_per_section: int = Field(
         default=3,

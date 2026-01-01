@@ -153,14 +153,25 @@ class ComponentVariant(BaseModel):
         default=None,
         description="Text color override for this variant"
     )
+    heading_color: Optional[str] = Field(
+        default=None,
+        description="Color for section/column headings"
+    )
+    content_background: Optional[str] = Field(
+        default=None,
+        description="Background color/gradient for content area"
+    )
 
     class Config:
+        extra = "allow"  # Allow additional variant properties
         json_schema_extra = {
             "example": {
                 "variant_id": "purple",
                 "gradient": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                 "shadow": "0 10px 30px rgba(102, 126, 234, 0.3)",
-                "text_color": "#ffffff"
+                "text_color": "#ffffff",
+                "heading_color": "#667eea",
+                "content_background": "linear-gradient(180deg, #f8f9ff 0%, #ffffff 100%)"
             }
         }
 
