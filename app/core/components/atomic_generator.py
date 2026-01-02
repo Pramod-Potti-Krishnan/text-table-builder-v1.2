@@ -654,8 +654,9 @@ Generate the content now:"""
         char_counts: Dict[str, List[int]] = {}
         instance_htmls = []
 
-        # Determine if opacity should be applied (for non-solid transparency)
-        apply_opacity = transparency < 1.0
+        # NOTE: Removed opacity wrapper that was applying to entire component.
+        # CSS opacity affects ALL child elements including text.
+        # Component templates now use rgba() backgrounds for transparency instead.
 
         for i, gen_content in enumerate(contents):
             # Get variant for this instance
@@ -714,10 +715,6 @@ Generate the content now:"""
                 html = html.replace("{margin_bottom}", f"{component.arrangement_rules.gap_px}px")
             else:
                 html = html.replace("{margin_bottom}", "0")
-
-            # Apply transparency for non-METRICS components (opacity < 1.0)
-            if apply_opacity:
-                html = f'<div style="opacity: {transparency};">{html}</div>'
 
             instance_htmls.append(html)
 
