@@ -709,6 +709,8 @@ async def generate_text_box(
     - items_per_box: Items per box (1-7, default: 4)
     - gridWidth: Available width in grid units (4-32)
     - gridHeight: Available height in grid units (4-18)
+    - variant: Color variant to use
+    - theme_mode: 'light' or 'dark' - affects text colors for accent variants
     - background_style: 'colored' or 'transparent'
     - color_scheme: 'gradient', 'solid', or 'accent'
     - list_style: 'bullets', 'numbers', or 'none'
@@ -722,11 +724,17 @@ async def generate_text_box(
         "count": 3,
         "items_per_box": 4,
         "gridWidth": 28,
-        "gridHeight": 12
+        "gridHeight": 12,
+        "variant": "accent_1_purple",
+        "theme_mode": "light"
     }
     ```
 
-    **Color Variants**: gradient_purple, gradient_pink, gradient_cyan, gradient_green, gradient_orange, gradient_pastel
+    **Accent Variants (pastel backgrounds with dark/light mode support)**:
+    accent_1_purple, accent_2_blue, accent_3_red, accent_4_green, accent_5_yellow,
+    accent_6_cyan, accent_7_orange, accent_8_teal, accent_9_pink, accent_10_indigo
+
+    **Legacy Gradient Variants**: gradient_purple, gradient_pink, gradient_cyan, gradient_green, gradient_orange, gradient_pastel
     """
     try:
         result = await generator.generate(
@@ -741,7 +749,8 @@ async def generate_text_box(
             placeholder_mode=request.placeholder_mode,
             transparency=request.transparency,
             layout=request.layout,
-            grid_cols=request.grid_cols
+            grid_cols=request.grid_cols,
+            theme_mode=request.theme_mode
         )
         return _build_response(result)
 
@@ -987,12 +996,17 @@ async def list_atomic_components():
             {
                 "type": "TEXT_BOX",
                 "component_id": "text_box",
-                "description": "Configurable text boxes with gradient backgrounds and various styling options",
+                "description": "Configurable text boxes with pastel or gradient backgrounds and dark/light mode support",
                 "use_cases": ["key points", "features", "benefits", "grouped content", "section summaries"],
                 "slots": ["box_heading", "item_1..item_N"],
                 "instance_range": {"min": 1, "max": 6},
                 "items_per_instance_range": {"min": 1, "max": 7},
-                "variants": ["gradient_purple", "gradient_pink", "gradient_cyan", "gradient_green", "gradient_orange", "gradient_pastel"],
+                "variants": [
+                    "accent_1_purple", "accent_2_blue", "accent_3_red", "accent_4_green", "accent_5_yellow",
+                    "accent_6_cyan", "accent_7_orange", "accent_8_teal", "accent_9_pink", "accent_10_indigo",
+                    "gradient_purple", "gradient_pink", "gradient_cyan", "gradient_green", "gradient_orange", "gradient_pastel"
+                ],
+                "theme_mode_support": True,
                 "flexible_items": True,
                 "supports_placeholder_mode": True,
                 "default_transparency": 1.0

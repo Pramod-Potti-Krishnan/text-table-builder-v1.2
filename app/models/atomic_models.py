@@ -519,6 +519,10 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
         default=True,
         description="Show title in each box"
     )
+    theme_mode: str = Field(
+        default="light",
+        description="Theme mode: 'light' or 'dark' - affects text colors for accent variants"
+    )
 
     class Config:
         json_schema_extra = {
@@ -530,7 +534,9 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
                 "gridHeight": 12,
                 "background_style": "colored",
                 "color_scheme": "gradient",
-                "list_style": "bullets"
+                "list_style": "bullets",
+                "variant": "accent_1_purple",
+                "theme_mode": "light"
             }
         }
 

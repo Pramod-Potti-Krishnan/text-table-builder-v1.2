@@ -119,7 +119,8 @@ class AtomicComponentGenerator:
         placeholder_mode: bool = False,
         transparency: Optional[float] = None,
         layout: LayoutType = LayoutType.HORIZONTAL,
-        grid_cols: Optional[int] = None
+        grid_cols: Optional[int] = None,
+        theme_mode: str = "light"
     ) -> AtomicResult:
         """
         Generate atomic component with explicit parameters.
@@ -213,7 +214,8 @@ class AtomicComponentGenerator:
                 layout=layout,
                 contents=contents,
                 items_per_instance=items_per_instance,
-                transparency=actual_transparency
+                transparency=actual_transparency,
+                theme_mode=theme_mode
             )
 
             # Calculate metadata
@@ -647,7 +649,8 @@ Generate the content now:"""
         layout: LayoutSelection,
         contents: List[GeneratedContent],
         items_per_instance: Optional[int],
-        transparency: float = 1.0
+        transparency: float = 1.0,
+        theme_mode: str = "light"
     ) -> tuple[str, Dict[str, List[int]]]:
         """
         Assemble final HTML with optional dynamic template generation.
@@ -706,11 +709,30 @@ Generate the content now:"""
                     html = html.replace("{shadow}", variant.shadow)
                 if variant.accent_color:
                     html = html.replace("{accent_color}", variant.accent_color)
-                if variant.text_color:
+
+                # Handle theme_mode for text_box accent variants (dark mode text colors)
+                text_color_applied = False
+                item_color_applied = False
+                if component.component_id == "text_box" and theme_mode == "dark":
+                    if hasattr(variant, 'model_extra') and variant.model_extra:
+                        if "text_color_dark" in variant.model_extra:
+                            html = html.replace("{text_color}", variant.model_extra["text_color_dark"])
+                            text_color_applied = True
+                        if "item_color_dark" in variant.model_extra:
+                            html = html.replace("{item_color}", variant.model_extra["item_color_dark"])
+                            item_color_applied = True
+
+                # Standard text_color (if not already applied by dark mode)
+                if variant.text_color and not text_color_applied:
                     html = html.replace("{text_color}", variant.text_color)
 
+                # Handle item_color from model_extra (if not already applied by dark mode)
+                if not item_color_applied and hasattr(variant, 'model_extra') and variant.model_extra:
+                    if "item_color" in variant.model_extra:
+                        html = html.replace("{item_color}", variant.model_extra["item_color"])
+
                 # Handle variant-specific placeholders including content_background
-                for attr in ["number_color", "heading_color", "content_background"]:
+                for attr in ["number_color", "heading_color", "content_background", "border_radius"]:
                     attr_value = getattr(variant, attr, None)
                     if attr_value is None and hasattr(variant, 'model_extra') and variant.model_extra is not None:
                         attr_value = variant.model_extra.get(attr)
@@ -898,7 +920,8 @@ async def generate_atomic_component(
     placeholder_mode: bool = False,
     transparency: Optional[float] = None,
     layout: LayoutType = LayoutType.HORIZONTAL,
-    grid_cols: Optional[int] = None
+    grid_cols: Optional[int] = None,
+    theme_mode: str = "light"
 ) -> AtomicResult:
     """
     Convenience function for quick atomic component generation.
@@ -917,6 +940,7 @@ async def generate_atomic_component(
         transparency: Box opacity (0.0-1.0). If None, uses component default
         layout: Layout arrangement (horizontal, vertical, or grid)
         grid_cols: Number of columns for grid layout (auto-calculated if None)
+        theme_mode: Theme mode ('light' or 'dark') for text_box accent variants
 
     Returns:
         AtomicResult with generated HTML
@@ -934,5 +958,6 @@ async def generate_atomic_component(
         placeholder_mode=placeholder_mode,
         transparency=transparency,
         layout=layout,
-        grid_cols=grid_cols
+        grid_cols=grid_cols,
+        theme_mode=theme_mode
     )

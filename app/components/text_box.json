@@ -52,6 +52,86 @@
   },
 
   "variants": {
+    "accent_1_purple": {
+      "background": "rgba(232, 215, 241, 0.6)",
+      "text_color": "#805AA0",
+      "text_color_dark": "#E6D2F5",
+      "item_color": "#374151",
+      "item_color_dark": "#FFFFFF",
+      "border_radius": "12px"
+    },
+    "accent_2_blue": {
+      "background": "rgba(189, 224, 249, 0.6)",
+      "text_color": "#2980B9",
+      "text_color_dark": "#B4DCFF",
+      "item_color": "#374151",
+      "item_color_dark": "#FFFFFF",
+      "border_radius": "12px"
+    },
+    "accent_3_red": {
+      "background": "rgba(254, 226, 226, 0.6)",
+      "text_color": "#C0392B",
+      "text_color_dark": "#FFC8C3",
+      "item_color": "#374151",
+      "item_color_dark": "#FFFFFF",
+      "border_radius": "12px"
+    },
+    "accent_4_green": {
+      "background": "rgba(212, 237, 218, 0.6)",
+      "text_color": "#27AE60",
+      "text_color_dark": "#B4F5D2",
+      "item_color": "#374151",
+      "item_color_dark": "#FFFFFF",
+      "border_radius": "12px"
+    },
+    "accent_5_yellow": {
+      "background": "rgba(253, 230, 138, 0.6)",
+      "text_color": "#D39E1E",
+      "text_color_dark": "#FFF0BE",
+      "item_color": "#374151",
+      "item_color_dark": "#FFFFFF",
+      "border_radius": "12px"
+    },
+    "accent_6_cyan": {
+      "background": "rgba(195, 241, 247, 0.6)",
+      "text_color": "#0097A7",
+      "text_color_dark": "#B2EBF2",
+      "item_color": "#374151",
+      "item_color_dark": "#FFFFFF",
+      "border_radius": "12px"
+    },
+    "accent_7_orange": {
+      "background": "rgba(255, 224, 178, 0.6)",
+      "text_color": "#E65100",
+      "text_color_dark": "#FFCCBC",
+      "item_color": "#374151",
+      "item_color_dark": "#FFFFFF",
+      "border_radius": "12px"
+    },
+    "accent_8_teal": {
+      "background": "rgba(178, 223, 219, 0.6)",
+      "text_color": "#00796B",
+      "text_color_dark": "#B2DFDB",
+      "item_color": "#374151",
+      "item_color_dark": "#FFFFFF",
+      "border_radius": "12px"
+    },
+    "accent_9_pink": {
+      "background": "rgba(225, 213, 246, 0.6)",
+      "text_color": "#C2185B",
+      "text_color_dark": "#F8BBD9",
+      "item_color": "#374151",
+      "item_color_dark": "#FFFFFF",
+      "border_radius": "12px"
+    },
+    "accent_10_indigo": {
+      "background": "rgba(197, 202, 233, 0.6)",
+      "text_color": "#3949AB",
+      "text_color_dark": "#D1D9FF",
+      "item_color": "#374151",
+      "item_color_dark": "#FFFFFF",
+      "border_radius": "12px"
+    },
     "gradient_purple": {
       "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       "text_color": "white",
