@@ -1,0 +1,116 @@
+{
+  "component_id": "text_box",
+  "description": "Configurable text box with title and bullet/numbered items. Supports gradient backgrounds, borders, and various styling options.",
+  "use_cases": [
+    "key points",
+    "features list",
+    "benefits",
+    "grouped content",
+    "section summaries"
+  ],
+
+  "template": "<div style=\"padding: 24px; background: {background}; border-radius: {border_radius}; box-shadow: 0 8px 24px rgba(0,0,0,0.1);\"><h3 style=\"font-size: 28px; font-weight: 700; color: {text_color}; margin: 0 0 16px 0; line-height: 1.2;\">{box_heading}</h3><ul style=\"list-style-type: disc; margin: 0; padding-left: 20px; font-size: 21px; line-height: 1.5; color: {item_color};\"><li style=\"margin-bottom: 8px;\">{item_1}</li><li style=\"margin-bottom: 8px;\">{item_2}</li><li style=\"margin-bottom: 8px;\">{item_3}</li><li style=\"margin-bottom: 0;\">{item_4}</li></ul></div>",
+
+  "wrapper_template": "<div style=\"display: grid; grid-template-columns: repeat({column_count}, 1fr); gap: 24px; padding: 0;\">{instances}</div>",
+
+  "slots": {
+    "box_heading": {
+      "min_chars": 10,
+      "max_chars": 40,
+      "baseline_chars": 25,
+      "description": "Heading for the text box",
+      "format_hint": "title_case"
+    },
+    "item_1": {
+      "min_chars": 30,
+      "max_chars": 100,
+      "baseline_chars": 65,
+      "description": "First item",
+      "format_hint": "sentence"
+    },
+    "item_2": {
+      "min_chars": 30,
+      "max_chars": 100,
+      "baseline_chars": 65,
+      "description": "Second item",
+      "format_hint": "sentence"
+    },
+    "item_3": {
+      "min_chars": 30,
+      "max_chars": 100,
+      "baseline_chars": 65,
+      "description": "Third item",
+      "format_hint": "sentence"
+    },
+    "item_4": {
+      "min_chars": 30,
+      "max_chars": 100,
+      "baseline_chars": 65,
+      "description": "Fourth item",
+      "format_hint": "sentence"
+    }
+  },
+
+  "variants": {
+    "gradient_purple": {
+      "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+      "text_color": "white",
+      "item_color": "rgba(255,255,255,0.95)",
+      "border_radius": "16px"
+    },
+    "gradient_pink": {
+      "background": "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+      "text_color": "white",
+      "item_color": "rgba(255,255,255,0.95)",
+      "border_radius": "16px"
+    },
+    "gradient_cyan": {
+      "background": "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+      "text_color": "white",
+      "item_color": "rgba(255,255,255,0.95)",
+      "border_radius": "16px"
+    },
+    "gradient_green": {
+      "background": "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
+      "text_color": "white",
+      "item_color": "rgba(255,255,255,0.95)",
+      "border_radius": "16px"
+    },
+    "gradient_orange": {
+      "background": "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+      "text_color": "white",
+      "item_color": "rgba(255,255,255,0.95)",
+      "border_radius": "16px"
+    },
+    "gradient_pastel": {
+      "background": "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+      "text_color": "#1f2937",
+      "item_color": "#4b5563",
+      "border_radius": "16px"
+    }
+  },
+
+  "space_requirements": {
+    "min_grid_width": 8,
+    "min_grid_height": 6,
+    "ideal_grid_width": 12,
+    "ideal_grid_height": 10,
+    "padding_px": 24
+  },
+
+  "arrangement_rules": {
+    "min_instances": 1,
+    "max_instances": 6,
+    "valid_arrangements": ["single", "row_2", "row_3", "row_4", "stacked_2", "stacked_3", "stacked_4", "grid_2x2", "grid_2x3"],
+    "gap_px": 24,
+    "prefer_row": true
+  },
+
+  "scaling_rules": {
+    "compress_slot": "item_4",
+    "min_scale": 0.75,
+    "expand_slot": "item_1",
+    "max_scale": 1.15,
+    "preserve_slots": ["box_heading"]
+  }
+}

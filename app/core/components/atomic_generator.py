@@ -416,6 +416,16 @@ class AtomicComponentGenerator:
                 "item_8": ["Eighth numbered item in the list"],
                 "item_9": ["Ninth numbered item in the list"],
                 "item_10": ["Tenth numbered item in the list"]
+            },
+            "text_box": {
+                "box_heading": ["Section Heading"],
+                "item_1": ["First key point for this section"],
+                "item_2": ["Second key point for this section"],
+                "item_3": ["Third key point for this section"],
+                "item_4": ["Fourth key point for this section"],
+                "item_5": ["Fifth key point for this section"],
+                "item_6": ["Sixth key point for this section"],
+                "item_7": ["Seventh key point for this section"]
             }
         }
 
@@ -828,6 +838,15 @@ Generate the content now:"""
                 items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
 
             return f'''<div style="padding: 24px; background: {{background}}; border-radius: 12px; border-left: 4px solid {{accent_color}}; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2;">{{list_title}}</h4><ol style="margin: 0; padding-left: 24px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY}; counter-reset: item;">{items_html}</ol></div>'''
+
+        elif component_id == "text_box":
+            # Build items HTML for text_box with gradient backgrounds
+            items_html = ""
+            for i in range(1, items_per_instance + 1):
+                margin = "0" if i == items_per_instance else "8px"
+                items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
+
+            return f'''<div style="padding: 24px; background: {{background}}; border-radius: {{border_radius}}; box-shadow: 0 8px 24px rgba(0,0,0,0.1);"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2;">{{box_heading}}</h3><ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {{item_color}};">{items_html}</ul></div>'''
 
         else:
             # Return original template for components without flexible items

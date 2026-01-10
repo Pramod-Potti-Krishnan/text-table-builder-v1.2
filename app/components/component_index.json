@@ -9,13 +9,14 @@
     "text_bullets": "text_bullets.json",
     "bullet_box": "bullet_box.json",
     "table_basic": "table_basic.json",
-    "numbered_list": "numbered_list.json"
+    "numbered_list": "numbered_list.json",
+    "text_box": "text_box.json"
   },
   "categories": {
     "evidence": ["metrics_card"],
     "process": ["numbered_card", "colored_section", "numbered_list"],
     "comparison": ["comparison_column", "table_basic"],
-    "highlight": ["sidebar_box", "bullet_box"],
-    "content": ["text_bullets", "bullet_box", "numbered_list"]
+    "highlight": ["sidebar_box", "bullet_box", "text_box"],
+    "content": ["text_bullets", "bullet_box", "numbered_list", "text_box"]
   }
 }

@@ -99,11 +99,16 @@ async def lifespan(app: FastAPI):
     logger.info("  - /v1.2/slides/L29 (alias for H1-generated)")
     logger.info("  - /v1.2/slides/L25 (alias for C1-text)")
     logger.info("✓ Atomic Component API (direct component generation):")
-    logger.info("  - /v1.2/atomic/METRICS (2-4 metric cards)")
-    logger.info("  - /v1.2/atomic/SEQUENTIAL (2-6 numbered steps)")
-    logger.info("  - /v1.2/atomic/COMPARISON (2-4 columns, flexible items)")
-    logger.info("  - /v1.2/atomic/SECTIONS (2-5 sections, flexible bullets)")
+    logger.info("  - /v1.2/atomic/METRICS (1-4 metric cards)")
+    logger.info("  - /v1.2/atomic/SEQUENTIAL (1-6 numbered steps)")
+    logger.info("  - /v1.2/atomic/COMPARISON (1-4 columns, flexible items)")
+    logger.info("  - /v1.2/atomic/SECTIONS (1-5 sections, flexible bullets)")
     logger.info("  - /v1.2/atomic/CALLOUT (1-2 callout boxes)")
+    logger.info("  - /v1.2/atomic/TEXT_BULLETS (1-4 text bullet boxes)")
+    logger.info("  - /v1.2/atomic/BULLET_BOX (1-4 bordered boxes)")
+    logger.info("  - /v1.2/atomic/TABLE (1-2 HTML tables)")
+    logger.info("  - /v1.2/atomic/NUMBERED_LIST (1-4 numbered lists)")
+    logger.info("  - /v1.2/atomic/TEXT_BOX (1-6 gradient text boxes)")
     logger.info("✓ Gemini integration enabled")
     logger.info("✓ Image Builder API integration enabled")
     logger.info(f"✓ LLM Pool enabled: {os.getenv('USE_LLM_POOL', 'true')}")
@@ -256,6 +261,11 @@ async def root():
                 "COMPARISON": "POST /v1.2/atomic/COMPARISON",
                 "SECTIONS": "POST /v1.2/atomic/SECTIONS",
                 "CALLOUT": "POST /v1.2/atomic/CALLOUT",
+                "TEXT_BULLETS": "POST /v1.2/atomic/TEXT_BULLETS",
+                "BULLET_BOX": "POST /v1.2/atomic/BULLET_BOX",
+                "TABLE": "POST /v1.2/atomic/TABLE",
+                "NUMBERED_LIST": "POST /v1.2/atomic/NUMBERED_LIST",
+                "TEXT_BOX": "POST /v1.2/atomic/TEXT_BOX",
                 "health": "GET /v1.2/atomic/health",
                 "list_components": "GET /v1.2/atomic/components"
             }
@@ -275,12 +285,12 @@ async def root():
             "atomic_component_generation": True
         },
         "total_variants": 26,
-        "total_endpoints": 34,
+        "total_endpoints": 39,
         "hero_endpoints": 6,
         "layout_ai_endpoints": 8,
         "coordination_endpoints": 3,
         "iseries_endpoints": 7,
-        "atomic_endpoints": 7,
+        "atomic_endpoints": 12,
         "slide_types": [
             "matrix", "grid", "comparison", "sequential",
             "asymmetric", "hybrid", "metrics", "single_column",

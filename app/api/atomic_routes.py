@@ -45,7 +45,8 @@ from app.models.atomic_models import (
     TextBulletsAtomicRequest,
     BulletBoxAtomicRequest,
     TableAtomicRequest,
-    NumberedListAtomicRequest
+    NumberedListAtomicRequest,
+    TextBoxAtomicRequest
 )
 from app.services import create_llm_callable_async
 
@@ -687,6 +688,73 @@ async def generate_numbered_list(
 
 
 # =============================================================================
+# POST /v1.2/atomic/TEXT_BOX
+# =============================================================================
+
+@router.post("/TEXT_BOX", response_model=AtomicComponentResponse)
+async def generate_text_box(
+    request: TextBoxAtomicRequest,
+    generator: AtomicComponentGenerator = Depends(get_atomic_generator)
+) -> AtomicComponentResponse:
+    """
+    Generate TEXT_BOX atomic component (1-6 configurable text boxes).
+
+    Each text box contains:
+    - box_heading: Title for the box
+    - item_1 through item_N: Content items (1-7 per box)
+
+    **Request Body**:
+    - prompt: Content request describing what to generate
+    - count: Number of text boxes (1-6, default: 3)
+    - items_per_box: Items per box (1-7, default: 4)
+    - gridWidth: Available width in grid units (4-32)
+    - gridHeight: Available height in grid units (4-18)
+    - background_style: 'colored' or 'transparent'
+    - color_scheme: 'gradient', 'solid', or 'accent'
+    - list_style: 'bullets', 'numbers', or 'none'
+    - context: Optional slide/presentation context
+    - placeholder_mode: If true, use placeholder content (no LLM call)
+
+    **Example Request**:
+    ```json
+    {
+        "prompt": "Key product features: performance, security, ease of use",
+        "count": 3,
+        "items_per_box": 4,
+        "gridWidth": 28,
+        "gridHeight": 12
+    }
+    ```
+
+    **Color Variants**: gradient_purple, gradient_pink, gradient_cyan, gradient_green, gradient_orange, gradient_pastel
+    """
+    try:
+        result = await generator.generate(
+            component_type=ATOMIC_TYPE_MAP[AtomicType.TEXT_BOX],
+            prompt=request.prompt,
+            count=request.count,
+            grid_width=request.gridWidth,
+            grid_height=request.gridHeight,
+            items_per_instance=request.items_per_box,
+            context=request.context,
+            variant=request.variant,
+            placeholder_mode=request.placeholder_mode,
+            transparency=request.transparency,
+            layout=request.layout,
+            grid_cols=request.grid_cols
+        )
+        return _build_response(result)
+
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="LLM request timed out")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        logger.error(f"[ATOMIC-TEXT_BOX-ERROR] {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# =============================================================================
 # GET /v1.2/atomic/health
 # =============================================================================
 
@@ -769,6 +837,13 @@ async def atomic_health():
                 "count_range": "1-4",
                 "flexible_items": True,
                 "items_range": "1-10 items per list"
+            },
+            "TEXT_BOX": {
+                "path": "/v1.2/atomic/TEXT_BOX",
+                "component_id": "text_box",
+                "count_range": "1-6",
+                "flexible_items": True,
+                "items_range": "1-7 items per box"
             }
         },
         "grid_system": {
@@ -908,6 +983,19 @@ async def list_atomic_components():
                 "flexible_items": True,
                 "supports_placeholder_mode": True,
                 "default_transparency": 0.6
+            },
+            {
+                "type": "TEXT_BOX",
+                "component_id": "text_box",
+                "description": "Configurable text boxes with gradient backgrounds and various styling options",
+                "use_cases": ["key points", "features", "benefits", "grouped content", "section summaries"],
+                "slots": ["box_heading", "item_1..item_N"],
+                "instance_range": {"min": 1, "max": 6},
+                "items_per_instance_range": {"min": 1, "max": 7},
+                "variants": ["gradient_purple", "gradient_pink", "gradient_cyan", "gradient_green", "gradient_orange", "gradient_pastel"],
+                "flexible_items": True,
+                "supports_placeholder_mode": True,
+                "default_transparency": 1.0
             }
         ]
     }

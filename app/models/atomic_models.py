@@ -37,6 +37,7 @@ class AtomicType(str, Enum):
     BULLET_BOX = "BULLET_BOX"
     TABLE = "TABLE"
     NUMBERED_LIST = "NUMBERED_LIST"
+    TEXT_BOX = "TEXT_BOX"
 
 
 class LayoutType(str, Enum):
@@ -56,7 +57,8 @@ ATOMIC_TYPE_MAP = {
     AtomicType.TEXT_BULLETS: "text_bullets",
     AtomicType.BULLET_BOX: "bullet_box",
     AtomicType.TABLE: "table_basic",
-    AtomicType.NUMBERED_LIST: "numbered_list"
+    AtomicType.NUMBERED_LIST: "numbered_list",
+    AtomicType.TEXT_BOX: "text_box"
 }
 
 
@@ -470,6 +472,65 @@ class NumberedListAtomicRequest(AtomicComponentRequest):
                 "items_per_list": 5,
                 "gridWidth": 24,
                 "gridHeight": 12
+            }
+        }
+
+
+class TextBoxAtomicRequest(AtomicComponentRequest):
+    """
+    Request model for POST /v1.2/atomic/TEXT_BOX
+
+    Generates 1-6 configurable text boxes with various styling options.
+    Supports gradient backgrounds, borders, different list styles.
+    """
+    count: int = Field(
+        default=3,
+        ge=1,
+        le=6,
+        description="Number of text boxes (1-6)"
+    )
+    items_per_box: int = Field(
+        default=4,
+        ge=1,
+        le=7,
+        description="Number of items per box (1-7)"
+    )
+    background_style: str = Field(
+        default="colored",
+        description="Background style: 'colored' or 'transparent'"
+    )
+    color_scheme: str = Field(
+        default="gradient",
+        description="Color scheme: 'gradient', 'solid', or 'accent'"
+    )
+    list_style: str = Field(
+        default="bullets",
+        description="List style: 'bullets', 'numbers', or 'none'"
+    )
+    corners: str = Field(
+        default="rounded",
+        description="Corner style: 'rounded' or 'square'"
+    )
+    border: bool = Field(
+        default=False,
+        description="Show border around boxes"
+    )
+    show_title: bool = Field(
+        default=True,
+        description="Show title in each box"
+    )
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "prompt": "Key features of our product: performance, security, ease of use",
+                "count": 3,
+                "items_per_box": 4,
+                "gridWidth": 28,
+                "gridHeight": 12,
+                "background_style": "colored",
+                "color_scheme": "gradient",
+                "list_style": "bullets"
             }
         }
 
