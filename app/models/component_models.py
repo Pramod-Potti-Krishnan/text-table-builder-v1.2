@@ -36,6 +36,7 @@ class ArrangementType(str, Enum):
     ROW_3 = "row_3"
     ROW_4 = "row_4"
     GRID_2X2 = "grid_2x2"
+    GRID_2X3 = "grid_2x3"
     GRID_3X2 = "grid_3x2"
     STACKED_2 = "stacked_2"
     STACKED_3 = "stacked_3"
