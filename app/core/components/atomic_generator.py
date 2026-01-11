@@ -750,8 +750,18 @@ Generate the content now:"""
                             item_color_applied = True
 
                 # Standard text_color (if not already applied by dark mode)
+                # For text_box: use CSS variable for dark/light mode auto-switching
                 if variant.text_color and not text_color_applied:
-                    html = html.replace("{text_color}", variant.text_color)
+                    css_var = None
+                    if hasattr(variant, 'model_extra') and variant.model_extra:
+                        css_var = variant.model_extra.get("css_var")
+                    if css_var and component.component_id == "text_box":
+                        # Use CSS variable with fallback for dark/light mode switching
+                        # Layout Service provides --accent-text-{color} variables
+                        heading_color = f"var(--accent-text-{css_var}, {variant.text_color})"
+                    else:
+                        heading_color = variant.text_color
+                    html = html.replace("{text_color}", heading_color)
 
                 # Handle item_color from model_extra (if not already applied by dark mode)
                 if not item_color_applied and hasattr(variant, 'model_extra') and variant.model_extra:

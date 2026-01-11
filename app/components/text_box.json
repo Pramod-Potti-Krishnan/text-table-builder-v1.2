@@ -56,6 +56,7 @@
       "background": "rgba(232, 215, 241, 0.6)",
       "text_color": "#805AA0",
       "text_color_dark": "#E6D2F5",
+      "css_var": "purple",
       "item_color": "#374151",
       "item_color_dark": "#FFFFFF",
       "border_radius": "12px"
@@ -64,6 +65,7 @@
       "background": "rgba(189, 224, 249, 0.6)",
       "text_color": "#2980B9",
       "text_color_dark": "#B4DCFF",
+      "css_var": "blue",
       "item_color": "#374151",
       "item_color_dark": "#FFFFFF",
       "border_radius": "12px"
@@ -72,6 +74,7 @@
       "background": "rgba(254, 226, 226, 0.6)",
       "text_color": "#C0392B",
       "text_color_dark": "#FFC8C3",
+      "css_var": "red",
       "item_color": "#374151",
       "item_color_dark": "#FFFFFF",
       "border_radius": "12px"
@@ -80,6 +83,7 @@
       "background": "rgba(212, 237, 218, 0.6)",
       "text_color": "#27AE60",
       "text_color_dark": "#B4F5D2",
+      "css_var": "green",
       "item_color": "#374151",
       "item_color_dark": "#FFFFFF",
       "border_radius": "12px"
@@ -88,6 +92,7 @@
       "background": "rgba(253, 230, 138, 0.6)",
       "text_color": "#D39E1E",
       "text_color_dark": "#FFF0BE",
+      "css_var": "yellow",
       "item_color": "#374151",
       "item_color_dark": "#FFFFFF",
       "border_radius": "12px"
@@ -96,6 +101,7 @@
       "background": "rgba(195, 241, 247, 0.6)",
       "text_color": "#0097A7",
       "text_color_dark": "#B2EBF2",
+      "css_var": "cyan",
       "item_color": "#374151",
       "item_color_dark": "#FFFFFF",
       "border_radius": "12px"
@@ -104,6 +110,7 @@
       "background": "rgba(255, 224, 178, 0.6)",
       "text_color": "#E65100",
       "text_color_dark": "#FFCCBC",
+      "css_var": "orange",
       "item_color": "#374151",
       "item_color_dark": "#FFFFFF",
       "border_radius": "12px"
@@ -112,6 +119,7 @@
       "background": "rgba(178, 223, 219, 0.6)",
       "text_color": "#00796B",
       "text_color_dark": "#B2DFDB",
+      "css_var": "teal",
       "item_color": "#374151",
       "item_color_dark": "#FFFFFF",
       "border_radius": "12px"
@@ -120,6 +128,7 @@
       "background": "rgba(225, 213, 246, 0.6)",
       "text_color": "#C2185B",
       "text_color_dark": "#F8BBD9",
+      "css_var": "pink",
       "item_color": "#374151",
       "item_color_dark": "#FFFFFF",
       "border_radius": "12px"
