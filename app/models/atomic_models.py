@@ -547,6 +547,14 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
         default=False,
         description="If True with placeholder_mode, generate Lorem Ipsum text with proper character limits instead of generic placeholders"
     )
+    title_style: str = Field(
+        default="plain",
+        description="Title rendering style: 'plain' (simple text), 'highlighted' (bold, larger), or 'colored-bg' (badge with dark background)"
+    )
+    existing_colors: Optional[List[str]] = Field(
+        default=None,
+        description="List of color names already in use (e.g., ['purple', 'blue']) for collision avoidance. Only applies when background_style='colored'"
+    )
 
     class Config:
         json_schema_extra = {
@@ -565,7 +573,9 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
                 "content_align": "left",
                 "title_max_chars": 40,
                 "item_max_chars": 100,
-                "use_lorem_ipsum": False
+                "use_lorem_ipsum": False,
+                "title_style": "plain",
+                "existing_colors": None
             }
         }
 

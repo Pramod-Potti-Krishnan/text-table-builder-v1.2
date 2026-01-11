@@ -212,7 +212,15 @@ class AtomicComponentGenerator:
         title_max_chars: int = 40,
         item_max_chars: int = 100,
         list_style: str = "bullets",
-        use_lorem_ipsum: bool = False
+        use_lorem_ipsum: bool = False,
+        # New styling parameters
+        background_style: str = "colored",
+        color_scheme: str = "gradient",
+        corners: str = "rounded",
+        border: bool = False,
+        title_style: str = "plain",
+        show_title: bool = True,
+        existing_colors: Optional[List[str]] = None
     ) -> AtomicResult:
         """
         Generate atomic component with explicit parameters.
@@ -267,6 +275,12 @@ class AtomicComponentGenerator:
                 layout_type=layout, grid_cols=grid_cols
             )
 
+            # Step 3b: Apply color scheme filtering and collision avoidance (TEXT_BOX only)
+            if component.component_id == "text_box":
+                layout = self._apply_color_scheme_filter(
+                    component, layout, color_scheme, existing_colors
+                )
+
             # Step 4: Generate content (placeholder or LLM)
             if placeholder_mode:
                 # Generate placeholder content without LLM call
@@ -318,7 +332,15 @@ class AtomicComponentGenerator:
                 theme_mode=theme_mode,
                 heading_align=heading_align,
                 content_align=content_align,
-                list_style=list_style
+                list_style=list_style,
+                # New styling parameters
+                background_style=background_style,
+                color_scheme=color_scheme,
+                corners=corners,
+                border=border,
+                title_style=title_style,
+                show_title=show_title,
+                existing_colors=existing_colors
             )
 
             # Calculate metadata
@@ -636,6 +658,70 @@ class AtomicComponentGenerator:
 
         return layout
 
+    def _apply_color_scheme_filter(
+        self,
+        component: ComponentDefinition,
+        layout: LayoutSelection,
+        color_scheme: str = "gradient",
+        existing_colors: Optional[List[str]] = None
+    ) -> LayoutSelection:
+        """
+        Apply color scheme filtering and collision avoidance to variant assignments.
+
+        Args:
+            component: Component definition with variants
+            layout: Layout selection to modify
+            color_scheme: 'gradient', 'solid', or 'accent'
+            existing_colors: List of color names to avoid (e.g., ['purple', 'blue'])
+
+        Returns:
+            Modified layout with filtered variant assignments
+        """
+        # Only apply to text_box component
+        if component.component_id != "text_box":
+            return layout
+
+        all_variants = list(component.variants.keys())
+        instance_count = layout.instance_count
+
+        # Filter variants by color_scheme
+        if color_scheme == "gradient":
+            filtered = [v for v in all_variants if v.startswith("gradient_")]
+        elif color_scheme == "accent":
+            filtered = [v for v in all_variants if v.startswith("accent_")]
+        else:  # solid - use accent variants (solid colors, no gradient)
+            filtered = [v for v in all_variants if v.startswith("accent_")]
+
+        # If no variants match the filter, fall back to all variants
+        if not filtered:
+            filtered = all_variants
+
+        # Remove variants matching existing_colors (collision avoidance)
+        if existing_colors:
+            available = []
+            for v in filtered:
+                # Extract color name from variant ID (e.g., "accent_1_purple" -> "purple")
+                parts = v.split("_")
+                color_name = parts[-1] if len(parts) > 1 else v
+                if color_name.lower() not in [c.lower() for c in existing_colors]:
+                    available.append(v)
+            # Only use filtered if we still have options
+            if available:
+                filtered = available
+
+        # Select variants for requested count (cycle if needed)
+        selected = []
+        for i in range(instance_count):
+            selected.append(filtered[i % len(filtered)])
+
+        layout.variant_assignments = selected
+        logger.info(
+            f"[ATOMIC-TEXT_BOX] Color scheme filter: scheme={color_scheme}, "
+            f"existing={existing_colors}, selected={selected[:3]}..."
+        )
+
+        return layout
+
     async def _generate_content(
         self,
         component_type: str,
@@ -801,7 +887,15 @@ Generate the content now:"""
         theme_mode: str = "light",
         heading_align: str = "left",
         content_align: str = "left",
-        list_style: str = "bullets"
+        list_style: str = "bullets",
+        # New styling parameters
+        background_style: str = "colored",
+        color_scheme: str = "gradient",
+        corners: str = "rounded",
+        border: bool = False,
+        title_style: str = "plain",
+        show_title: bool = True,
+        existing_colors: Optional[List[str]] = None
     ) -> tuple[str, Dict[str, List[int]]]:
         """
         Assemble final HTML with optional dynamic template generation.
@@ -833,7 +927,12 @@ Generate the content now:"""
                     component, items_per_instance,
                     heading_align=heading_align,
                     content_align=content_align,
-                    list_style=list_style
+                    list_style=list_style,
+                    # New styling parameters
+                    corners=corners,
+                    border=border,
+                    title_style=title_style,
+                    show_title=show_title
                 )
             else:
                 template = component.template
@@ -857,12 +956,23 @@ Generate the content now:"""
             if variant:
                 if variant.gradient:
                     html = html.replace("{gradient}", variant.gradient)
-                if variant.background:
+
+                # Handle background_style: transparent overrides variant background
+                if component.component_id == "text_box" and background_style == "transparent":
+                    html = html.replace("{background}", "transparent")
+                elif variant.background:
                     html = html.replace("{background}", variant.background)
+
                 if variant.shadow:
                     html = html.replace("{shadow}", variant.shadow)
                 if variant.accent_color:
                     html = html.replace("{accent_color}", variant.accent_color)
+
+                # Handle title_badge_bg for colored-bg title style
+                # Uses the dark accent color (text_color) as badge background
+                if component.component_id == "text_box" and title_style == "colored-bg":
+                    badge_bg = variant.text_color or "#805AA0"  # Default purple
+                    html = html.replace("{title_badge_bg}", badge_bg)
 
                 # Handle theme_mode for text_box accent variants (dark mode text colors)
                 text_color_applied = False
@@ -962,7 +1072,12 @@ Generate the content now:"""
         items_per_instance: int,
         heading_align: str = "left",
         content_align: str = "left",
-        list_style: str = "bullets"
+        list_style: str = "bullets",
+        # New styling parameters
+        corners: str = "rounded",
+        border: bool = False,
+        title_style: str = "plain",
+        show_title: bool = True
     ) -> str:
         """
         Generate a dynamic template with the correct number of items.
@@ -976,6 +1091,10 @@ Generate the content now:"""
             heading_align: Text alignment for headings ('left', 'center', 'right')
             content_align: Text alignment for content/bullets ('left', 'center', 'right')
             list_style: List style - 'bullets' (disc), 'numbers' (ordered list), or 'none' (plain text)
+            corners: Corner style - 'rounded' (12px) or 'square' (0px)
+            border: Show border around boxes
+            title_style: Title rendering - 'plain', 'highlighted', or 'colored-bg' (badge)
+            show_title: Show or hide the title
         """
         component_id = component.component_id
 
@@ -1062,10 +1181,27 @@ Generate the content now:"""
                     items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
                 list_html = f'<ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{items_html}</ul>'
 
-            # Apply heading_align and content_align to text_box template
-            # Bullets use var(--text-primary, ...) to auto-switch white in dark mode
-            # Headings keep accent color from variant (no CSS variable)
-            return f'''<div style="padding: 24px; background: {{background}}; border-radius: {{border_radius}}; box-shadow: 0 8px 24px rgba(0,0,0,0.1);"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3>{list_html}</div>'''
+            # Determine border_radius based on corners parameter
+            border_radius = "0px" if corners == "square" else "12px"
+
+            # Determine border CSS
+            border_css = "border: 2px solid rgba(0,0,0,0.1); " if border else ""
+
+            # Build heading HTML based on title_style and show_title
+            if not show_title:
+                heading_html = ""
+            elif title_style == "colored-bg":
+                # Badge style: dark color background, white text
+                heading_html = f'''<div style="display: inline-block; background: {{title_badge_bg}}; color: #FFFFFF; padding: 8px 16px; border-radius: 6px; margin-bottom: 16px;"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; margin: 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3></div>'''
+            elif title_style == "highlighted":
+                # Emphasized: larger, bolder
+                heading_html = f'''<h3 style="font-size: 32px; font-weight: 800; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align}; text-transform: uppercase; letter-spacing: 0.5px;">{{box_heading}}</h3>'''
+            else:
+                # plain (default)
+                heading_html = f'''<h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3>'''
+
+            # Build final template with new styling parameters
+            return f'''<div style="padding: 24px; background: {{background}}; border-radius: {border_radius}; {border_css}box-shadow: 0 8px 24px rgba(0,0,0,0.1);">{heading_html}{list_html}</div>'''
 
         else:
             # Return original template for components without flexible items

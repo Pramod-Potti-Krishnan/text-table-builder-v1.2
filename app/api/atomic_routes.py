@@ -756,7 +756,15 @@ async def generate_text_box(
             title_max_chars=request.title_max_chars,
             item_max_chars=request.item_max_chars,
             list_style=request.list_style,
-            use_lorem_ipsum=request.use_lorem_ipsum
+            use_lorem_ipsum=request.use_lorem_ipsum,
+            # New styling parameters
+            background_style=request.background_style,
+            color_scheme=request.color_scheme,
+            corners=request.corners,
+            border=request.border,
+            title_style=request.title_style,
+            show_title=request.show_title,
+            existing_colors=request.existing_colors
         )
         return _build_response(result)
 
