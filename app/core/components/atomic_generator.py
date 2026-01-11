@@ -64,6 +64,88 @@ logger = logging.getLogger(__name__)
 
 
 # =============================================================================
+# Lorem Ipsum Generator
+# =============================================================================
+
+# Standard Lorem Ipsum text pool for generating placeholder content
+LOREM_IPSUM_TEXT = """Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur adipisci velit sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."""
+
+# Title-style Lorem words for headings
+LOREM_TITLES = [
+    "Strategic Innovation",
+    "Business Excellence",
+    "Market Leadership",
+    "Digital Transformation",
+    "Growth Optimization",
+    "Performance Metrics",
+    "Quality Assurance",
+    "Customer Success",
+    "Operational Efficiency",
+    "Sustainable Solutions"
+]
+
+
+def generate_lorem_ipsum(max_chars: int, start_offset: int = 0) -> str:
+    """
+    Generate Lorem Ipsum text truncated to the specified character limit.
+
+    Args:
+        max_chars: Maximum number of characters for the generated text
+        start_offset: Offset into the Lorem text to start from (for variety)
+
+    Returns:
+        Lorem Ipsum text truncated at word boundary, ending with period if possible
+    """
+    if max_chars <= 0:
+        return ""
+
+    # Use the offset to get variety in the output
+    words = LOREM_IPSUM_TEXT.split()
+    num_words = len(words)
+
+    # Start from offset position (wrap around if needed)
+    offset_words = start_offset % num_words
+    rotated_words = words[offset_words:] + words[:offset_words]
+
+    # Build text up to max_chars
+    result = ""
+    for word in rotated_words:
+        if len(result) + len(word) + 1 <= max_chars:
+            if result:
+                result += " " + word
+            else:
+                result = word
+        else:
+            break
+
+    # Capitalize first letter
+    if result:
+        result = result[0].upper() + result[1:] if len(result) > 1 else result.upper()
+
+    # Try to end with a period if we have room
+    if result and not result.endswith("."):
+        if len(result) < max_chars:
+            result = result.rstrip(",;:") + "."
+
+    return result
+
+
+def generate_lorem_title(max_chars: int, index: int = 0) -> str:
+    """
+    Generate a Lorem-style title for headings.
+
+    Args:
+        max_chars: Maximum number of characters for the title
+        index: Index for variety (cycles through title options)
+
+    Returns:
+        Title text truncated to max_chars
+    """
+    title = LOREM_TITLES[index % len(LOREM_TITLES)]
+    return title[:max_chars] if len(title) > max_chars else title
+
+
+# =============================================================================
 # Result Dataclass
 # =============================================================================
 
@@ -124,7 +206,9 @@ class AtomicComponentGenerator:
         heading_align: str = "left",
         content_align: str = "left",
         title_max_chars: int = 40,
-        item_max_chars: int = 100
+        item_max_chars: int = 100,
+        list_style: str = "bullets",
+        use_lorem_ipsum: bool = False
     ) -> AtomicResult:
         """
         Generate atomic component with explicit parameters.
@@ -144,6 +228,8 @@ class AtomicComponentGenerator:
                           - all others: 0.6 (60% transparent)
             layout: Layout arrangement (horizontal, vertical, or grid)
             grid_cols: Number of columns for grid layout (auto-calculated if None)
+            list_style: List style - 'bullets' (disc), 'numbers' (ordered), or 'none' (plain text)
+            use_lorem_ipsum: If True with placeholder_mode, use Lorem Ipsum text instead of generic placeholders
 
         Returns:
             AtomicResult with HTML, metadata, and character counts
@@ -183,9 +269,13 @@ class AtomicComponentGenerator:
                 contents = self._generate_placeholder_content(
                     component_type=component_type,
                     slots=dynamic_slots,
-                    instance_count=count
+                    instance_count=count,
+                    use_lorem_ipsum=use_lorem_ipsum,
+                    title_max_chars=title_max_chars,
+                    item_max_chars=item_max_chars
                 )
-                logger.info(f"[ATOMIC-{component_type.upper()}] Placeholder mode - no LLM call")
+                mode_str = "Lorem Ipsum" if use_lorem_ipsum else "Placeholder"
+                logger.info(f"[ATOMIC-{component_type.upper()}] {mode_str} mode - no LLM call")
             else:
                 # Generate content via LLM
                 contents = await self._generate_content(
@@ -223,7 +313,8 @@ class AtomicComponentGenerator:
                 transparency=actual_transparency,
                 theme_mode=theme_mode,
                 heading_align=heading_align,
-                content_align=content_align
+                content_align=content_align,
+                list_style=list_style
             )
 
             # Calculate metadata
@@ -330,13 +421,24 @@ class AtomicComponentGenerator:
         self,
         component_type: str,
         slots: Dict[str, SlotSpec],
-        instance_count: int
+        instance_count: int,
+        use_lorem_ipsum: bool = False,
+        title_max_chars: int = 40,
+        item_max_chars: int = 100
     ) -> List[GeneratedContent]:
         """
         Generate placeholder content without LLM call.
 
         Returns static placeholder content that can be replaced later
         when user triggers content generation with full context.
+
+        Args:
+            component_type: Type of component to generate content for
+            slots: Dictionary of slot specifications
+            instance_count: Number of instances to generate
+            use_lorem_ipsum: If True, generate Lorem Ipsum text with proper character limits
+            title_max_chars: Maximum characters for title/heading slots
+            item_max_chars: Maximum characters for item/bullet slots
         """
         PLACEHOLDER_TEMPLATES = {
             "metrics_card": {
@@ -444,8 +546,27 @@ class AtomicComponentGenerator:
 
         for i in range(instance_count):
             slot_values = {}
-            for slot_id in slots:
-                if slot_id in templates:
+            for slot_idx, slot_id in enumerate(slots):
+                if use_lorem_ipsum:
+                    # Generate Lorem Ipsum content respecting character limits
+                    # Determine if this is a title/heading slot or an item/bullet slot
+                    is_heading = any(x in slot_id.lower() for x in ['heading', 'title', 'subtitle', 'label'])
+
+                    if is_heading:
+                        # Use Lorem title with title_max_chars limit
+                        slot_values[slot_id] = generate_lorem_title(
+                            max_chars=title_max_chars,
+                            index=i * 10 + slot_idx
+                        )
+                    else:
+                        # Use Lorem Ipsum text with item_max_chars limit
+                        # Use different offsets to get variety across instances and slots
+                        offset = (i * 20 + slot_idx * 7) % 100
+                        slot_values[slot_id] = generate_lorem_ipsum(
+                            max_chars=item_max_chars,
+                            start_offset=offset
+                        )
+                elif slot_id in templates:
                     values = templates[slot_id]
                     slot_values[slot_id] = values[i % len(values)]
                 else:
@@ -675,7 +796,8 @@ Generate the content now:"""
         transparency: float = 1.0,
         theme_mode: str = "light",
         heading_align: str = "left",
-        content_align: str = "left"
+        content_align: str = "left",
+        list_style: str = "bullets"
     ) -> tuple[str, Dict[str, List[int]]]:
         """
         Assemble final HTML with optional dynamic template generation.
@@ -706,7 +828,8 @@ Generate the content now:"""
                 template = self._generate_dynamic_template(
                     component, items_per_instance,
                     heading_align=heading_align,
-                    content_align=content_align
+                    content_align=content_align,
+                    list_style=list_style
                 )
             else:
                 template = component.template
@@ -834,7 +957,8 @@ Generate the content now:"""
         component: ComponentDefinition,
         items_per_instance: int,
         heading_align: str = "left",
-        content_align: str = "left"
+        content_align: str = "left",
+        list_style: str = "bullets"
     ) -> str:
         """
         Generate a dynamic template with the correct number of items.
@@ -847,6 +971,7 @@ Generate the content now:"""
             items_per_instance: Number of items/bullets per instance
             heading_align: Text alignment for headings ('left', 'center', 'right')
             content_align: Text alignment for content/bullets ('left', 'center', 'right')
+            list_style: List style - 'bullets' (disc), 'numbers' (ordered list), or 'none' (plain text)
         """
         component_id = component.component_id
 
@@ -908,16 +1033,35 @@ Generate the content now:"""
             return f'''<div style="padding: 24px; background: {{background}}; border-radius: 12px; border-left: 4px solid {{accent_color}}; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2;">{{list_title}}</h4><ol style="margin: 0; padding-left: 24px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY}; counter-reset: item;">{items_html}</ol></div>'''
 
         elif component_id == "text_box":
-            # Build items HTML for text_box with gradient backgrounds
-            items_html = ""
-            for i in range(1, items_per_instance + 1):
-                margin = "0" if i == items_per_instance else "8px"
-                items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
+            # Build items HTML for text_box based on list_style
+            # list_style: 'bullets' (disc), 'numbers' (ordered), 'none' (plain text)
+
+            if list_style == "numbers":
+                # Ordered list with numbers
+                items_html = ""
+                for i in range(1, items_per_instance + 1):
+                    margin = "0" if i == items_per_instance else "8px"
+                    items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
+                list_html = f'<ol style="margin: 0; padding-left: 24px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{items_html}</ol>'
+            elif list_style == "none":
+                # Plain text without bullets or numbers
+                items_html = ""
+                for i in range(1, items_per_instance + 1):
+                    margin = "0" if i == items_per_instance else "12px"
+                    items_html += f'<p style="margin: 0 0 {margin} 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{{item_{i}}}</p>'
+                list_html = f'<div style="margin: 0;">{items_html}</div>'
+            else:
+                # Default: bullets (disc)
+                items_html = ""
+                for i in range(1, items_per_instance + 1):
+                    margin = "0" if i == items_per_instance else "8px"
+                    items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
+                list_html = f'<ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{items_html}</ul>'
 
             # Apply heading_align and content_align to text_box template
             # Bullets use var(--text-primary, ...) to auto-switch white in dark mode
             # Headings keep accent color from variant (no CSS variable)
-            return f'''<div style="padding: 24px; background: {{background}}; border-radius: {{border_radius}}; box-shadow: 0 8px 24px rgba(0,0,0,0.1);"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3><ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{items_html}</ul></div>'''
+            return f'''<div style="padding: 24px; background: {{background}}; border-radius: {{border_radius}}; box-shadow: 0 8px 24px rgba(0,0,0,0.1);"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3>{list_html}</div>'''
 
         else:
             # Return original template for components without flexible items

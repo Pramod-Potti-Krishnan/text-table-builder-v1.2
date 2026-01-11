@@ -754,7 +754,9 @@ async def generate_text_box(
             heading_align=request.heading_align,
             content_align=request.content_align,
             title_max_chars=request.title_max_chars,
-            item_max_chars=request.item_max_chars
+            item_max_chars=request.item_max_chars,
+            list_style=request.list_style,
+            use_lorem_ipsum=request.use_lorem_ipsum
         )
         return _build_response(result)
 

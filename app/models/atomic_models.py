@@ -543,6 +543,10 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
         le=200,
         description="Maximum characters per bullet/item (30-200)"
     )
+    use_lorem_ipsum: bool = Field(
+        default=False,
+        description="If True with placeholder_mode, generate Lorem Ipsum text with proper character limits instead of generic placeholders"
+    )
 
     class Config:
         json_schema_extra = {
@@ -560,7 +564,8 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
                 "heading_align": "left",
                 "content_align": "left",
                 "title_max_chars": 40,
-                "item_max_chars": 100
+                "item_max_chars": 100,
+                "use_lorem_ipsum": False
             }
         }
 
