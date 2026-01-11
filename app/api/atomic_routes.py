@@ -750,7 +750,11 @@ async def generate_text_box(
             transparency=request.transparency,
             layout=request.layout,
             grid_cols=request.grid_cols,
-            theme_mode=request.theme_mode
+            theme_mode=request.theme_mode,
+            heading_align=request.heading_align,
+            content_align=request.content_align,
+            title_max_chars=request.title_max_chars,
+            item_max_chars=request.item_max_chars
         )
         return _build_response(result)
 

@@ -120,7 +120,11 @@ class AtomicComponentGenerator:
         transparency: Optional[float] = None,
         layout: LayoutType = LayoutType.HORIZONTAL,
         grid_cols: Optional[int] = None,
-        theme_mode: str = "light"
+        theme_mode: str = "light",
+        heading_align: str = "left",
+        content_align: str = "left",
+        title_max_chars: int = 40,
+        item_max_chars: int = 100
     ) -> AtomicResult:
         """
         Generate atomic component with explicit parameters.
@@ -192,7 +196,9 @@ class AtomicComponentGenerator:
                     prompt=prompt,
                     instance_count=count,
                     items_per_instance=items_per_instance,
-                    context=context
+                    context=context,
+                    title_max_chars=title_max_chars,
+                    item_max_chars=item_max_chars
                 )
 
             if not contents:
@@ -215,7 +221,9 @@ class AtomicComponentGenerator:
                 contents=contents,
                 items_per_instance=items_per_instance,
                 transparency=actual_transparency,
-                theme_mode=theme_mode
+                theme_mode=theme_mode,
+                heading_align=heading_align,
+                content_align=content_align
             )
 
             # Calculate metadata
@@ -512,10 +520,16 @@ class AtomicComponentGenerator:
         prompt: str,
         instance_count: int,
         items_per_instance: Optional[int],
-        context: Optional[AtomicContext]
+        context: Optional[AtomicContext],
+        title_max_chars: int = 40,
+        item_max_chars: int = 100
     ) -> List[GeneratedContent]:
         """
         Generate content for all component instances via LLM.
+
+        Args:
+            title_max_chars: Maximum characters for title/heading (used for text_box)
+            item_max_chars: Maximum characters per bullet/item (used for text_box)
         """
         if not self.llm_service:
             raise ValueError("LLM service required for content generation")
@@ -548,6 +562,15 @@ class AtomicComponentGenerator:
             if context.industry:
                 context_text += f"Industry: {context.industry}\n"
 
+        # Build text_box-specific character limit instructions
+        text_box_char_limits = ""
+        if component_type == "text_box":
+            text_box_char_limits = f"""
+TEXT BOX CHARACTER LIMITS:
+- Heading (box_heading): Maximum {title_max_chars} characters
+- Each bullet item: Maximum {item_max_chars} characters
+"""
+
         # Build the prompt
         llm_prompt = f"""Generate content for {instance_count} {component_type} component(s).
 
@@ -557,7 +580,7 @@ USER REQUEST:
 {f'CONTEXT:{chr(10)}{context_text}' if context_text else ''}
 
 COMPONENT: {component_description}
-
+{text_box_char_limits}
 SLOTS TO FILL (for each of the {instance_count} instances):
 {slots_text}
 
@@ -650,7 +673,9 @@ Generate the content now:"""
         contents: List[GeneratedContent],
         items_per_instance: Optional[int],
         transparency: float = 1.0,
-        theme_mode: str = "light"
+        theme_mode: str = "light",
+        heading_align: str = "left",
+        content_align: str = "left"
     ) -> tuple[str, Dict[str, List[int]]]:
         """
         Assemble final HTML with optional dynamic template generation.
@@ -679,7 +704,9 @@ Generate the content now:"""
             # Generate dynamic template if needed
             if items_per_instance:
                 template = self._generate_dynamic_template(
-                    component, items_per_instance
+                    component, items_per_instance,
+                    heading_align=heading_align,
+                    content_align=content_align
                 )
             else:
                 template = component.template
@@ -794,13 +821,21 @@ Generate the content now:"""
     def _generate_dynamic_template(
         self,
         component: ComponentDefinition,
-        items_per_instance: int
+        items_per_instance: int,
+        heading_align: str = "left",
+        content_align: str = "left"
     ) -> str:
         """
         Generate a dynamic template with the correct number of items.
 
         Handles colored_section (bullets) and comparison_column/sidebar_box (items).
         Enhanced templates with gradient backgrounds, styled bullets, and card layouts.
+
+        Args:
+            component: Component definition
+            items_per_instance: Number of items/bullets per instance
+            heading_align: Text alignment for headings ('left', 'center', 'right')
+            content_align: Text alignment for content/bullets ('left', 'center', 'right')
         """
         component_id = component.component_id
 
@@ -868,7 +903,8 @@ Generate the content now:"""
                 margin = "0" if i == items_per_instance else "8px"
                 items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
 
-            return f'''<div style="padding: 24px; background: {{background}}; border-radius: {{border_radius}}; box-shadow: 0 8px 24px rgba(0,0,0,0.1);"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2;">{{box_heading}}</h3><ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {{item_color}};">{items_html}</ul></div>'''
+            # Apply heading_align and content_align to text_box template
+            return f'''<div style="padding: 24px; background: {{background}}; border-radius: {{border_radius}}; box-shadow: 0 8px 24px rgba(0,0,0,0.1);"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3><ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {{item_color}}; text-align: {content_align};">{items_html}</ul></div>'''
 
         else:
             # Return original template for components without flexible items
@@ -921,7 +957,11 @@ async def generate_atomic_component(
     transparency: Optional[float] = None,
     layout: LayoutType = LayoutType.HORIZONTAL,
     grid_cols: Optional[int] = None,
-    theme_mode: str = "light"
+    theme_mode: str = "light",
+    heading_align: str = "left",
+    content_align: str = "left",
+    title_max_chars: int = 40,
+    item_max_chars: int = 100
 ) -> AtomicResult:
     """
     Convenience function for quick atomic component generation.
@@ -941,6 +981,10 @@ async def generate_atomic_component(
         layout: Layout arrangement (horizontal, vertical, or grid)
         grid_cols: Number of columns for grid layout (auto-calculated if None)
         theme_mode: Theme mode ('light' or 'dark') for text_box accent variants
+        heading_align: Text alignment for headings ('left', 'center', 'right')
+        content_align: Text alignment for content/bullets ('left', 'center', 'right')
+        title_max_chars: Maximum characters for title/heading (10-100)
+        item_max_chars: Maximum characters per bullet/item (30-200)
 
     Returns:
         AtomicResult with generated HTML
@@ -959,5 +1003,9 @@ async def generate_atomic_component(
         transparency=transparency,
         layout=layout,
         grid_cols=grid_cols,
-        theme_mode=theme_mode
+        theme_mode=theme_mode,
+        heading_align=heading_align,
+        content_align=content_align,
+        title_max_chars=title_max_chars,
+        item_max_chars=item_max_chars
     )

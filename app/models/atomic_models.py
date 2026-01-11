@@ -523,6 +523,26 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
         default="light",
         description="Theme mode: 'light' or 'dark' - affects text colors for accent variants"
     )
+    heading_align: str = Field(
+        default="left",
+        description="Heading text alignment: 'left', 'center', or 'right'"
+    )
+    content_align: str = Field(
+        default="left",
+        description="Content/bullet text alignment: 'left', 'center', or 'right'"
+    )
+    title_max_chars: int = Field(
+        default=40,
+        ge=10,
+        le=100,
+        description="Maximum characters for title/heading (10-100)"
+    )
+    item_max_chars: int = Field(
+        default=100,
+        ge=30,
+        le=200,
+        description="Maximum characters per bullet/item (30-200)"
+    )
 
     class Config:
         json_schema_extra = {
@@ -536,7 +556,11 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
                 "color_scheme": "gradient",
                 "list_style": "bullets",
                 "variant": "accent_1_purple",
-                "theme_mode": "light"
+                "theme_mode": "light",
+                "heading_align": "left",
+                "content_align": "left",
+                "title_max_chars": 40,
+                "item_max_chars": 100
             }
         }
 
