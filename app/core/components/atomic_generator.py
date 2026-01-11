@@ -904,10 +904,9 @@ Generate the content now:"""
                 items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
 
             # Apply heading_align and content_align to text_box template
-            # Use CSS variables for theme compatibility (auto-switch between light/dark backgrounds)
-            # --accent-text-color: heading text, --body-text-color: bullet text
-            # Falls back to variant colors if CSS variables not set
-            return f'''<div style="padding: 24px; background: {{background}}; border-radius: {{border_radius}}; box-shadow: 0 8px 24px rgba(0,0,0,0.1);"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: var(--accent-text-color, {{text_color}}); margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3><ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--body-text-color, {{item_color}}); text-align: {content_align};">{items_html}</ul></div>'''
+            # Text boxes have their own backgrounds - use variant-defined colors directly
+            # (no CSS variables to avoid conflicts with slide-level theme settings)
+            return f'''<div style="padding: 24px; background: {{background}}; border-radius: {{border_radius}}; box-shadow: 0 8px 24px rgba(0,0,0,0.1);"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3><ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {{item_color}}; text-align: {content_align};">{items_html}</ul></div>'''
 
         else:
             # Return original template for components without flexible items
