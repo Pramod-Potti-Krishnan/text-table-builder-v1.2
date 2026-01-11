@@ -1194,10 +1194,13 @@ Generate the content now:"""
                 # Badge style: dark color background, white text
                 heading_html = f'''<div style="display: inline-block; background: {{title_badge_bg}}; color: #FFFFFF; padding: 8px 16px; border-radius: 6px; margin-bottom: 16px;"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; margin: 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3></div>'''
             elif title_style == "highlighted":
-                # Emphasized: larger, bolder
+                # Emphasized: larger, bolder, colored (Accent Dark/Light Pastel)
                 heading_html = f'''<h3 style="font-size: 32px; font-weight: 800; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align}; text-transform: uppercase; letter-spacing: 0.5px;">{{box_heading}}</h3>'''
+            elif title_style == "neutral":
+                # Non-colored: same color as body text (#374151 light / #FFFFFF dark)
+                heading_html = f'''<h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{item_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3>'''
             else:
-                # plain (default)
+                # plain (default) - colored (Accent Dark/Light Pastel)
                 heading_html = f'''<h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3>'''
 
             # Build final template with new styling parameters

@@ -549,7 +549,7 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
     )
     title_style: str = Field(
         default="plain",
-        description="Title rendering style: 'plain' (simple text), 'highlighted' (bold, larger), or 'colored-bg' (badge with dark background)"
+        description="Title rendering style: 'plain' (colored text), 'highlighted' (bold, larger, colored), 'neutral' (same color as body text), or 'colored-bg' (badge with dark background, white text)"
     )
     existing_colors: Optional[List[str]] = Field(
         default=None,
