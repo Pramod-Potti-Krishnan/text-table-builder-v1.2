@@ -788,7 +788,8 @@ Generate the content now:"""
             instance_htmls.append(html)
 
         # Wrap instances if wrapper template exists
-        if component.wrapper_template and len(instance_htmls) > 1:
+        # For text_box: Always apply wrapper (even for single instance) to constrain height with fit-content
+        if component.wrapper_template and (len(instance_htmls) > 1 or component.component_id == "text_box"):
             wrapper = component.wrapper_template
 
             arrangement = layout.arrangement.value if hasattr(layout.arrangement, 'value') else str(layout.arrangement)
