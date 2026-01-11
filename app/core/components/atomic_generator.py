@@ -70,21 +70,6 @@ logger = logging.getLogger(__name__)
 # Standard Lorem Ipsum text pool for generating placeholder content
 LOREM_IPSUM_TEXT = """Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur adipisci velit sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."""
 
-# Title-style Lorem words for headings
-LOREM_TITLES = [
-    "Strategic Innovation",
-    "Business Excellence",
-    "Market Leadership",
-    "Digital Transformation",
-    "Growth Optimization",
-    "Performance Metrics",
-    "Quality Assurance",
-    "Customer Success",
-    "Operational Efficiency",
-    "Sustainable Solutions"
-]
-
-
 def generate_lorem_ipsum(max_chars: int, start_offset: int = 0) -> str:
     """
     Generate Lorem Ipsum text truncated to the specified character limit.
@@ -132,17 +117,36 @@ def generate_lorem_ipsum(max_chars: int, start_offset: int = 0) -> str:
 
 def generate_lorem_title(max_chars: int, index: int = 0) -> str:
     """
-    Generate a Lorem-style title for headings.
+    Generate actual Lorem Ipsum text for headings.
 
     Args:
         max_chars: Maximum number of characters for the title
-        index: Index for variety (cycles through title options)
+        index: Index for variety (starts from different positions in Lorem text)
 
     Returns:
-        Title text truncated to max_chars
+        Lorem Ipsum text truncated to max_chars at word boundary
     """
-    title = LOREM_TITLES[index % len(LOREM_TITLES)]
-    return title[:max_chars] if len(title) > max_chars else title
+    words = LOREM_IPSUM_TEXT.split()
+    num_words = len(words)
+
+    # Start from different positions for variety
+    start = (index * 3) % num_words
+    rotated_words = words[start:] + words[:start]
+
+    # Build title from Lorem words
+    result = ""
+    for word in rotated_words:
+        test = result + (" " if result else "") + word
+        if len(test) <= max_chars:
+            result = test
+        else:
+            break
+
+    # Capitalize first letter
+    if result:
+        result = result[0].upper() + result[1:] if len(result) > 1 else result.upper()
+
+    return result
 
 
 # =============================================================================
