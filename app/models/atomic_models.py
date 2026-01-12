@@ -18,7 +18,7 @@ v1.0.0: Initial atomic component endpoints
 """
 
 from typing import List, Dict, Optional, Any
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 from enum import Enum
 
 
@@ -531,11 +531,23 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
         default="left",
         description="Content/bullet text alignment: 'left', 'center', or 'right'"
     )
+    title_min_chars: int = Field(
+        default=30,
+        ge=10,
+        le=100,
+        description="Minimum characters for title/heading (10-100). Must be <= title_max_chars"
+    )
     title_max_chars: int = Field(
         default=40,
         ge=10,
         le=100,
         description="Maximum characters for title/heading (10-100)"
+    )
+    item_min_chars: int = Field(
+        default=80,
+        ge=30,
+        le=200,
+        description="Minimum characters per bullet/item (30-200). Must be <= item_max_chars"
     )
     item_max_chars: int = Field(
         default=100,
@@ -556,6 +568,19 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
         description="List of color names already in use (e.g., ['purple', 'blue']) for collision avoidance. Only applies when background_style='colored'"
     )
 
+    @model_validator(mode='after')
+    def validate_char_bounds(self) -> 'TextBoxAtomicRequest':
+        """Ensure min_chars <= max_chars for both title and items."""
+        if self.title_min_chars > self.title_max_chars:
+            raise ValueError(
+                f"title_min_chars ({self.title_min_chars}) must be <= title_max_chars ({self.title_max_chars})"
+            )
+        if self.item_min_chars > self.item_max_chars:
+            raise ValueError(
+                f"item_min_chars ({self.item_min_chars}) must be <= item_max_chars ({self.item_max_chars})"
+            )
+        return self
+
     class Config:
         json_schema_extra = {
             "example": {
@@ -571,7 +596,9 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
                 "theme_mode": "light",
                 "heading_align": "left",
                 "content_align": "left",
+                "title_min_chars": 30,
                 "title_max_chars": 40,
+                "item_min_chars": 80,
                 "item_max_chars": 100,
                 "use_lorem_ipsum": False,
                 "title_style": "plain",

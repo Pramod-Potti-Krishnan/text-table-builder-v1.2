@@ -70,16 +70,17 @@ logger = logging.getLogger(__name__)
 # Standard Lorem Ipsum text pool for generating placeholder content
 LOREM_IPSUM_TEXT = """Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est qui dolorem ipsum quia dolor sit amet consectetur adipisci velit sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."""
 
-def generate_lorem_ipsum(max_chars: int, start_offset: int = 0) -> str:
+def generate_lorem_ipsum(min_chars: int, max_chars: int, start_offset: int = 0) -> str:
     """
-    Generate Lorem Ipsum text truncated to the specified character limit.
+    Generate Lorem Ipsum text within specified character bounds.
 
     Args:
-        max_chars: Maximum number of characters for the generated text
+        min_chars: Minimum characters (will continue adding words to reach this)
+        max_chars: Maximum characters (hard ceiling)
         start_offset: Offset into the Lorem text to start from (for variety)
 
     Returns:
-        Lorem Ipsum text truncated at word boundary, ending with period if possible
+        Text between min_chars and max_chars, respecting word boundaries
     """
     if max_chars <= 0:
         return ""
@@ -92,22 +93,42 @@ def generate_lorem_ipsum(max_chars: int, start_offset: int = 0) -> str:
     offset_words = start_offset % num_words
     rotated_words = words[offset_words:] + words[:offset_words]
 
-    # Build text up to max_chars
+    # Build text, ensuring we reach min_chars while staying under max_chars
     result = ""
-    for word in rotated_words:
-        if len(result) + len(word) + 1 <= max_chars:
-            if result:
-                result += " " + word
-            else:
-                result = word
+    word_idx = 0
+    words_used = 0
+
+    while word_idx < len(rotated_words) * 2:  # Allow wrap-around once
+        word = rotated_words[word_idx % len(rotated_words)]
+        next_len = len(result) + len(word) + (1 if result else 0)
+
+        if next_len <= max_chars:
+            result = f"{result} {word}" if result else word
+            word_idx += 1
+            words_used += 1
+
+            # If we've reached min_chars, check if we can stop
+            if len(result) >= min_chars:
+                # Check if adding next word would exceed max
+                if word_idx < len(rotated_words) * 2:
+                    next_word = rotated_words[word_idx % len(rotated_words)]
+                    if len(result) + len(next_word) + 1 > max_chars:
+                        break
         else:
-            break
+            # Next word would exceed max_chars
+            if len(result) >= min_chars:
+                break  # We have enough
+            else:
+                # Haven't reached min yet, skip this word and try next
+                word_idx += 1
+                if words_used > num_words:  # Safety: don't loop forever
+                    break
 
     # Capitalize first letter
     if result:
         result = result[0].upper() + result[1:] if len(result) > 1 else result.upper()
 
-    # Try to end with a period if we have room
+    # End with period if we have room
     if result and not result.endswith("."):
         if len(result) < max_chars:
             result = result.rstrip(",;:") + "."
@@ -115,16 +136,17 @@ def generate_lorem_ipsum(max_chars: int, start_offset: int = 0) -> str:
     return result
 
 
-def generate_lorem_title(max_chars: int, index: int = 0) -> str:
+def generate_lorem_title(min_chars: int, max_chars: int, index: int = 0) -> str:
     """
-    Generate actual Lorem Ipsum text for headings.
+    Generate Lorem Ipsum text for headings within character bounds.
 
     Args:
-        max_chars: Maximum number of characters for the title
+        min_chars: Minimum characters for the title
+        max_chars: Maximum characters for the title
         index: Index for variety (starts from different positions in Lorem text)
 
     Returns:
-        Lorem Ipsum text truncated to max_chars at word boundary
+        Lorem Ipsum text between min_chars and max_chars at word boundaries
     """
     words = LOREM_IPSUM_TEXT.split()
     num_words = len(words)
@@ -133,14 +155,36 @@ def generate_lorem_title(max_chars: int, index: int = 0) -> str:
     start = (index * 3) % num_words
     rotated_words = words[start:] + words[:start]
 
-    # Build title from Lorem words
+    # Build title from Lorem words, ensuring we reach min_chars
     result = ""
-    for word in rotated_words:
+    word_idx = 0
+    words_used = 0
+
+    while word_idx < len(rotated_words) * 2:  # Allow wrap-around once
+        word = rotated_words[word_idx % len(rotated_words)]
         test = result + (" " if result else "") + word
+
         if len(test) <= max_chars:
             result = test
+            word_idx += 1
+            words_used += 1
+
+            # If we've reached min_chars, check if we can stop
+            if len(result) >= min_chars:
+                # Check if adding next word would exceed max
+                if word_idx < len(rotated_words) * 2:
+                    next_word = rotated_words[word_idx % len(rotated_words)]
+                    if len(result) + len(next_word) + 1 > max_chars:
+                        break
         else:
-            break
+            # Next word would exceed max_chars
+            if len(result) >= min_chars:
+                break  # We have enough
+            else:
+                # Haven't reached min yet, skip and try next
+                word_idx += 1
+                if words_used > num_words:  # Safety
+                    break
 
     # Capitalize first letter
     if result:
@@ -209,7 +253,9 @@ class AtomicComponentGenerator:
         theme_mode: str = "light",
         heading_align: str = "left",
         content_align: str = "left",
+        title_min_chars: int = 30,
         title_max_chars: int = 40,
+        item_min_chars: int = 80,
         item_max_chars: int = 100,
         list_style: str = "bullets",
         use_lorem_ipsum: bool = False,
@@ -289,7 +335,9 @@ class AtomicComponentGenerator:
                     slots=dynamic_slots,
                     instance_count=count,
                     use_lorem_ipsum=use_lorem_ipsum,
+                    title_min_chars=title_min_chars,
                     title_max_chars=title_max_chars,
+                    item_min_chars=item_min_chars,
                     item_max_chars=item_max_chars
                 )
                 mode_str = "Lorem Ipsum" if use_lorem_ipsum else "Placeholder"
@@ -449,7 +497,9 @@ class AtomicComponentGenerator:
         slots: Dict[str, SlotSpec],
         instance_count: int,
         use_lorem_ipsum: bool = False,
+        title_min_chars: int = 30,
         title_max_chars: int = 40,
+        item_min_chars: int = 80,
         item_max_chars: int = 100
     ) -> List[GeneratedContent]:
         """
@@ -463,7 +513,9 @@ class AtomicComponentGenerator:
             slots: Dictionary of slot specifications
             instance_count: Number of instances to generate
             use_lorem_ipsum: If True, generate Lorem Ipsum text with proper character limits
+            title_min_chars: Minimum characters for title/heading slots
             title_max_chars: Maximum characters for title/heading slots
+            item_min_chars: Minimum characters for item/bullet slots
             item_max_chars: Maximum characters for item/bullet slots
         """
         PLACEHOLDER_TEMPLATES = {
@@ -579,16 +631,18 @@ class AtomicComponentGenerator:
                     is_heading = any(x in slot_id.lower() for x in ['heading', 'title', 'subtitle', 'label'])
 
                     if is_heading:
-                        # Use Lorem title with title_max_chars limit
+                        # Use Lorem title with min/max char limits
                         slot_values[slot_id] = generate_lorem_title(
+                            min_chars=title_min_chars,
                             max_chars=title_max_chars,
                             index=i * 10 + slot_idx
                         )
                     else:
-                        # Use Lorem Ipsum text with item_max_chars limit
+                        # Use Lorem Ipsum text with min/max char limits
                         # Use different offsets to get variety across instances and slots
                         offset = (i * 20 + slot_idx * 7) % 100
                         slot_values[slot_id] = generate_lorem_ipsum(
+                            min_chars=item_min_chars,
                             max_chars=item_max_chars,
                             start_offset=offset
                         )
