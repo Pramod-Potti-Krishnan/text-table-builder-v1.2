@@ -500,8 +500,8 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
         description="Background style: 'colored' or 'transparent'"
     )
     color_scheme: str = Field(
-        default="gradient",
-        description="Color scheme: 'gradient', 'solid', or 'accent'"
+        default="accent",
+        description="Color scheme: 'gradient', 'solid', or 'accent' (accent recommended for title_style options)"
     )
     list_style: str = Field(
         default="bullets",
