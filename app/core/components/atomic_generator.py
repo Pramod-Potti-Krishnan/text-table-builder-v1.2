@@ -1240,30 +1240,40 @@ Generate the content now:"""
                     items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
                 list_html = f'<ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{items_html}</ul>'
 
-            # Determine border_radius based on corners parameter
-            border_radius = "0px" if corners == "square" else "12px"
-
             # Determine border CSS
             border_css = "border: 2px solid rgba(0,0,0,0.1); " if border else ""
 
             # Build heading HTML based on title_style and show_title
             if not show_title:
                 heading_html = ""
+                # Standard border_radius for all corners
+                border_radius = "0px" if corners == "square" else "12px"
             elif title_style == "colored-bg":
-                # Badge style: dark color background, white text
-                heading_html = f'''<div style="display: inline-block; background: {{title_badge_bg}}; color: #FFFFFF; padding: 8px 16px; border-radius: 6px; margin-bottom: 16px;"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; margin: 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3></div>'''
+                # Badge style: full-width dark color background, white text
+                # Badge sits ON TOP of content box with coordinated corners
+                badge_radius = "12px 12px 0 0" if corners != "square" else "0"
+                heading_html = f'''<div style="display: block; width: 100%; background: {{title_badge_bg}}; color: #FFFFFF; padding: 12px 24px; border-radius: {badge_radius}; margin: 0; box-sizing: border-box;"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #FFFFFF; margin: 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3></div>'''
+                # Content box has only bottom corners rounded (top connects to badge)
+                border_radius = "0 0 12px 12px" if corners != "square" else "0"
             elif title_style == "highlighted":
                 # Emphasized: larger, bolder, colored (Accent Dark/Light Pastel)
                 heading_html = f'''<h3 style="font-size: 32px; font-weight: 800; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align}; text-transform: uppercase; letter-spacing: 0.5px;">{{box_heading}}</h3>'''
+                border_radius = "0px" if corners == "square" else "12px"
             elif title_style == "neutral":
                 # Non-colored: same color as body text (#374151 light / #FFFFFF dark)
                 heading_html = f'''<h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{item_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3>'''
+                border_radius = "0px" if corners == "square" else "12px"
             else:
                 # plain (default) - colored (Accent Dark/Light Pastel)
                 heading_html = f'''<h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{text_color}}; margin: 0 0 16px 0; line-height: 1.2; text-align: {heading_align};">{{box_heading}}</h3>'''
+                border_radius = "0px" if corners == "square" else "12px"
 
             # Build final template with new styling parameters
-            return f'''<div style="padding: 24px; background: {{background}}; border-radius: {border_radius}; {border_css}box-shadow: 0 8px 24px rgba(0,0,0,0.1);">{heading_html}{list_html}</div>'''
+            if title_style == "colored-bg" and show_title:
+                # Badge outside content box, they fit together seamlessly
+                return f'''{heading_html}<div style="padding: 16px 24px 24px 24px; background: {{background}}; border-radius: {border_radius}; {border_css}box-shadow: 0 8px 24px rgba(0,0,0,0.1);">{list_html}</div>'''
+            else:
+                return f'''<div style="padding: 24px; background: {{background}}; border-radius: {border_radius}; {border_css}box-shadow: 0 8px 24px rgba(0,0,0,0.1);">{heading_html}{list_html}</div>'''
 
         else:
             # Return original template for components without flexible items
