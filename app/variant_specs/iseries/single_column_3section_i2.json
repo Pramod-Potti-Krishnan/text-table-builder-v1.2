@@ -1,0 +1,13 @@
+{
+  "variant_id": "single_column_3section_i2",
+  "slide_type": "single_column",
+  "template_path": "app/templates/single_column/single_column_3section_c1_themed.html",
+  "description": "Single column layout with 3 sections (4 bullets each) for I1/I2 layouts",
+  "iseries_layout": "wide",
+  "elements": [
+    {"element_id": "section_1", "element_type": "section_with_bullets", "required_fields": ["heading", "bullet_1", "bullet_2", "bullet_3", "bullet_4"], "placeholders": {"heading": "section_1_heading", "bullet_1": "section_1_bullet_1", "bullet_2": "section_1_bullet_2", "bullet_3": "section_1_bullet_3", "bullet_4": "section_1_bullet_4"}, "character_requirements": {"heading": {"baseline": 28, "min": 14, "max": 40}, "bullet_1": {"baseline": 80, "min": 65, "max": 90}, "bullet_2": {"baseline": 80, "min": 65, "max": 90}, "bullet_3": {"baseline": 80, "min": 65, "max": 90}, "bullet_4": {"baseline": 80, "min": 65, "max": 90}}},
+    {"element_id": "section_2", "element_type": "section_with_bullets", "required_fields": ["heading", "bullet_1", "bullet_2", "bullet_3", "bullet_4"], "placeholders": {"heading": "section_2_heading", "bullet_1": "section_2_bullet_1", "bullet_2": "section_2_bullet_2", "bullet_3": "section_2_bullet_3", "bullet_4": "section_2_bullet_4"}, "character_requirements": {"heading": {"baseline": 28, "min": 14, "max": 40}, "bullet_1": {"baseline": 80, "min": 65, "max": 90}, "bullet_2": {"baseline": 80, "min": 65, "max": 90}, "bullet_3": {"baseline": 80, "min": 65, "max": 90}, "bullet_4": {"baseline": 80, "min": 65, "max": 90}}},
+    {"element_id": "section_3", "element_type": "section_with_bullets", "required_fields": ["heading", "bullet_1", "bullet_2", "bullet_3", "bullet_4"], "placeholders": {"heading": "section_3_heading", "bullet_1": "section_3_bullet_1", "bullet_2": "section_3_bullet_2", "bullet_3": "section_3_bullet_3", "bullet_4": "section_3_bullet_4"}, "character_requirements": {"heading": {"baseline": 28, "min": 14, "max": 40}, "bullet_1": {"baseline": 80, "min": 65, "max": 90}, "bullet_2": {"baseline": 80, "min": 65, "max": 90}, "bullet_3": {"baseline": 80, "min": 65, "max": 90}, "bullet_4": {"baseline": 80, "min": 65, "max": 90}}}
+  ],
+  "layout": {"sections_count": 3, "bullets_per_section": 4, "layout_type": "single_column"}
+}

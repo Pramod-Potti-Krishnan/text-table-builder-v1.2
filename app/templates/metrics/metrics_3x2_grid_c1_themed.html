@@ -1,0 +1,253 @@
+<!--
+  Themed Template: metrics_3x2_grid_c1
+  Uses CSS variables for dark/light mode support.
+  Requires: theme-variables.css loaded in parent document.
+-->
+<div style="background: transparent; height: 100%;">
+
+  <!-- Metrics Grid -->
+  <div style="display: grid;
+              grid-template-columns: repeat(3, 1fr);
+              grid-template-rows: repeat(2, 1fr);
+              gap: 24px;
+              padding: 20px 40px 0 0;
+              height: 98%;
+              align-items: stretch;">
+
+    <!-- Card 1: Purple Gradient -->
+    <div style="padding: 36px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                box-shadow: 0 12px 32px rgba(102, 126, 234, 0.2);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;">
+
+      <div style="font-size: 77px;
+                  font-weight: 900;
+                  color: var(--text-on-dark, white);
+                  line-height: 1;
+                  margin: 0 0 16px 0;
+                  text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        {metric_1_number}
+      </div>
+
+      <h3 style="font-size: 29px;
+                 font-weight: 700;
+                 color: var(--text-on-dark, white);
+                 margin: 0 0 20px 0;
+                 text-transform: uppercase;
+                 letter-spacing: 1px;">
+        {metric_1_label}
+      </h3>
+
+      <p style="font-size: 18px;
+                font-weight: 400;
+                color: rgba(255,255,255,0.95);
+                line-height: 1.6;
+                margin: 0;">
+        {metric_1_description}
+      </p>
+
+    </div>
+
+    <!-- Card 2: Pink Gradient -->
+    <div style="padding: 36px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+                box-shadow: 0 12px 32px rgba(240, 147, 251, 0.2);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;">
+
+      <div style="font-size: 77px;
+                  font-weight: 900;
+                  color: var(--text-on-dark, white);
+                  line-height: 1;
+                  margin: 0 0 16px 0;
+                  text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        {metric_2_number}
+      </div>
+
+      <h3 style="font-size: 29px;
+                 font-weight: 700;
+                 color: var(--text-on-dark, white);
+                 margin: 0 0 20px 0;
+                 text-transform: uppercase;
+                 letter-spacing: 1px;">
+        {metric_2_label}
+      </h3>
+
+      <p style="font-size: 18px;
+                font-weight: 400;
+                color: rgba(255,255,255,0.95);
+                line-height: 1.6;
+                margin: 0;">
+        {metric_2_description}
+      </p>
+
+    </div>
+
+    <!-- Card 3: Blue Gradient -->
+    <div style="padding: 36px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+                box-shadow: 0 12px 32px rgba(79, 172, 254, 0.2);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;">
+
+      <div style="font-size: 77px;
+                  font-weight: 900;
+                  color: var(--text-on-dark, white);
+                  line-height: 1;
+                  margin: 0 0 16px 0;
+                  text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        {metric_3_number}
+      </div>
+
+      <h3 style="font-size: 29px;
+                 font-weight: 700;
+                 color: var(--text-on-dark, white);
+                 margin: 0 0 20px 0;
+                 text-transform: uppercase;
+                 letter-spacing: 1px;">
+        {metric_3_label}
+      </h3>
+
+      <p style="font-size: 18px;
+                font-weight: 400;
+                color: rgba(255,255,255,0.95);
+                line-height: 1.6;
+                margin: 0;">
+        {metric_3_description}
+      </p>
+
+    </div>
+
+    <!-- Card 4: Green Gradient -->
+    <div style="padding: 36px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                box-shadow: 0 12px 32px rgba(17, 153, 142, 0.2);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;">
+
+      <div style="font-size: 77px;
+                  font-weight: 900;
+                  color: var(--text-on-dark, white);
+                  line-height: 1;
+                  margin: 0 0 16px 0;
+                  text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        {metric_4_number}
+      </div>
+
+      <h3 style="font-size: 29px;
+                 font-weight: 700;
+                 color: var(--text-on-dark, white);
+                 margin: 0 0 20px 0;
+                 text-transform: uppercase;
+                 letter-spacing: 1px;">
+        {metric_4_label}
+      </h3>
+
+      <p style="font-size: 18px;
+                font-weight: 400;
+                color: rgba(255,255,255,0.95);
+                line-height: 1.6;
+                margin: 0;">
+        {metric_4_description}
+      </p>
+
+    </div>
+
+    <!-- Card 5: Orange Gradient -->
+    <div style="padding: 36px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                box-shadow: 0 12px 32px rgba(245, 158, 11, 0.2);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;">
+
+      <div style="font-size: 77px;
+                  font-weight: 900;
+                  color: var(--text-on-dark, white);
+                  line-height: 1;
+                  margin: 0 0 16px 0;
+                  text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        {metric_5_number}
+      </div>
+
+      <h3 style="font-size: 29px;
+                 font-weight: 700;
+                 color: var(--text-on-dark, white);
+                 margin: 0 0 20px 0;
+                 text-transform: uppercase;
+                 letter-spacing: 1px;">
+        {metric_5_label}
+      </h3>
+
+      <p style="font-size: 18px;
+                font-weight: 400;
+                color: rgba(255,255,255,0.95);
+                line-height: 1.6;
+                margin: 0;">
+        {metric_5_description}
+      </p>
+
+    </div>
+
+    <!-- Card 6: Red Gradient -->
+    <div style="padding: 36px;
+                border-radius: 16px;
+                background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                box-shadow: 0 12px 32px rgba(239, 68, 68, 0.2);
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;">
+
+      <div style="font-size: 77px;
+                  font-weight: 900;
+                  color: var(--text-on-dark, white);
+                  line-height: 1;
+                  margin: 0 0 16px 0;
+                  text-shadow: 0 4px 12px rgba(0,0,0,0.2);">
+        {metric_6_number}
+      </div>
+
+      <h3 style="font-size: 29px;
+                 font-weight: 700;
+                 color: var(--text-on-dark, white);
+                 margin: 0 0 20px 0;
+                 text-transform: uppercase;
+                 letter-spacing: 1px;">
+        {metric_6_label}
+      </h3>
+
+      <p style="font-size: 18px;
+                font-weight: 400;
+                color: rgba(255,255,255,0.95);
+                line-height: 1.6;
+                margin: 0;">
+        {metric_6_description}
+      </p>
+
+    </div>
+
+  </div>
+
+</div>
