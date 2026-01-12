@@ -215,7 +215,7 @@ class AtomicComponentGenerator:
         use_lorem_ipsum: bool = False,
         # New styling parameters
         background_style: str = "colored",
-        color_scheme: str = "gradient",
+        color_scheme: str = "accent",  # Default to accent for title_style compatibility
         corners: str = "rounded",
         border: bool = False,
         title_style: str = "plain",
@@ -662,7 +662,7 @@ class AtomicComponentGenerator:
         self,
         component: ComponentDefinition,
         layout: LayoutSelection,
-        color_scheme: str = "gradient",
+        color_scheme: str = "accent",  # Default to accent for title_style compatibility
         existing_colors: Optional[List[str]] = None
     ) -> LayoutSelection:
         """
@@ -890,7 +890,7 @@ Generate the content now:"""
         list_style: str = "bullets",
         # New styling parameters
         background_style: str = "colored",
-        color_scheme: str = "gradient",
+        color_scheme: str = "accent",  # Default to accent for title_style compatibility
         corners: str = "rounded",
         border: bool = False,
         title_style: str = "plain",
@@ -969,9 +969,14 @@ Generate the content now:"""
                     html = html.replace("{accent_color}", variant.accent_color)
 
                 # Handle title_badge_bg for colored-bg title style
-                # Uses the dark accent color (text_color) as badge background
+                # First check model_extra for title_badge_bg, then fall back to text_color (if not white)
                 if component.component_id == "text_box" and title_style == "colored-bg":
-                    badge_bg = variant.text_color or "#805AA0"  # Default purple
+                    badge_bg = None
+                    if hasattr(variant, 'model_extra') and variant.model_extra:
+                        badge_bg = variant.model_extra.get("title_badge_bg")
+                    if not badge_bg:
+                        # Fall back to text_color if not white, otherwise use default purple
+                        badge_bg = variant.text_color if variant.text_color and variant.text_color.lower() != "white" else "#805AA0"
                     html = html.replace("{title_badge_bg}", badge_bg)
 
                 # Handle theme_mode for text_box accent variants (dark mode text colors)

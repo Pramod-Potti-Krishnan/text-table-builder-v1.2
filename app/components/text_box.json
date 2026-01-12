@@ -156,36 +156,42 @@
       "background": "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       "text_color": "white",
       "item_color": "rgba(255,255,255,0.95)",
+      "title_badge_bg": "#764ba2",
       "border_radius": "16px"
     },
     "gradient_pink": {
       "background": "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
       "text_color": "white",
       "item_color": "rgba(255,255,255,0.95)",
+      "title_badge_bg": "#f5576c",
       "border_radius": "16px"
     },
     "gradient_cyan": {
       "background": "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
       "text_color": "white",
       "item_color": "rgba(255,255,255,0.95)",
+      "title_badge_bg": "#4facfe",
       "border_radius": "16px"
     },
     "gradient_green": {
       "background": "linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)",
       "text_color": "white",
       "item_color": "rgba(255,255,255,0.95)",
+      "title_badge_bg": "#43e97b",
       "border_radius": "16px"
     },
     "gradient_orange": {
       "background": "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
       "text_color": "white",
       "item_color": "rgba(255,255,255,0.95)",
+      "title_badge_bg": "#fa709a",
       "border_radius": "16px"
     },
     "gradient_pastel": {
       "background": "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
       "text_color": "#1f2937",
       "item_color": "#4b5563",
+      "title_badge_bg": "#a8edea",
       "border_radius": "16px"
     }
   },
