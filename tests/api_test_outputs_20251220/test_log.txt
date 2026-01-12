@@ -1,1 +1,0 @@
-=== TEST 1: GET /v1.2/slides/health === curl -s https://web-production-5daf.up.railway.app/v1.2/slides/health

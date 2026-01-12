@@ -1270,8 +1270,8 @@ Generate the content now:"""
 
             # Build final template with new styling parameters
             if title_style == "colored-bg" and show_title:
-                # Badge outside content box, they fit together seamlessly
-                return f'''{heading_html}<div style="padding: 16px 24px 24px 24px; background: {{background}}; border-radius: {border_radius}; {border_css}box-shadow: 0 8px 24px rgba(0,0,0,0.1);">{list_html}</div>'''
+                # Badge outside content box, wrapped in flex-column container for vertical stacking
+                return f'''<div style="display: flex; flex-direction: column; width: 100%;">{heading_html}<div style="padding: 16px 24px 24px 24px; background: {{background}}; border-radius: {border_radius}; {border_css}box-shadow: 0 8px 24px rgba(0,0,0,0.1);">{list_html}</div></div>'''
             else:
                 return f'''<div style="padding: 24px; background: {{background}}; border-radius: {border_radius}; {border_css}box-shadow: 0 8px 24px rgba(0,0,0,0.1);">{heading_html}{list_html}</div>'''
 

@@ -1,1 +1,0 @@
-{"detail":"1 validation error for ElementContent\ngenerated_content.character_counts\n  Input should be a valid string [type=string_type, input_value={'heading': 26, 'bullet_1..._2': 82, 'bullet_3': 76}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.9/v/string_type"}
