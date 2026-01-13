@@ -699,7 +699,14 @@ class AtomicComponentGenerator:
             layout.arrangement = f"stacked_{instance_count}"
         elif layout_type == LayoutType.GRID:
             # Grid layout with specified or auto-calculated columns
-            cols = grid_cols if grid_cols else min(instance_count, 3)
+            # For 3-4 boxes: 2 columns (2x2 or special 1+2 arrangement)
+            # For 5+ boxes: 3 columns
+            if grid_cols:
+                cols = grid_cols
+            elif instance_count <= 4:
+                cols = 2
+            else:
+                cols = 3
             rows = math.ceil(instance_count / cols)
             layout.arrangement = f"grid_{rows}x{cols}"
         else:
@@ -1117,6 +1124,12 @@ Generate the content now:"""
             wrapper = wrapper.replace("{column_count}", str(cols))
             wrapper = wrapper.replace("{row_count}", str(rows))
             wrapper = wrapper.replace("{gap}", str(component.arrangement_rules.gap_px))
+
+            # Special handling for 3-box grid: first item spans full width (1 on top, 2 on bottom)
+            if len(instance_htmls) == 3 and cols == 2 and arrangement.startswith("grid_"):
+                # Wrap first instance to span 2 columns
+                instance_htmls[0] = f'<div style="grid-column: span 2;">{instance_htmls[0]}</div>'
+
             wrapper = wrapper.replace("{instances}", "\n".join(instance_htmls))
 
             final_html = wrapper
