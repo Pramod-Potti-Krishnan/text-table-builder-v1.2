@@ -353,7 +353,9 @@ class AtomicComponentGenerator:
                     instance_count=count,
                     items_per_instance=items_per_instance,
                     context=context,
+                    title_min_chars=title_min_chars,
                     title_max_chars=title_max_chars,
+                    item_min_chars=item_min_chars,
                     item_max_chars=item_max_chars
                 )
 
@@ -793,14 +795,18 @@ class AtomicComponentGenerator:
         instance_count: int,
         items_per_instance: Optional[int],
         context: Optional[AtomicContext],
+        title_min_chars: int = 30,
         title_max_chars: int = 40,
+        item_min_chars: int = 80,
         item_max_chars: int = 100
     ) -> List[GeneratedContent]:
         """
         Generate content for all component instances via LLM.
 
         Args:
+            title_min_chars: Minimum characters for title/heading (used for text_box)
             title_max_chars: Maximum characters for title/heading (used for text_box)
+            item_min_chars: Minimum characters per bullet/item (used for text_box)
             item_max_chars: Maximum characters per bullet/item (used for text_box)
         """
         if not self.llm_service:
