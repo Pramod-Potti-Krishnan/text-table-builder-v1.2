@@ -838,9 +838,11 @@ class AtomicComponentGenerator:
         text_box_char_limits = ""
         if component_type == "text_box":
             text_box_char_limits = f"""
-TEXT BOX CHARACTER LIMITS:
-- Heading (box_heading): Maximum {title_max_chars} characters
-- Each bullet item: Maximum {item_max_chars} characters
+TEXT BOX CHARACTER LIMITS (STRICT - MUST BE FOLLOWED):
+- Heading (box_heading): MINIMUM {title_min_chars} characters, MAXIMUM {title_max_chars} characters
+- Each bullet item: MINIMUM {item_min_chars} characters, MAXIMUM {item_max_chars} characters
+
+CRITICAL: Every heading and item MUST fall within these character ranges. Count characters carefully.
 """
 
         # Build the prompt
