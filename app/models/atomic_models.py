@@ -533,27 +533,27 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
     )
     title_min_chars: int = Field(
         default=30,
-        ge=10,
-        le=100,
-        description="Minimum characters for title/heading (10-100). Must be <= title_max_chars"
+        ge=5,
+        le=500,
+        description="Minimum characters for title/heading (5-500). Must be <= title_max_chars"
     )
     title_max_chars: int = Field(
         default=40,
-        ge=10,
-        le=100,
-        description="Maximum characters for title/heading (10-100)"
+        ge=5,
+        le=500,
+        description="Maximum characters for title/heading (5-500)"
     )
     item_min_chars: int = Field(
         default=80,
-        ge=30,
-        le=200,
-        description="Minimum characters per bullet/item (30-200). Must be <= item_max_chars"
+        ge=5,
+        le=500,
+        description="Minimum characters per bullet/item (5-500). Must be <= item_max_chars"
     )
     item_max_chars: int = Field(
         default=100,
-        ge=30,
-        le=200,
-        description="Maximum characters per bullet/item (30-200)"
+        ge=5,
+        le=500,
+        description="Maximum characters per bullet/item (5-500)"
     )
     use_lorem_ipsum: bool = Field(
         default=False,
