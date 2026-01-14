@@ -711,7 +711,8 @@ async def generate_text_box(
     - items_per_box: Items per box (1-7, default: 4)
     - gridWidth: Available width in grid units (4-32)
     - gridHeight: Available height in grid units (4-18)
-    - variant: Color variant to use
+    - color_variant: Simple color name (purple, blue, red, green, yellow, cyan, orange, teal, pink, indigo) - auto-selects matching accent variant
+    - variant: Full variant ID (alternative to color_variant)
     - theme_mode: 'light' or 'dark' - affects text colors for accent variants
     - background_style: 'colored' or 'transparent'
     - color_scheme: 'gradient', 'solid', or 'accent'
@@ -719,7 +720,7 @@ async def generate_text_box(
     - context: Optional slide/presentation context
     - placeholder_mode: If true, use placeholder content (no LLM call)
 
-    **Example Request**:
+    **Example Request with color_variant** (recommended):
     ```json
     {
         "prompt": "Key product features: performance, security, ease of use",
@@ -727,12 +728,20 @@ async def generate_text_box(
         "items_per_box": 4,
         "gridWidth": 28,
         "gridHeight": 12,
-        "variant": "accent_1_purple",
+        "color_variant": "green",
         "theme_mode": "light"
     }
     ```
 
-    **Accent Variants (pastel backgrounds with dark/light mode support)**:
+    **Simple Color Names** (maps to accent variants with pastel backgrounds):
+    purple, blue, red, green, yellow, cyan, orange, teal, pink, indigo
+
+    When using color_variant, all associated colors are automatically applied:
+    - Pastel background for the box
+    - Dark-colored heading font (for plain/highlighted title_style)
+    - Dark badge with white text (for colored-bg title_style)
+
+    **Full Accent Variant IDs** (use with 'variant' parameter):
     accent_1_purple, accent_2_blue, accent_3_red, accent_4_green, accent_5_yellow,
     accent_6_cyan, accent_7_orange, accent_8_teal, accent_9_pink, accent_10_indigo
 

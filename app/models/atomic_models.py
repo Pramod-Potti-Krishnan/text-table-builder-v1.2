@@ -17,7 +17,7 @@ v1.1.0: Added count=1 support for all types + placeholder_mode
 v1.0.0: Initial atomic component endpoints
 """
 
-from typing import List, Dict, Optional, Any
+from typing import List, Dict, Optional, Any, Literal
 from pydantic import BaseModel, Field, model_validator
 from enum import Enum
 
@@ -59,6 +59,21 @@ ATOMIC_TYPE_MAP = {
     AtomicType.TABLE: "table_basic",
     AtomicType.NUMBERED_LIST: "numbered_list",
     AtomicType.TEXT_BOX: "text_box"
+}
+
+# Color name to variant ID mapping for TEXT_BOX
+# Maps simple color names to full accent variant IDs
+COLOR_NAME_TO_VARIANT = {
+    "purple": "accent_1_purple",
+    "blue": "accent_2_blue",
+    "red": "accent_3_red",
+    "green": "accent_4_green",
+    "yellow": "accent_5_yellow",
+    "cyan": "accent_6_cyan",
+    "orange": "accent_7_orange",
+    "teal": "accent_8_teal",
+    "pink": "accent_9_pink",
+    "indigo": "accent_10_indigo",
 }
 
 
@@ -597,10 +612,15 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
         default=None,
         description="List of color names already in use (e.g., ['purple', 'blue']) for collision avoidance. Only applies when background_style='colored'"
     )
+    color_variant: Optional[Literal["purple", "blue", "red", "green", "yellow", "cyan", "orange", "teal", "pink", "indigo"]] = Field(
+        default=None,
+        description="Simple color name that auto-selects the matching accent variant with all associated colors (pastel background, dark heading, badge colors)"
+    )
 
     @model_validator(mode='after')
-    def validate_char_bounds(self) -> 'TextBoxAtomicRequest':
-        """Ensure min_chars <= max_chars for both title and items."""
+    def validate_and_resolve(self) -> 'TextBoxAtomicRequest':
+        """Validate char bounds and resolve color_variant to full variant ID."""
+        # Validate character bounds
         if self.title_min_chars > self.title_max_chars:
             raise ValueError(
                 f"title_min_chars ({self.title_min_chars}) must be <= title_max_chars ({self.title_max_chars})"
@@ -609,6 +629,11 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
             raise ValueError(
                 f"item_min_chars ({self.item_min_chars}) must be <= item_max_chars ({self.item_max_chars})"
             )
+
+        # Resolve color_variant to full variant ID (only if variant not already set)
+        if self.color_variant and not self.variant:
+            self.variant = COLOR_NAME_TO_VARIANT.get(self.color_variant)
+
         return self
 
     class Config:
@@ -620,9 +645,9 @@ class TextBoxAtomicRequest(AtomicComponentRequest):
                 "gridWidth": 28,
                 "gridHeight": 12,
                 "background_style": "colored",
-                "color_scheme": "gradient",
+                "color_scheme": "accent",
                 "list_style": "bullets",
-                "variant": "accent_1_purple",
+                "color_variant": "green",
                 "theme_mode": "light",
                 "heading_align": "left",
                 "content_align": "left",
