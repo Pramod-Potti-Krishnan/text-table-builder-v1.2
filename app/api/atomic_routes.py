@@ -149,7 +149,8 @@ async def generate_metrics(
             placeholder_mode=request.placeholder_mode,
             transparency=request.transparency,
             layout=request.layout,
-            grid_cols=request.grid_cols
+            grid_cols=request.grid_cols,
+            metrics_config=request.metrics_config
         )
         return _build_response(result)
 
@@ -595,7 +596,7 @@ async def generate_table(
     try:
         # For TABLE, we need special handling since it has columns AND rows
         # items_per_instance will represent the structure as columns * rows
-        table_config = {"columns": request.columns, "rows": request.rows}
+        table_structure = {"columns": request.columns, "rows": request.rows}
 
         result = await generator.generate(
             component_type=ATOMIC_TYPE_MAP[AtomicType.TABLE],
@@ -609,7 +610,8 @@ async def generate_table(
             placeholder_mode=request.placeholder_mode,
             transparency=request.transparency,
             layout=request.layout,
-            grid_cols=request.grid_cols
+            grid_cols=request.grid_cols,
+            table_config=request.table_config
         )
         return _build_response(result)
 

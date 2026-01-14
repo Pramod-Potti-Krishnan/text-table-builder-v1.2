@@ -266,7 +266,10 @@ class AtomicComponentGenerator:
         border: bool = False,
         title_style: str = "plain",
         show_title: bool = True,
-        existing_colors: Optional[List[str]] = None
+        existing_colors: Optional[List[str]] = None,
+        # Config objects for METRICS and TABLE
+        metrics_config: Optional[Any] = None,
+        table_config: Optional[Any] = None
     ) -> AtomicResult:
         """
         Generate atomic component with explicit parameters.
@@ -390,7 +393,10 @@ class AtomicComponentGenerator:
                 border=border,
                 title_style=title_style,
                 show_title=show_title,
-                existing_colors=existing_colors
+                existing_colors=existing_colors,
+                # Config objects for METRICS and TABLE
+                metrics_config=metrics_config,
+                table_config=table_config
             )
 
             # Calculate metadata
@@ -964,7 +970,10 @@ Generate the content now:"""
         border: bool = False,
         title_style: str = "plain",
         show_title: bool = True,
-        existing_colors: Optional[List[str]] = None
+        existing_colors: Optional[List[str]] = None,
+        # Config objects for METRICS and TABLE
+        metrics_config: Optional[Any] = None,
+        table_config: Optional[Any] = None
     ) -> tuple[str, Dict[str, List[int]]]:
         """
         Assemble final HTML with optional dynamic template generation.
@@ -1143,6 +1152,57 @@ Generate the content now:"""
             final_html = wrapper
         else:
             final_html = "\n".join(instance_htmls)
+
+        # Apply METRICS config styling modifications
+        if component.component_id == "metrics_card" and metrics_config:
+            # Apply corner radius
+            if metrics_config.corners == "square":
+                final_html = re.sub(r'border-radius:\s*\d+px;', 'border-radius: 0px;', final_html)
+            # Apply border
+            if metrics_config.border:
+                final_html = re.sub(r'box-shadow:', 'border: 2px solid rgba(0,0,0,0.15); box-shadow:', final_html)
+            # Apply text alignment
+            if metrics_config.alignment != "center":
+                final_html = final_html.replace('text-align: center;', f'text-align: {metrics_config.alignment};')
+            # Apply theme mode (dark = dark text on light backgrounds)
+            if metrics_config.theme_mode == "dark":
+                final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #f8fafc;', final_html)
+                final_html = final_html.replace('color: white;', 'color: #1f2937;')
+                final_html = final_html.replace('color: rgba(255,255,255,0.9);', 'color: #374151;')
+                final_html = final_html.replace('color: rgba(255,255,255,0.8);', 'color: #6b7280;')
+            # Apply color scheme
+            if metrics_config.color_scheme == "solid":
+                # Replace gradients with solid colors
+                final_html = re.sub(r'linear-gradient\(\d+deg,\s*#([0-9a-fA-F]{6})[^)]+\)', r'#\1', final_html)
+            elif metrics_config.color_scheme == "accent":
+                # Use pastel backgrounds with dark text
+                final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #e0f2fe;', final_html)
+                final_html = final_html.replace('color: white;', 'color: #0c4a6e;')
+
+        # Apply TABLE config styling modifications
+        if component.component_id == "table_basic" and table_config:
+            # Apply row striping
+            if not table_config.stripe_rows:
+                final_html = re.sub(r'background:\s*#f9fafb;', 'background: transparent;', final_html)
+            # Apply corners (wrap table in rounded div)
+            if table_config.corners == "rounded":
+                final_html = f'<div style="border-radius: 12px; overflow: hidden;">{final_html}</div>'
+            # Apply header style
+            if table_config.header_style == "solid":
+                final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #3b82f6;', final_html)
+            elif table_config.header_style == "minimal":
+                final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #e5e7eb;', final_html)
+                final_html = final_html.replace('color: white;', 'color: #1f2937;')
+            # Apply text alignment
+            if table_config.alignment != "left":
+                final_html = final_html.replace('text-align: left;', f'text-align: {table_config.alignment};')
+            # Apply border style
+            if table_config.border_style == "none":
+                final_html = re.sub(r'border:\s*\d+px\s+solid\s+[^;]+;', 'border: none;', final_html)
+            elif table_config.border_style == "medium":
+                final_html = re.sub(r'border:\s*1px\s+solid', 'border: 2px solid', final_html)
+            elif table_config.border_style == "heavy":
+                final_html = re.sub(r'border:\s*1px\s+solid', 'border: 3px solid', final_html)
 
         return final_html, char_counts
 

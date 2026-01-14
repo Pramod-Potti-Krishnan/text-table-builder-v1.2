@@ -193,6 +193,28 @@ class AtomicComponentRequest(BaseModel):
 
 
 # =============================================================================
+# Component Configuration Models
+# =============================================================================
+
+class MetricsConfigData(BaseModel):
+    """METRICS configuration data for styling metric cards."""
+    theme_mode: str = Field(default="light", description="Theme mode: 'light' or 'dark'")
+    corners: str = Field(default="rounded", description="Corner style: 'rounded' or 'square'")
+    border: bool = Field(default=False, description="Show border around metric cards")
+    alignment: str = Field(default="center", description="Text alignment: 'left', 'center', or 'right'")
+    color_scheme: str = Field(default="gradient", description="Color scheme: 'gradient', 'solid', or 'accent'")
+
+
+class TableConfigData(BaseModel):
+    """TABLE configuration data for styling data tables."""
+    stripe_rows: bool = Field(default=True, description="Enable alternating row background colors")
+    corners: str = Field(default="square", description="Corner style: 'rounded' or 'square'")
+    header_style: str = Field(default="gradient", description="Header row style: 'gradient', 'solid', or 'minimal'")
+    alignment: str = Field(default="left", description="Cell text alignment: 'left', 'center', or 'right'")
+    border_style: str = Field(default="light", description="Border thickness: 'none', 'light', 'medium', or 'heavy'")
+
+
+# =============================================================================
 # Endpoint-Specific Request Models
 # =============================================================================
 
@@ -208,6 +230,10 @@ class MetricsAtomicRequest(AtomicComponentRequest):
         ge=1,
         le=4,
         description="Number of metric cards to generate (1-4)"
+    )
+    metrics_config: Optional[MetricsConfigData] = Field(
+        default=None,
+        description="Optional styling configuration for metrics cards"
     )
 
     class Config:
@@ -429,6 +455,10 @@ class TableAtomicRequest(AtomicComponentRequest):
         ge=2,
         le=10,
         description="Number of data rows per table (2-10)"
+    )
+    table_config: Optional[TableConfigData] = Field(
+        default=None,
+        description="Optional styling configuration for tables"
     )
 
     class Config:
