@@ -1115,7 +1115,7 @@ Generate the content now:"""
             arrangement = layout.arrangement.value if hasattr(layout.arrangement, 'value') else str(layout.arrangement)
 
             # Parse arrangement to determine grid dimensions
-            import re
+            # Note: re is already imported at module level
             if arrangement.startswith("row_"):
                 # Horizontal: row_N means N columns, 1 row
                 cols = len(instance_htmls)
