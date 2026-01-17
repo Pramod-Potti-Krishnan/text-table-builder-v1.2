@@ -1225,56 +1225,79 @@ Generate the content now:"""
                     final_html = final_html.replace('color: rgba(255,255,255,0.9);', 'color: #1e40af;')
                     final_html = final_html.replace('color: rgba(255,255,255,0.8);', 'color: #1e40af;')
 
-        # Apply TABLE config styling modifications
-        if component.component_id == "table_basic" and table_config:
+        # Replace table_basic variant placeholders BEFORE applying config styling
+        # The template uses {header_bg}, {header_text}, {border_color} placeholders
+        if component.component_id == "table_basic":
             # Color definitions for TABLE header and banded rows
             TABLE_COLOR_SCHEMES = {
-                "purple": {"header": "#7c3aed", "header_light": "#a855f7", "band": "#f5f3ff", "text": "white"},
-                "blue": {"header": "#2563eb", "header_light": "#3b82f6", "band": "#eff6ff", "text": "white"},
-                "green": {"header": "#059669", "header_light": "#10b981", "band": "#ecfdf5", "text": "white"},
-                "red": {"header": "#dc2626", "header_light": "#ef4444", "band": "#fef2f2", "text": "white"},
-                "cyan": {"header": "#06b6d4", "header_light": "#22d3ee", "band": "#ecfeff", "text": "white"},
-                "orange": {"header": "#ea580c", "header_light": "#f97316", "band": "#fff7ed", "text": "white"},
-                "pink": {"header": "#db2777", "header_light": "#ec4899", "band": "#fdf2f8", "text": "white"},
-                "yellow": {"header": "#ca8a04", "header_light": "#eab308", "band": "#fefce8", "text": "#1f2937"},
-                "teal": {"header": "#0d9488", "header_light": "#14b8a6", "band": "#f0fdfa", "text": "white"},
-                "indigo": {"header": "#4f46e5", "header_light": "#6366f1", "band": "#eef2ff", "text": "white"}
+                "purple": {"header": "#7c3aed", "header_light": "#a855f7", "band": "#f5f3ff", "text": "white", "border": "#7c3aed"},
+                "blue": {"header": "#2563eb", "header_light": "#3b82f6", "band": "#eff6ff", "text": "white", "border": "#2563eb"},
+                "green": {"header": "#059669", "header_light": "#10b981", "band": "#ecfdf5", "text": "white", "border": "#059669"},
+                "red": {"header": "#dc2626", "header_light": "#ef4444", "band": "#fef2f2", "text": "white", "border": "#dc2626"},
+                "cyan": {"header": "#06b6d4", "header_light": "#22d3ee", "band": "#ecfeff", "text": "white", "border": "#06b6d4"},
+                "orange": {"header": "#ea580c", "header_light": "#f97316", "band": "#fff7ed", "text": "white", "border": "#ea580c"},
+                "pink": {"header": "#db2777", "header_light": "#ec4899", "band": "#fdf2f8", "text": "white", "border": "#db2777"},
+                "yellow": {"header": "#ca8a04", "header_light": "#eab308", "band": "#fefce8", "text": "#1f2937", "border": "#ca8a04"},
+                "teal": {"header": "#0d9488", "header_light": "#14b8a6", "band": "#f0fdfa", "text": "white", "border": "#0d9488"},
+                "indigo": {"header": "#4f46e5", "header_light": "#6366f1", "band": "#eef2ff", "text": "white", "border": "#4f46e5"}
             }
 
-            # Apply header color
+            # Default values (blue gradient - matches original template defaults)
+            default_header_bg = "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)"
+            default_header_text = "white"
+            default_border_color = "#2563eb"
+
+            # If table_config has header_color, use that color scheme for placeholders
+            if table_config and hasattr(table_config, 'header_color') and table_config.header_color:
+                color = table_config.header_color
+                if color in TABLE_COLOR_SCHEMES:
+                    scheme = TABLE_COLOR_SCHEMES[color]
+                    header_style = getattr(table_config, 'header_style', 'gradient')
+                    if header_style == "gradient":
+                        default_header_bg = f"linear-gradient(135deg, {scheme['header']} 0%, {scheme['header_light']} 100%)"
+                    elif header_style == "solid":
+                        default_header_bg = scheme['header']
+                    elif header_style == "minimal":
+                        default_header_bg = "#e5e7eb"
+                        default_header_text = "#1f2937"
+                        default_border_color = "#d1d5db"
+                    else:
+                        default_header_bg = f"linear-gradient(135deg, {scheme['header']} 0%, {scheme['header_light']} 100%)"
+
+                    if header_style != "minimal":
+                        default_header_text = scheme['text']
+                        default_border_color = scheme['border']
+            elif table_config and hasattr(table_config, 'header_style'):
+                # No color specified but header_style might be minimal
+                if table_config.header_style == "minimal":
+                    default_header_bg = "#e5e7eb"
+                    default_header_text = "#1f2937"
+                    default_border_color = "#d1d5db"
+                elif table_config.header_style == "solid":
+                    default_header_bg = "#3b82f6"
+
+            # Replace the placeholders in the HTML
+            final_html = final_html.replace("{header_bg}", default_header_bg)
+            final_html = final_html.replace("{header_text}", default_header_text)
+            final_html = final_html.replace("{border_color}", default_border_color)
+
+        # Apply TABLE config styling modifications (styling beyond placeholder replacement)
+        if component.component_id == "table_basic" and table_config:
+            # Get header color for banded row styling
             header_color = getattr(table_config, 'header_color', None)
-            if header_color and header_color in TABLE_COLOR_SCHEMES:
+
+            # Apply banded row color linked to header
+            if header_color and header_color in TABLE_COLOR_SCHEMES and table_config.stripe_rows:
                 scheme = TABLE_COLOR_SCHEMES[header_color]
-                # Apply header background
-                if table_config.header_style == "gradient":
-                    header_bg = f'linear-gradient(135deg, {scheme["header"]} 0%, {scheme["header_light"]} 100%)'
-                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', f'background: {header_bg};', final_html, count=1)
-                else:
-                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', f'background: {scheme["header"]};', final_html, count=1)
-                # Apply header text color
-                if scheme["text"] != "white":
-                    # For yellow, use dark text
-                    final_html = re.sub(r'<th([^>]*)style="([^"]*color:\s*)white;', f'<th\\1style="\\2{scheme["text"]};', final_html)
+                final_html = re.sub(r'background:\s*#f9fafb;', f'background: {scheme["band"]};', final_html)
 
-                # Apply banded row color linked to header
-                if table_config.stripe_rows:
-                    final_html = re.sub(r'background:\s*#f9fafb;', f'background: {scheme["band"]};', final_html)
-
-            # Apply row striping (if no custom header_color)
+            # Remove row striping if disabled
             if not table_config.stripe_rows:
-                final_html = re.sub(r'background:\s*#f9fafb;', 'background: transparent;', final_html)
+                final_html = re.sub(r'background:\s*#f9fafb;', 'background: #ffffff;', final_html)
 
             # Apply corners (wrap table in rounded div)
             if table_config.corners == "rounded":
                 final_html = f'<div style="border-radius: 12px; overflow: hidden;">{final_html}</div>'
-
-            # Apply header style (if no custom header_color)
-            if not header_color:
-                if table_config.header_style == "solid":
-                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #3b82f6;', final_html, count=1)
-                elif table_config.header_style == "minimal":
-                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #e5e7eb;', final_html, count=1)
-                    final_html = final_html.replace('color: white;', 'color: #1f2937;')
 
             # Apply text alignment
             if table_config.alignment != "left":
