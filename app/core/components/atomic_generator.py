@@ -1173,38 +1173,113 @@ Generate the content now:"""
             # Apply text alignment
             if metrics_config.alignment != "center":
                 final_html = final_html.replace('text-align: center;', f'text-align: {metrics_config.alignment};')
-            # Apply theme mode (dark = dark text on light backgrounds)
-            if metrics_config.theme_mode == "dark":
-                final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #f8fafc;', final_html)
-                final_html = final_html.replace('color: white;', 'color: #1f2937;')
-                final_html = final_html.replace('color: rgba(255,255,255,0.9);', 'color: #374151;')
-                final_html = final_html.replace('color: rgba(255,255,255,0.8);', 'color: #6b7280;')
-            # Apply color scheme
-            if metrics_config.color_scheme == "solid":
-                # Replace gradients with solid colors
-                final_html = re.sub(r'linear-gradient\(\d+deg,\s*#([0-9a-fA-F]{6})[^)]+\)', r'#\1', final_html)
+
+            # Color scheme definitions for metrics
+            METRICS_COLOR_SCHEMES = {
+                "purple": {"gradient": "linear-gradient(135deg, #7c3aed 0%, #a855f7 100%)", "pastel": "#ede9fe", "dark_text": "#5b21b6"},
+                "blue": {"gradient": "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)", "pastel": "#dbeafe", "dark_text": "#1e40af"},
+                "green": {"gradient": "linear-gradient(135deg, #059669 0%, #10b981 100%)", "pastel": "#d1fae5", "dark_text": "#065f46"},
+                "red": {"gradient": "linear-gradient(135deg, #dc2626 0%, #ef4444 100%)", "pastel": "#fee2e2", "dark_text": "#991b1b"},
+                "cyan": {"gradient": "linear-gradient(135deg, #06b6d4 0%, #22d3ee 100%)", "pastel": "#cffafe", "dark_text": "#0e7490"},
+                "orange": {"gradient": "linear-gradient(135deg, #ea580c 0%, #f97316 100%)", "pastel": "#ffedd5", "dark_text": "#c2410c"},
+                "pink": {"gradient": "linear-gradient(135deg, #db2777 0%, #ec4899 100%)", "pastel": "#fce7f3", "dark_text": "#9d174d"},
+                "yellow": {"gradient": "linear-gradient(135deg, #ca8a04 0%, #eab308 100%)", "pastel": "#fef9c3", "dark_text": "#854d0e"},
+                "teal": {"gradient": "linear-gradient(135deg, #0d9488 0%, #14b8a6 100%)", "pastel": "#ccfbf1", "dark_text": "#115e59"},
+                "indigo": {"gradient": "linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)", "pastel": "#e0e7ff", "dark_text": "#3730a3"}
+            }
+
+            # Apply color scheme with color_variant support
+            color = metrics_config.color_variant if hasattr(metrics_config, 'color_variant') and metrics_config.color_variant else None
+
+            if metrics_config.color_scheme == "gradient":
+                if color and color in METRICS_COLOR_SCHEMES:
+                    # Apply specific gradient color
+                    final_html = re.sub(
+                        r'background:\s*linear-gradient\([^)]+\);',
+                        f'background: {METRICS_COLOR_SCHEMES[color]["gradient"]};',
+                        final_html
+                    )
+            elif metrics_config.color_scheme == "solid":
+                if color and color in METRICS_COLOR_SCHEMES:
+                    # Use solid version of the specific color
+                    gradient = METRICS_COLOR_SCHEMES[color]["gradient"]
+                    # Extract first color from gradient
+                    match = re.search(r'#([0-9a-fA-F]{6})', gradient)
+                    solid_color = f'#{match.group(1)}' if match else '#3b82f6'
+                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', f'background: {solid_color};', final_html)
+                else:
+                    # Replace gradients with solid colors (first color from gradient)
+                    final_html = re.sub(r'linear-gradient\(\d+deg,\s*#([0-9a-fA-F]{6})[^)]+\)', r'#\1', final_html)
             elif metrics_config.color_scheme == "accent":
-                # Use pastel backgrounds with dark text
-                final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #e0f2fe;', final_html)
-                final_html = final_html.replace('color: white;', 'color: #0c4a6e;')
+                # Use pastel backgrounds with DARK text (fixed readability issue)
+                if color and color in METRICS_COLOR_SCHEMES:
+                    scheme = METRICS_COLOR_SCHEMES[color]
+                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', f'background: {scheme["pastel"]};', final_html)
+                    final_html = final_html.replace('color: white;', f'color: {scheme["dark_text"]};')
+                    final_html = final_html.replace('color: rgba(255,255,255,0.9);', f'color: {scheme["dark_text"]};')
+                    final_html = final_html.replace('color: rgba(255,255,255,0.8);', f'color: {scheme["dark_text"]};')
+                else:
+                    # Default pastel blue with dark text
+                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #dbeafe;', final_html)
+                    final_html = final_html.replace('color: white;', 'color: #1e40af;')
+                    final_html = final_html.replace('color: rgba(255,255,255,0.9);', 'color: #1e40af;')
+                    final_html = final_html.replace('color: rgba(255,255,255,0.8);', 'color: #1e40af;')
 
         # Apply TABLE config styling modifications
         if component.component_id == "table_basic" and table_config:
-            # Apply row striping
+            # Color definitions for TABLE header and banded rows
+            TABLE_COLOR_SCHEMES = {
+                "purple": {"header": "#7c3aed", "header_light": "#a855f7", "band": "#f5f3ff", "text": "white"},
+                "blue": {"header": "#2563eb", "header_light": "#3b82f6", "band": "#eff6ff", "text": "white"},
+                "green": {"header": "#059669", "header_light": "#10b981", "band": "#ecfdf5", "text": "white"},
+                "red": {"header": "#dc2626", "header_light": "#ef4444", "band": "#fef2f2", "text": "white"},
+                "cyan": {"header": "#06b6d4", "header_light": "#22d3ee", "band": "#ecfeff", "text": "white"},
+                "orange": {"header": "#ea580c", "header_light": "#f97316", "band": "#fff7ed", "text": "white"},
+                "pink": {"header": "#db2777", "header_light": "#ec4899", "band": "#fdf2f8", "text": "white"},
+                "yellow": {"header": "#ca8a04", "header_light": "#eab308", "band": "#fefce8", "text": "#1f2937"},
+                "teal": {"header": "#0d9488", "header_light": "#14b8a6", "band": "#f0fdfa", "text": "white"},
+                "indigo": {"header": "#4f46e5", "header_light": "#6366f1", "band": "#eef2ff", "text": "white"}
+            }
+
+            # Apply header color
+            header_color = getattr(table_config, 'header_color', None)
+            if header_color and header_color in TABLE_COLOR_SCHEMES:
+                scheme = TABLE_COLOR_SCHEMES[header_color]
+                # Apply header background
+                if table_config.header_style == "gradient":
+                    header_bg = f'linear-gradient(135deg, {scheme["header"]} 0%, {scheme["header_light"]} 100%)'
+                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', f'background: {header_bg};', final_html, count=1)
+                else:
+                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', f'background: {scheme["header"]};', final_html, count=1)
+                # Apply header text color
+                if scheme["text"] != "white":
+                    # For yellow, use dark text
+                    final_html = re.sub(r'<th([^>]*)style="([^"]*color:\s*)white;', f'<th\\1style="\\2{scheme["text"]};', final_html)
+
+                # Apply banded row color linked to header
+                if table_config.stripe_rows:
+                    final_html = re.sub(r'background:\s*#f9fafb;', f'background: {scheme["band"]};', final_html)
+
+            # Apply row striping (if no custom header_color)
             if not table_config.stripe_rows:
                 final_html = re.sub(r'background:\s*#f9fafb;', 'background: transparent;', final_html)
+
             # Apply corners (wrap table in rounded div)
             if table_config.corners == "rounded":
                 final_html = f'<div style="border-radius: 12px; overflow: hidden;">{final_html}</div>'
-            # Apply header style
-            if table_config.header_style == "solid":
-                final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #3b82f6;', final_html)
-            elif table_config.header_style == "minimal":
-                final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #e5e7eb;', final_html)
-                final_html = final_html.replace('color: white;', 'color: #1f2937;')
+
+            # Apply header style (if no custom header_color)
+            if not header_color:
+                if table_config.header_style == "solid":
+                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #3b82f6;', final_html, count=1)
+                elif table_config.header_style == "minimal":
+                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #e5e7eb;', final_html, count=1)
+                    final_html = final_html.replace('color: white;', 'color: #1f2937;')
+
             # Apply text alignment
             if table_config.alignment != "left":
                 final_html = final_html.replace('text-align: left;', f'text-align: {table_config.alignment};')
+
             # Apply border style
             if table_config.border_style == "none":
                 final_html = re.sub(r'border:\s*\d+px\s+solid\s+[^;]+;', 'border: none;', final_html)
@@ -1212,6 +1287,45 @@ Generate the content now:"""
                 final_html = re.sub(r'border:\s*1px\s+solid', 'border: 2px solid', final_html)
             elif table_config.border_style == "heavy":
                 final_html = re.sub(r'border:\s*1px\s+solid', 'border: 3px solid', final_html)
+
+            # Apply first column bold
+            first_col_bold = getattr(table_config, 'first_column_bold', False)
+            if first_col_bold:
+                # Add font-weight:700 to first <td> in each row
+                final_html = re.sub(r'(<td[^>]*style="[^"]*)(">)', r'\1 font-weight: 700;\2', final_html, count=0)
+                # More targeted: match first td after each tr
+                final_html = re.sub(r'(<tr[^>]*>)\s*(<td[^>]*style=")', r'\1<td style="font-weight: 700; ', final_html)
+
+            # Apply last column bold
+            last_col_bold = getattr(table_config, 'last_column_bold', False)
+            if last_col_bold:
+                # Add font-weight:700 to last <td> before each </tr>
+                final_html = re.sub(r'(<td[^>]*style="[^"]*)(">)([^<]*)(</td>\s*</tr>)', r'\1 font-weight: 700;\2\3\4', final_html)
+
+            # Apply total row styling (double line above)
+            show_total_row = getattr(table_config, 'show_total_row', False)
+            if show_total_row:
+                # Add double border-top to the last row
+                final_html = re.sub(
+                    r'(<tr[^>]*>)([^<]*<td)',
+                    lambda m: m.group(0),  # Keep non-last rows as-is
+                    final_html
+                )
+                # Target the last <tr> and add double border style
+                # Find all </tr> and add styling to the last one's preceding <tr>
+                rows = list(re.finditer(r'<tr[^>]*>', final_html))
+                if len(rows) > 1:  # At least header + 1 data row
+                    last_row_match = rows[-1]
+                    last_row_start = last_row_match.start()
+                    # Insert double border styling
+                    final_html = (
+                        final_html[:last_row_start] +
+                        final_html[last_row_start:].replace(
+                            '<tr',
+                            '<tr style="border-top: 3px double #374151;"',
+                            1
+                        )
+                    )
 
         return final_html, char_counts
 

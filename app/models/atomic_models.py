@@ -213,20 +213,30 @@ class AtomicComponentRequest(BaseModel):
 
 class MetricsConfigData(BaseModel):
     """METRICS configuration data for styling metric cards."""
-    theme_mode: str = Field(default="light", description="Theme mode: 'light' or 'dark'")
     corners: str = Field(default="rounded", description="Corner style: 'rounded' or 'square'")
     border: bool = Field(default=False, description="Show border around metric cards")
     alignment: str = Field(default="center", description="Text alignment: 'left', 'center', or 'right'")
     color_scheme: str = Field(default="gradient", description="Color scheme: 'gradient', 'solid', or 'accent'")
+    color_variant: Optional[Literal["purple", "blue", "red", "green", "yellow", "cyan", "orange", "teal", "pink", "indigo"]] = Field(
+        default=None,
+        description="Specific color to use for all metric cards (overrides auto-color rotation)"
+    )
 
 
 class TableConfigData(BaseModel):
     """TABLE configuration data for styling data tables."""
-    stripe_rows: bool = Field(default=True, description="Enable alternating row background colors")
+    stripe_rows: bool = Field(default=True, description="Enable alternating row background colors (banded rows linked to header color)")
     corners: str = Field(default="square", description="Corner style: 'rounded' or 'square'")
     header_style: str = Field(default="gradient", description="Header row style: 'gradient', 'solid', or 'minimal'")
     alignment: str = Field(default="left", description="Cell text alignment: 'left', 'center', or 'right'")
     border_style: str = Field(default="light", description="Border thickness: 'none', 'light', 'medium', or 'heavy'")
+    header_color: Optional[Literal["purple", "blue", "red", "green", "yellow", "cyan", "orange", "teal", "pink", "indigo"]] = Field(
+        default=None,
+        description="Header row color (affects banded rows when stripe_rows is True)"
+    )
+    first_column_bold: bool = Field(default=False, description="Bold text in the first column")
+    last_column_bold: bool = Field(default=False, description="Bold text in the last column")
+    show_total_row: bool = Field(default=False, description="Show total row with double line above")
 
 
 # =============================================================================
