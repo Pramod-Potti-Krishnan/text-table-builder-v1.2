@@ -1093,9 +1093,16 @@ Generate the content now:"""
                         header_bg_value = scheme['dark']
                         header_text_value = "white" if header_color != "yellow" else "#1f2937"
                         border_color_value = scheme['dark']
-                    elif header_style == "gradient":
-                        header_bg_value = f"linear-gradient(135deg, {scheme['dark']} 0%, {scheme['light']} 100%)"
-                        header_text_value = "white" if header_color != "yellow" else "#1f2937"
+                    elif header_style == "pastel":
+                        # Pastel: Use band color (same as alternating rows) with dark bold text
+                        PASTEL_COLORS = {
+                            "blue": "#eff6ff", "purple": "#f5f3ff", "green": "#ecfdf5",
+                            "red": "#fef2f2", "cyan": "#ecfeff", "orange": "#fff7ed",
+                            "pink": "#fdf2f8", "yellow": "#fefce8", "teal": "#f0fdfa",
+                            "indigo": "#eef2ff"
+                        }
+                        header_bg_value = PASTEL_COLORS.get(header_color, "#eff6ff")
+                        header_text_value = scheme['dark']  # Dark text matching the color
                         border_color_value = scheme['dark']
                     else:  # minimal
                         header_bg_value = "#e5e7eb"
@@ -1319,11 +1326,11 @@ Generate the content now:"""
                 "indigo": {"band": "#eef2ff"}
             }
 
-            # Fallback: If placeholders weren't replaced in the loop, apply defaults
+            # Fallback: If placeholders weren't replaced in the loop, apply defaults (solid style)
             # This handles edge cases where table_config might be None
             if "{header_bg}" in final_html:
-                logger.info("[TABLE-STYLING] Applying fallback placeholder values")
-                final_html = final_html.replace("{header_bg}", "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)")
+                logger.info("[TABLE-STYLING] Applying fallback placeholder values (solid default)")
+                final_html = final_html.replace("{header_bg}", "#2563eb")
                 final_html = final_html.replace("{header_text}", "white")
                 final_html = final_html.replace("{border_color}", "#2563eb")
 

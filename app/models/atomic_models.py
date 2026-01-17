@@ -227,7 +227,7 @@ class TableConfigData(BaseModel):
     """TABLE configuration data for styling data tables."""
     stripe_rows: bool = Field(default=True, description="Enable alternating row background colors (banded rows linked to header color)")
     corners: str = Field(default="square", description="Corner style: 'rounded' or 'square'")
-    header_style: str = Field(default="gradient", description="Header row style: 'gradient', 'solid', or 'minimal'")
+    header_style: str = Field(default="solid", description="Header row style: 'solid', 'pastel', or 'minimal'")
     alignment: str = Field(default="left", description="Cell text alignment: 'left', 'center', or 'right'")
     border_style: str = Field(default="light", description="Border thickness: 'none', 'light', 'medium', or 'heavy'")
     header_color: Optional[Literal["purple", "blue", "red", "green", "yellow", "cyan", "orange", "teal", "pink", "indigo"]] = Field(
