@@ -237,6 +237,11 @@ class TableConfigData(BaseModel):
     first_column_bold: bool = Field(default=False, description="Bold text in the first column")
     last_column_bold: bool = Field(default=False, description="Bold text in the last column")
     show_total_row: bool = Field(default=False, description="Show total row with double line above")
+    # Character limit fields for table content generation
+    header_min_chars: int = Field(default=5, ge=5, le=500, description="Min chars for header cells")
+    header_max_chars: int = Field(default=25, ge=5, le=500, description="Max chars for header cells")
+    cell_min_chars: int = Field(default=10, ge=5, le=500, description="Min chars for body cells")
+    cell_max_chars: int = Field(default=50, ge=5, le=500, description="Max chars for body cells")
 
 
 # =============================================================================

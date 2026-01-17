@@ -330,6 +330,33 @@ class AtomicComponentGenerator:
                     component, layout, color_scheme, existing_colors, variant
                 )
 
+            # Step 3c: Override table character limits with user-specified values
+            if component.component_id == "table_basic" and table_config:
+                header_min = getattr(table_config, 'header_min_chars', 5)
+                header_max = getattr(table_config, 'header_max_chars', 25)
+                cell_min = getattr(table_config, 'cell_min_chars', 10)
+                cell_max = getattr(table_config, 'cell_max_chars', 50)
+
+                # Override slot char limits based on slot type (header vs cell)
+                for slot_name in layout.scaled_char_limits:
+                    if slot_name.startswith('header_'):
+                        layout.scaled_char_limits[slot_name] = CharLimits(
+                            min_chars=header_min,
+                            max_chars=header_max,
+                            baseline_chars=(header_min + header_max) // 2
+                        )
+                    elif slot_name.startswith('row'):
+                        # Cell slots: row1_col1, row2_col2, etc.
+                        layout.scaled_char_limits[slot_name] = CharLimits(
+                            min_chars=cell_min,
+                            max_chars=cell_max,
+                            baseline_chars=(cell_min + cell_max) // 2
+                        )
+
+                logger.info(
+                    f"[TABLE-CHAR-LIMITS] Applied: header={header_min}-{header_max}, cell={cell_min}-{cell_max}"
+                )
+
             # Step 4: Generate content (placeholder or LLM)
             if placeholder_mode:
                 # Generate placeholder content without LLM call
@@ -1275,6 +1302,18 @@ Generate the content now:"""
                     default_border_color = "#d1d5db"
                 elif table_config.header_style == "solid":
                     default_header_bg = "#3b82f6"
+
+            # Log the table styling values being applied
+            header_color_log = table_config.header_color if table_config else None
+            header_style_log = table_config.header_style if table_config else 'gradient'
+            logger.info(f"[TABLE-STYLING] header_color={header_color_log}, header_style={header_style_log}")
+            logger.info(f"[TABLE-STYLING] Applied: header_bg={default_header_bg}, header_text={default_header_text}, border_color={default_border_color}")
+
+            # Replace explicit template placeholders {header_bg}, {header_text}, {border_color}
+            # This handles templates that use placeholder syntax (like table_basic.json)
+            final_html = final_html.replace("{header_bg}", default_header_bg)
+            final_html = final_html.replace("{header_text}", default_header_text)
+            final_html = final_html.replace("{border_color}", default_border_color)
 
             # FIX 1: Replace HARDCODED gradients in templates with user-selected header color
             # Templates have different hardcoded gradients per column - we need regex replacement
