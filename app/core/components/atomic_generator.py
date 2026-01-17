@@ -1322,6 +1322,17 @@ Generate the content now:"""
             header_gradient_pattern = r'background:\s*linear-gradient\(135deg,\s*#[a-fA-F0-9]{6}\s+0%,\s*#[a-fA-F0-9]{6}\s+100%\)'
             final_html = re.sub(header_gradient_pattern, f'background: {default_header_bg}', final_html)
 
+            # FIX 2: Replace solid header backgrounds in <tr> that contain <th> elements
+            # The variant replacement happens BEFORE this code, so {header_bg} is already replaced
+            # with the variant's color. We need to replace the ACTUAL background color in header rows.
+            # Match: <tr style="background: #hexcolor;"> followed by <th> elements
+            def replace_header_row_bg(match):
+                return f'<tr style="background: {default_header_bg};">'
+
+            # Pattern matches <tr with background color that's followed by <th (header row indicator)
+            header_row_pattern = r'<tr\s+style="background:\s*#[a-fA-F0-9]{6};">(?=\s*<th)'
+            final_html = re.sub(header_row_pattern, replace_header_row_bg, final_html)
+
             # Replace header text color (handles both "white" and var(--text-on-dark, white))
             final_html = re.sub(r'(<th[^>]*style="[^"]*color:)\s*white;', f'\\1 {default_header_text};', final_html)
             final_html = re.sub(r'(<th[^>]*style="[^"]*color:)\s*var\(--text-on-dark,\s*white\);', f'\\1 {default_header_text};', final_html)
