@@ -327,7 +327,7 @@ class AtomicComponentGenerator:
             # Step 3b: Apply color scheme filtering and collision avoidance (TEXT_BOX only)
             if component.component_id == "text_box":
                 layout = self._apply_color_scheme_filter(
-                    component, layout, color_scheme, existing_colors
+                    component, layout, color_scheme, existing_colors, variant
                 )
 
             # Step 4: Generate content (placeholder or LLM)
@@ -732,7 +732,8 @@ class AtomicComponentGenerator:
         component: ComponentDefinition,
         layout: LayoutSelection,
         color_scheme: str = "accent",  # Default to accent for title_style compatibility
-        existing_colors: Optional[List[str]] = None
+        existing_colors: Optional[List[str]] = None,
+        explicit_variant: Optional[str] = None
     ) -> LayoutSelection:
         """
         Apply color scheme filtering and collision avoidance to variant assignments.
@@ -742,12 +743,20 @@ class AtomicComponentGenerator:
             layout: Layout selection to modify
             color_scheme: 'gradient', 'solid', or 'accent'
             existing_colors: List of color names to avoid (e.g., ['purple', 'blue'])
+            explicit_variant: If provided, preserve this variant (user specified)
 
         Returns:
             Modified layout with filtered variant assignments
         """
         # Only apply to text_box component
         if component.component_id != "text_box":
+            return layout
+
+        # If user specified an explicit variant, preserve it and skip auto-assignment
+        if explicit_variant and explicit_variant in component.variants:
+            logger.info(
+                f"[ATOMIC-TEXT_BOX] Using explicit variant: {explicit_variant}"
+            )
             return layout
 
         all_variants = list(component.variants.keys())
