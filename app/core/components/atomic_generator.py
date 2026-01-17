@@ -1327,6 +1327,15 @@ Generate the content now:"""
                 final_html = final_html.replace("{header_text}", "white")
                 final_html = final_html.replace("{border_color}", "#2563eb")
 
+            # FIX: Ensure <th> elements inherit background from <tr> to override CSS rules
+            # The CSS rule ".rich-content th { background-color: var(--theme-bg-alt) }"
+            # would otherwise override our <tr> background color with grey
+            final_html = re.sub(
+                r'(<th[^>]*style=")([^"]*)"',
+                r'\1background: inherit; \2"',
+                final_html
+            )
+
         # Apply TABLE config styling modifications (styling beyond header replacement)
         if component.component_id == "table_basic" and table_config:
             # Get header color for banded row styling
