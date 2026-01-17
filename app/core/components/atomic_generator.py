@@ -1276,12 +1276,21 @@ Generate the content now:"""
                 elif table_config.header_style == "solid":
                     default_header_bg = "#3b82f6"
 
-            # Replace the placeholders in the HTML
-            final_html = final_html.replace("{header_bg}", default_header_bg)
-            final_html = final_html.replace("{header_text}", default_header_text)
-            final_html = final_html.replace("{border_color}", default_border_color)
+            # FIX 1: Replace HARDCODED gradients in templates with user-selected header color
+            # Templates have different hardcoded gradients per column - we need regex replacement
 
-        # Apply TABLE config styling modifications (styling beyond placeholder replacement)
+            # Replace ALL header background gradients with user-selected background
+            header_gradient_pattern = r'background:\s*linear-gradient\(135deg,\s*#[a-fA-F0-9]{6}\s+0%,\s*#[a-fA-F0-9]{6}\s+100%\)'
+            final_html = re.sub(header_gradient_pattern, f'background: {default_header_bg}', final_html)
+
+            # Replace header text color (handles both "white" and var(--text-on-dark, white))
+            final_html = re.sub(r'(<th[^>]*style="[^"]*color:)\s*white;', f'\\1 {default_header_text};', final_html)
+            final_html = re.sub(r'(<th[^>]*style="[^"]*color:)\s*var\(--text-on-dark,\s*white\);', f'\\1 {default_header_text};', final_html)
+
+            # Replace header border-bottom colors (various hardcoded colors in template)
+            final_html = re.sub(r'border-bottom:\s*3px\s+solid\s+#[a-fA-F0-9]{6}', f'border-bottom: 3px solid {default_border_color}', final_html)
+
+        # Apply TABLE config styling modifications (styling beyond header replacement)
         if component.component_id == "table_basic" and table_config:
             # Get header color for banded row styling
             header_color = getattr(table_config, 'header_color', None)
@@ -1311,19 +1320,40 @@ Generate the content now:"""
             elif table_config.border_style == "heavy":
                 final_html = re.sub(r'border:\s*1px\s+solid', 'border: 3px solid', final_html)
 
-            # Apply first column bold
+            # FIX 2: Apply first column bold - process row-by-row to only bold first <td>
             first_col_bold = getattr(table_config, 'first_column_bold', False)
             if first_col_bold:
-                # Add font-weight:700 to first <td> in each row
-                final_html = re.sub(r'(<td[^>]*style="[^"]*)(">)', r'\1 font-weight: 700;\2', final_html, count=0)
-                # More targeted: match first td after each tr
-                final_html = re.sub(r'(<tr[^>]*>)\s*(<td[^>]*style=")', r'\1<td style="font-weight: 700; ', final_html)
+                def bold_first_td(match):
+                    """Add font-weight:700 to only the FIRST <td> in this row."""
+                    tr_content = match.group(0)
+                    # Only bold the first <td> with style attribute
+                    return re.sub(
+                        r'(<td[^>]*style="[^"]*)">',
+                        r'\1 font-weight: 700;">',
+                        tr_content,
+                        count=1  # Only replace first match
+                    )
+                final_html = re.sub(r'<tr[^>]*>.*?</tr>', bold_first_td, final_html, flags=re.DOTALL)
 
-            # Apply last column bold
+            # FIX 2: Apply last column bold - find last <td> in each row
             last_col_bold = getattr(table_config, 'last_column_bold', False)
             if last_col_bold:
-                # Add font-weight:700 to last <td> before each </tr>
-                final_html = re.sub(r'(<td[^>]*style="[^"]*)(">)([^<]*)(</td>\s*</tr>)', r'\1 font-weight: 700;\2\3\4', final_html)
+                def bold_last_td(match):
+                    """Add font-weight:700 to only the LAST <td> in this row."""
+                    tr_content = match.group(0)
+                    # Find all <td> tags with style in this row
+                    td_matches = list(re.finditer(r'(<td[^>]*style="[^"]*)">', tr_content))
+                    if td_matches:
+                        # Get the last <td> match
+                        last_td = td_matches[-1]
+                        # Reconstruct with bold added to last <td> only
+                        return (
+                            tr_content[:last_td.end() - 2] +  # Up to closing " before >
+                            ' font-weight: 700;">' +
+                            tr_content[last_td.end():]  # Rest after the >
+                        )
+                    return tr_content
+                final_html = re.sub(r'<tr[^>]*>.*?</tr>', bold_last_td, final_html, flags=re.DOTALL)
 
             # Apply total row styling (double line above)
             show_total_row = getattr(table_config, 'show_total_row', False)
