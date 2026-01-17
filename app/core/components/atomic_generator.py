@@ -1066,6 +1066,56 @@ Generate the content now:"""
             if component.component_id == "colored_section":
                 html = html.replace("{section_number}", str(i + 1))
 
+            # Override variant header colors for table_basic when table_config is provided
+            # This MUST run BEFORE variant replacement to ensure table_config takes precedence
+            if component.component_id == "table_basic" and table_config:
+                header_color = getattr(table_config, 'header_color', None)
+                header_style = getattr(table_config, 'header_style', 'gradient')
+
+                # Color scheme definitions for table headers
+                TABLE_SCHEMES = {
+                    "blue": {"dark": "#2563eb", "light": "#3b82f6"},
+                    "purple": {"dark": "#7c3aed", "light": "#a855f7"},
+                    "green": {"dark": "#059669", "light": "#10b981"},
+                    "red": {"dark": "#dc2626", "light": "#ef4444"},
+                    "cyan": {"dark": "#06b6d4", "light": "#22d3ee"},
+                    "orange": {"dark": "#ea580c", "light": "#f97316"},
+                    "pink": {"dark": "#db2777", "light": "#ec4899"},
+                    "yellow": {"dark": "#ca8a04", "light": "#eab308"},
+                    "teal": {"dark": "#0d9488", "light": "#14b8a6"},
+                    "indigo": {"dark": "#4f46e5", "light": "#6366f1"}
+                }
+
+                if header_color and header_color in TABLE_SCHEMES:
+                    scheme = TABLE_SCHEMES[header_color]
+                    if header_style == "solid":
+                        # SOLID = dark color for header background
+                        header_bg_value = scheme['dark']
+                        header_text_value = "white" if header_color != "yellow" else "#1f2937"
+                        border_color_value = scheme['dark']
+                    elif header_style == "gradient":
+                        header_bg_value = f"linear-gradient(135deg, {scheme['dark']} 0%, {scheme['light']} 100%)"
+                        header_text_value = "white" if header_color != "yellow" else "#1f2937"
+                        border_color_value = scheme['dark']
+                    else:  # minimal
+                        header_bg_value = "#e5e7eb"
+                        header_text_value = "#1f2937"
+                        border_color_value = "#d1d5db"
+
+                    # Replace placeholders INSIDE the loop (before variant replacement)
+                    html = html.replace("{header_bg}", header_bg_value)
+                    html = html.replace("{header_text}", header_text_value)
+                    html = html.replace("{border_color}", border_color_value)
+
+                    logger.info(f"[TABLE-STYLING] INSIDE LOOP: header_color={header_color}, header_style={header_style}")
+                    logger.info(f"[TABLE-STYLING] Applied INSIDE LOOP: header_bg={header_bg_value}")
+                elif header_style == "minimal":
+                    # No color specified but minimal style requested
+                    html = html.replace("{header_bg}", "#e5e7eb")
+                    html = html.replace("{header_text}", "#1f2937")
+                    html = html.replace("{border_color}", "#d1d5db")
+                    logger.info(f"[TABLE-STYLING] INSIDE LOOP: minimal style (no color)")
+
             # Replace variant placeholders
             if variant:
                 if variant.gradient:
@@ -1124,8 +1174,8 @@ Generate the content now:"""
                     if "item_color" in variant.model_extra:
                         html = html.replace("{item_color}", variant.model_extra["item_color"])
 
-                # Handle variant-specific placeholders including content_background
-                for attr in ["number_color", "heading_color", "content_background", "border_radius"]:
+                # Handle variant-specific placeholders including content_background and table header placeholders
+                for attr in ["number_color", "heading_color", "content_background", "border_radius", "header_bg", "header_text", "border_color"]:
                     attr_value = getattr(variant, attr, None)
                     if attr_value is None and hasattr(variant, 'model_extra') and variant.model_extra is not None:
                         attr_value = variant.model_extra.get(attr)
@@ -1252,93 +1302,30 @@ Generate the content now:"""
                     final_html = final_html.replace('color: rgba(255,255,255,0.9);', 'color: #1e40af;')
                     final_html = final_html.replace('color: rgba(255,255,255,0.8);', 'color: #1e40af;')
 
-        # Replace table_basic variant placeholders BEFORE applying config styling
-        # The template uses {header_bg}, {header_text}, {border_color} placeholders
+        # TABLE header color is now handled INSIDE the instance loop (before variant replacement)
+        # This section handles: fallback placeholder replacement + regex cleanup of hardcoded values
         if component.component_id == "table_basic":
-            # Color definitions for TABLE header and banded rows
+            # Color definitions for TABLE banded rows (header colors now handled in loop)
             TABLE_COLOR_SCHEMES = {
-                "purple": {"header": "#7c3aed", "header_light": "#a855f7", "band": "#f5f3ff", "text": "white", "border": "#7c3aed"},
-                "blue": {"header": "#2563eb", "header_light": "#3b82f6", "band": "#eff6ff", "text": "white", "border": "#2563eb"},
-                "green": {"header": "#059669", "header_light": "#10b981", "band": "#ecfdf5", "text": "white", "border": "#059669"},
-                "red": {"header": "#dc2626", "header_light": "#ef4444", "band": "#fef2f2", "text": "white", "border": "#dc2626"},
-                "cyan": {"header": "#06b6d4", "header_light": "#22d3ee", "band": "#ecfeff", "text": "white", "border": "#06b6d4"},
-                "orange": {"header": "#ea580c", "header_light": "#f97316", "band": "#fff7ed", "text": "white", "border": "#ea580c"},
-                "pink": {"header": "#db2777", "header_light": "#ec4899", "band": "#fdf2f8", "text": "white", "border": "#db2777"},
-                "yellow": {"header": "#ca8a04", "header_light": "#eab308", "band": "#fefce8", "text": "#1f2937", "border": "#ca8a04"},
-                "teal": {"header": "#0d9488", "header_light": "#14b8a6", "band": "#f0fdfa", "text": "white", "border": "#0d9488"},
-                "indigo": {"header": "#4f46e5", "header_light": "#6366f1", "band": "#eef2ff", "text": "white", "border": "#4f46e5"}
+                "purple": {"band": "#f5f3ff"},
+                "blue": {"band": "#eff6ff"},
+                "green": {"band": "#ecfdf5"},
+                "red": {"band": "#fef2f2"},
+                "cyan": {"band": "#ecfeff"},
+                "orange": {"band": "#fff7ed"},
+                "pink": {"band": "#fdf2f8"},
+                "yellow": {"band": "#fefce8"},
+                "teal": {"band": "#f0fdfa"},
+                "indigo": {"band": "#eef2ff"}
             }
 
-            # Default values (blue gradient - matches original template defaults)
-            default_header_bg = "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)"
-            default_header_text = "white"
-            default_border_color = "#2563eb"
-
-            # If table_config has header_color, use that color scheme for placeholders
-            if table_config and hasattr(table_config, 'header_color') and table_config.header_color:
-                color = table_config.header_color
-                if color in TABLE_COLOR_SCHEMES:
-                    scheme = TABLE_COLOR_SCHEMES[color]
-                    header_style = getattr(table_config, 'header_style', 'gradient')
-                    if header_style == "gradient":
-                        default_header_bg = f"linear-gradient(135deg, {scheme['header']} 0%, {scheme['header_light']} 100%)"
-                    elif header_style == "solid":
-                        default_header_bg = scheme['header']
-                    elif header_style == "minimal":
-                        default_header_bg = "#e5e7eb"
-                        default_header_text = "#1f2937"
-                        default_border_color = "#d1d5db"
-                    else:
-                        default_header_bg = f"linear-gradient(135deg, {scheme['header']} 0%, {scheme['header_light']} 100%)"
-
-                    if header_style != "minimal":
-                        default_header_text = scheme['text']
-                        default_border_color = scheme['border']
-            elif table_config and hasattr(table_config, 'header_style'):
-                # No color specified but header_style might be minimal
-                if table_config.header_style == "minimal":
-                    default_header_bg = "#e5e7eb"
-                    default_header_text = "#1f2937"
-                    default_border_color = "#d1d5db"
-                elif table_config.header_style == "solid":
-                    default_header_bg = "#3b82f6"
-
-            # Log the table styling values being applied
-            header_color_log = table_config.header_color if table_config else None
-            header_style_log = table_config.header_style if table_config else 'gradient'
-            logger.info(f"[TABLE-STYLING] header_color={header_color_log}, header_style={header_style_log}")
-            logger.info(f"[TABLE-STYLING] Applied: header_bg={default_header_bg}, header_text={default_header_text}, border_color={default_border_color}")
-
-            # Replace explicit template placeholders {header_bg}, {header_text}, {border_color}
-            # This handles templates that use placeholder syntax (like table_basic.json)
-            final_html = final_html.replace("{header_bg}", default_header_bg)
-            final_html = final_html.replace("{header_text}", default_header_text)
-            final_html = final_html.replace("{border_color}", default_border_color)
-
-            # FIX 1: Replace HARDCODED gradients in templates with user-selected header color
-            # Templates have different hardcoded gradients per column - we need regex replacement
-
-            # Replace ALL header background gradients with user-selected background
-            header_gradient_pattern = r'background:\s*linear-gradient\(135deg,\s*#[a-fA-F0-9]{6}\s+0%,\s*#[a-fA-F0-9]{6}\s+100%\)'
-            final_html = re.sub(header_gradient_pattern, f'background: {default_header_bg}', final_html)
-
-            # FIX 2: Replace solid header backgrounds in <tr> that contain <th> elements
-            # The variant replacement happens BEFORE this code, so {header_bg} is already replaced
-            # with the variant's color. We need to replace the ACTUAL background color in header rows.
-            # Match: <tr style="background: #hexcolor;"> followed by <th> elements
-            def replace_header_row_bg(match):
-                return f'<tr style="background: {default_header_bg};">'
-
-            # Pattern matches <tr with background color that's followed by <th (header row indicator)
-            header_row_pattern = r'<tr\s+style="background:\s*#[a-fA-F0-9]{6};">(?=\s*<th)'
-            final_html = re.sub(header_row_pattern, replace_header_row_bg, final_html)
-
-            # Replace header text color (handles both "white" and var(--text-on-dark, white))
-            final_html = re.sub(r'(<th[^>]*style="[^"]*color:)\s*white;', f'\\1 {default_header_text};', final_html)
-            final_html = re.sub(r'(<th[^>]*style="[^"]*color:)\s*var\(--text-on-dark,\s*white\);', f'\\1 {default_header_text};', final_html)
-
-            # Replace header border-bottom colors (various hardcoded colors in template)
-            final_html = re.sub(r'border-bottom:\s*3px\s+solid\s+#[a-fA-F0-9]{6}', f'border-bottom: 3px solid {default_border_color}', final_html)
+            # Fallback: If placeholders weren't replaced in the loop, apply defaults
+            # This handles edge cases where table_config might be None
+            if "{header_bg}" in final_html:
+                logger.info("[TABLE-STYLING] Applying fallback placeholder values")
+                final_html = final_html.replace("{header_bg}", "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)")
+                final_html = final_html.replace("{header_text}", "white")
+                final_html = final_html.replace("{border_color}", "#2563eb")
 
         # Apply TABLE config styling modifications (styling beyond header replacement)
         if component.component_id == "table_basic" and table_config:
