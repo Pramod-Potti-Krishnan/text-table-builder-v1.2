@@ -1377,7 +1377,7 @@ Generate the content now:"""
 
                     # Find each metric card div and convert it individually
                     # Pattern matches metric card containers with gradients
-                    card_pattern = r'(<div style="padding:[^"]*background:\s*linear-gradient\([^)]+\)[^"]*"[^>]*>.*?</div>)'
+                    card_pattern = r'(<div style="padding:[^"]*background:\s*linear-gradient\([^)]+\)[^"]*"[^>]*>.*?</p>\s*</div>)'
 
                     def replace_card(match):
                         return convert_card_to_pastel(match.group(0))
