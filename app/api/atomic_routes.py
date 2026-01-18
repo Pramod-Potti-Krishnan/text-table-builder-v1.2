@@ -182,12 +182,16 @@ async def generate_metrics(
         # Calculate grid position if specified
         position_data = _calculate_position(request)
 
+        # Use position dimensions for wrapper sizing when specified
+        effective_width = position_data['width'] if position_data else request.gridWidth
+        effective_height = position_data['height'] if position_data else request.gridHeight
+
         result = await generator.generate(
             component_type=ATOMIC_TYPE_MAP[AtomicType.METRICS],
             prompt=request.prompt,
             count=request.count,
-            grid_width=request.gridWidth,
-            grid_height=request.gridHeight,
+            grid_width=effective_width,
+            grid_height=effective_height,
             items_per_instance=None,  # Metrics don't have flexible items
             context=request.context,
             variant=request.variant,
@@ -642,6 +646,10 @@ async def generate_table(
         # Calculate grid position if specified
         position_data = _calculate_position(request)
 
+        # Use position dimensions for wrapper sizing when specified
+        effective_width = position_data['width'] if position_data else request.gridWidth
+        effective_height = position_data['height'] if position_data else request.gridHeight
+
         # For TABLE, we need special handling since it has columns AND rows
         # items_per_instance will represent the structure as columns * rows
         table_structure = {"columns": request.columns, "rows": request.rows}
@@ -650,8 +658,8 @@ async def generate_table(
             component_type=ATOMIC_TYPE_MAP[AtomicType.TABLE],
             prompt=request.prompt,
             count=request.count,
-            grid_width=request.gridWidth,
-            grid_height=request.gridHeight,
+            grid_width=effective_width,
+            grid_height=effective_height,
             items_per_instance=request.rows,  # Pass rows as items_per_instance
             context=request.context,
             variant=request.variant,
@@ -799,12 +807,16 @@ async def generate_text_box(
         # Calculate grid position if specified
         position_data = _calculate_position(request)
 
+        # Use position dimensions for wrapper sizing when specified
+        effective_width = position_data['width'] if position_data else request.gridWidth
+        effective_height = position_data['height'] if position_data else request.gridHeight
+
         result = await generator.generate(
             component_type=ATOMIC_TYPE_MAP[AtomicType.TEXT_BOX],
             prompt=request.prompt,
             count=request.count,
-            grid_width=request.gridWidth,
-            grid_height=request.gridHeight,
+            grid_width=effective_width,
+            grid_height=effective_height,
             items_per_instance=request.items_per_box,
             context=request.context,
             variant=request.variant,
