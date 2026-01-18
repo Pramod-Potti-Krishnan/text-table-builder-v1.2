@@ -882,6 +882,20 @@ class AtomicComponentGenerator:
             if context.industry:
                 context_text += f"Industry: {context.industry}\n"
 
+        # Build metrics_card-specific character limit instructions (CRITICAL for preventing JSON errors)
+        metrics_char_limits = ""
+        if component_type == "metrics_card":
+            metrics_char_limits = """
+METRICS CHARACTER LIMITS (CRITICAL - MUST BE FOLLOWED EXACTLY):
+- metric_number: MUST be 2-6 characters (e.g., "95%", "$2M", "1.5K", "47%")
+- metric_label: MUST be 6-18 characters (e.g., "REVENUE", "GROWTH RATE", "ROI")
+- metric_description: MUST be 60-90 characters (supporting context sentence)
+
+IMPORTANT: These are STRICT limits. Do NOT exceed them. Count characters carefully.
+If you cannot fit content, abbreviate or shorten it (e.g., "Million" → "M", "Billion" → "B").
+Return ONLY valid JSON. No explanations, apologies, or commentary outside the JSON structure.
+"""
+
         # Build text_box-specific character limit instructions
         text_box_char_limits = ""
         if component_type == "text_box":
@@ -902,7 +916,7 @@ USER REQUEST:
 {f'CONTEXT:{chr(10)}{context_text}' if context_text else ''}
 
 COMPONENT: {component_description}
-{text_box_char_limits}
+{metrics_char_limits}{text_box_char_limits}
 SLOTS TO FILL (for each of the {instance_count} instances):
 {slots_text}
 
@@ -928,13 +942,34 @@ Return a JSON object:
 
 Generate the content now:"""
 
-        # Call LLM
-        logger.info(f"[ATOMIC-LLM] Calling LLM for {component_type} x{instance_count}")
-        llm_response = await self.llm_service(llm_prompt)
-        logger.info(f"[ATOMIC-LLM] Response received, {len(llm_response)} chars")
+        # Call LLM with retry logic for JSON parsing failures
+        MAX_RETRIES = 2
+        last_error = None
 
-        # Parse response
-        return self._parse_llm_response(llm_response, instance_count, slots)
+        for attempt in range(MAX_RETRIES + 1):
+            try:
+                logger.info(f"[ATOMIC-LLM] Calling LLM for {component_type} x{instance_count} (attempt {attempt + 1}/{MAX_RETRIES + 1})")
+                llm_response = await self.llm_service(llm_prompt)
+                logger.info(f"[ATOMIC-LLM] Response received, {len(llm_response)} chars")
+
+                # Parse response - may raise JSONDecodeError or ValueError
+                return self._parse_llm_response(llm_response, instance_count, slots)
+
+            except (json.JSONDecodeError, ValueError) as e:
+                last_error = e
+                if attempt < MAX_RETRIES:
+                    logger.warning(
+                        f"[ATOMIC-LLM-RETRY] {component_type} attempt {attempt + 1} failed: {type(e).__name__}: {str(e)[:100]}... Retrying."
+                    )
+                    continue
+                else:
+                    logger.error(
+                        f"[ATOMIC-LLM-FAIL] {component_type} all {MAX_RETRIES + 1} attempts failed. Last error: {e}"
+                    )
+                    raise
+
+        # Should not reach here, but safety fallback
+        raise last_error if last_error else ValueError("LLM generation failed")
 
     def _parse_llm_response(
         self,
