@@ -460,7 +460,7 @@ class AtomicComponentGenerator:
                 component_type=component_type,
                 instance_count=count,
                 arrangement=layout.arrangement.value if hasattr(layout.arrangement, 'value') else str(layout.arrangement),
-                variants_used=layout.variant_assignments[:count],
+                variants_used=(layout.variant_assignments or [])[:count],
                 character_counts=char_counts,
                 metadata=metadata
             )

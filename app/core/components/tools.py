@@ -402,8 +402,9 @@ def assemble_html(
     total_chars = 0
 
     for i, gen_content in enumerate(content):
-        # Get variant for this instance
-        variant_id = layout.variant_assignments[i] if i < len(layout.variant_assignments) else list(component.variants.keys())[0]
+        # Get variant for this instance (with null check for variant_assignments)
+        variant_assignments = layout.variant_assignments or []
+        variant_id = variant_assignments[i] if i < len(variant_assignments) else list(component.variants.keys())[0]
         variant = component.variants.get(variant_id)
 
         # Fill template with content and variant values
@@ -477,7 +478,7 @@ def assemble_html(
         component_id=component_id,
         instance_count=len(content),
         arrangement=layout.arrangement.value if hasattr(layout.arrangement, 'value') else str(layout.arrangement),
-        variants_used=layout.variant_assignments[:len(content)],
+        variants_used=(layout.variant_assignments or [])[:len(content)],
         total_characters=total_chars
     )
 
