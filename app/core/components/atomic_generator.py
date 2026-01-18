@@ -424,7 +424,8 @@ class AtomicComponentGenerator:
                 # Config objects for METRICS and TABLE
                 metrics_config=metrics_config,
                 table_config=table_config,
-                # Grid height for wrapper sizing
+                # Grid dimensions for wrapper sizing
+                grid_width=grid_width,
                 grid_height=grid_height
             )
 
@@ -1047,7 +1048,8 @@ Generate the content now:"""
         # Config objects for METRICS and TABLE
         metrics_config: Optional[Any] = None,
         table_config: Optional[Any] = None,
-        # Grid height for wrapper sizing
+        # Grid dimensions for wrapper sizing
+        grid_width: int = 28,
         grid_height: int = 10
     ) -> tuple[str, Dict[str, List[int]]]:
         """
@@ -1275,8 +1277,10 @@ Generate the content now:"""
             wrapper = wrapper.replace("{row_count}", str(rows))
             wrapper = wrapper.replace("{gap}", str(component.arrangement_rules.gap_px))
 
-            # Calculate wrapper height from grid_height (each grid cell = 60px)
+            # Calculate wrapper dimensions from grid units (each grid cell = 60px)
+            wrapper_width_px = grid_width * CELL_SIZE_PX
             wrapper_height_px = grid_height * CELL_SIZE_PX
+            wrapper = wrapper.replace("{wrapper_width}", f"{wrapper_width_px}px")
             wrapper = wrapper.replace("{wrapper_height}", f"{wrapper_height_px}px")
 
             # Special handling for 3-box grid: first item spans full width (1 on top, 2 on bottom)
