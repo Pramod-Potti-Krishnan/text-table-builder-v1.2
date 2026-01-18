@@ -1031,8 +1031,9 @@ Generate the content now:"""
         # Component templates now use rgba() backgrounds for transparency instead.
 
         for i, gen_content in enumerate(contents):
-            # Get variant for this instance
-            variant_id = layout.variant_assignments[i] if i < len(layout.variant_assignments) else list(component.variants.keys())[0]
+            # Get variant for this instance (with null check for variant_assignments)
+            variant_assignments = layout.variant_assignments or []
+            variant_id = variant_assignments[i] if i < len(variant_assignments) else list(component.variants.keys())[0]
             variant = component.variants.get(variant_id)
 
             # Generate dynamic template if needed
@@ -1248,15 +1249,16 @@ Generate the content now:"""
 
         # Apply METRICS config styling modifications
         if component.component_id == "metrics_card" and metrics_config:
-            # Apply corner radius
-            if metrics_config.corners == "square":
+            # Apply corner radius (with null-safe attribute access)
+            if getattr(metrics_config, 'corners', 'rounded') == "square":
                 final_html = re.sub(r'border-radius:\s*\d+px;', 'border-radius: 0px;', final_html)
-            # Apply border
-            if metrics_config.border:
+            # Apply border (with null-safe attribute access)
+            if getattr(metrics_config, 'border', False):
                 final_html = re.sub(r'box-shadow:', 'border: 2px solid rgba(0,0,0,0.15); box-shadow:', final_html)
-            # Apply text alignment
-            if metrics_config.alignment != "center":
-                final_html = final_html.replace('text-align: center;', f'text-align: {metrics_config.alignment};')
+            # Apply text alignment (with null-safe attribute access)
+            alignment = getattr(metrics_config, 'alignment', 'center')
+            if alignment != "center":
+                final_html = final_html.replace('text-align: center;', f'text-align: {alignment};')
 
             # Color scheme definitions for metrics
             METRICS_COLOR_SCHEMES = {
@@ -1272,10 +1274,11 @@ Generate the content now:"""
                 "indigo": {"gradient": "linear-gradient(135deg, #4f46e5 0%, #6366f1 100%)", "pastel": "#e0e7ff", "dark_text": "#3730a3"}
             }
 
-            # Apply color scheme with color_variant support
-            color = metrics_config.color_variant if hasattr(metrics_config, 'color_variant') and metrics_config.color_variant else None
+            # Apply color scheme with color_variant support (null-safe attribute access)
+            color = getattr(metrics_config, 'color_variant', None)
+            color_scheme = getattr(metrics_config, 'color_scheme', 'gradient')
 
-            if metrics_config.color_scheme == "gradient":
+            if color_scheme == "gradient":
                 if color and color in METRICS_COLOR_SCHEMES:
                     # Apply specific gradient color
                     final_html = re.sub(
@@ -1283,7 +1286,7 @@ Generate the content now:"""
                         f'background: {METRICS_COLOR_SCHEMES[color]["gradient"]};',
                         final_html
                     )
-            elif metrics_config.color_scheme == "solid":
+            elif color_scheme == "solid":
                 if color and color in METRICS_COLOR_SCHEMES:
                     # Use solid version of the specific color
                     gradient = METRICS_COLOR_SCHEMES[color]["gradient"]
@@ -1294,7 +1297,7 @@ Generate the content now:"""
                 else:
                     # Replace gradients with solid colors (first color from gradient)
                     final_html = re.sub(r'linear-gradient\(\d+deg,\s*#([0-9a-fA-F]{6})[^)]+\)', r'#\1', final_html)
-            elif metrics_config.color_scheme == "accent":
+            elif color_scheme == "accent":
                 # Use pastel backgrounds with DARK text (fixed readability issue)
                 if color and color in METRICS_COLOR_SCHEMES:
                     scheme = METRICS_COLOR_SCHEMES[color]
