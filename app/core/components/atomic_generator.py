@@ -1550,7 +1550,7 @@ Generate the content now:"""
                 bullets_html += f'<li style="margin-bottom: {margin}; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{{bullet_{i}}}</li>'
 
             # Enhanced template with gradient background, left border, numbered badge (28px heading)
-            return f'''<div style="background: {{background}}; border-left: 5px solid {{heading_color}}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: {{margin_bottom}}; box-shadow: 0 4px 12px {{shadow}};"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{heading_color}}; margin: 0 0 14px 0; line-height: 1.2; display: flex; align-items: center;"><span style="background: {{heading_color}}; color: white; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-right: 12px;">{{section_number}}</span>{{section_heading}}</h3><ul style="list-style-type: disc; margin: 0; padding-left: 20px;">{bullets_html}</ul></div>'''
+            return f'''<div style="background: {{background}}; border-left: 5px solid {{heading_color}}; border-radius: 0 12px 12px 0; padding: 20px 24px; margin-bottom: {{margin_bottom}}; box-shadow: 0 4px 12px {{shadow}};"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{heading_color}}; margin: 0 0 14px 0; line-height: 1.2; display: flex; align-items: center;"><span style="background: {{heading_color}}; color: white; width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; margin-right: 12px;">{{section_number}}</span>{{section_heading}}</h3><ul style="list-style-type: disc; margin: 0; padding-left: 0;">{bullets_html}</ul></div>'''
 
         elif component_id == "comparison_column":
             # Build styled bullet list HTML with black disc bullets (21px body text)
@@ -1560,7 +1560,7 @@ Generate the content now:"""
                 items_html += f'<li style="margin-bottom: {margin}; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{{item_{i}}}</li>'
 
             # Enhanced template with gradient header, card styling (28px heading)
-            return f'''<div style="background: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 6px 20px {{shadow}};"><div style="background: {{gradient}}; padding: 16px 20px;"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: white; margin: 0;">{{column_heading}}</h3></div><div style="padding: 18px; background: {{content_background}};"><ul style="list-style-type: disc; margin: 0; padding-left: 20px;">{items_html}</ul></div></div>'''
+            return f'''<div style="background: #ffffff; border-radius: 14px; overflow: hidden; box-shadow: 0 6px 20px {{shadow}};"><div style="background: {{gradient}}; padding: 16px 20px;"><h3 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: white; margin: 0;">{{column_heading}}</h3></div><div style="padding: 18px; background: {{content_background}};"><ul style="list-style-type: disc; margin: 0; padding-left: 0;">{items_html}</ul></div></div>'''
 
         elif component_id == "sidebar_box":
             # Build items HTML for sidebar with black disc bullets
@@ -1570,7 +1570,7 @@ Generate the content now:"""
                 items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
 
             # Use dark text colors for light gradient backgrounds with black disc bullets
-            return f'''<div style="padding: 32px; border-radius: 12px; background: {{gradient}}; border-left: 4px solid {{accent_color}}; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{accent_color}}; margin: 0 0 20px 0; line-height: 1.2;">{{sidebar_heading}}</h4><ul style="list-style-type: disc; padding-left: 20px; margin: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{items_html}</ul></div>'''
+            return f'''<div style="padding: 32px; border-radius: 12px; background: {{gradient}}; border-left: 4px solid {{accent_color}}; box-shadow: 0 4px 12px rgba(0,0,0,0.05);"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: {{accent_color}}; margin: 0 0 20px 0; line-height: 1.2;">{{sidebar_heading}}</h4><ul style="list-style-type: disc; padding-left: 0; margin: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{items_html}</ul></div>'''
 
         elif component_id == "text_bullets":
             # Build bullet list HTML for text_bullets
@@ -1579,7 +1579,7 @@ Generate the content now:"""
                 margin = "0" if i == items_per_instance else "10px"
                 bullets_html += f'<li style="margin-bottom: {margin};">{{bullet_{i}}}</li>'
 
-            return f'''<div style="padding: 24px; background: {{background}}; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2;">{{subtitle}}</h4><ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{bullets_html}</ul></div>'''
+            return f'''<div style="padding: 24px; background: {{background}}; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2;">{{subtitle}}</h4><ul style="list-style-type: disc; margin: 0; padding-left: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{bullets_html}</ul></div>'''
 
         elif component_id == "bullet_box":
             # Build items HTML for bullet_box with sharp corners and border
@@ -1588,7 +1588,7 @@ Generate the content now:"""
                 margin = "0" if i == items_per_instance else "10px"
                 items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
 
-            return f'''<div style="padding: 24px; background: {{background}}; border: 2px solid {{border_color}}; border-radius: 0;"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2; padding-bottom: 12px; border-bottom: 1px solid {{border_color}};">{{box_heading}}</h4><ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{items_html}</ul></div>'''
+            return f'''<div style="padding: 24px; background: {{background}}; border: 2px solid {{border_color}}; border-radius: 0;"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2; padding-bottom: 12px; border-bottom: 1px solid {{border_color}};">{{box_heading}}</h4><ul style="list-style-type: disc; margin: 0; padding-left: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY};">{items_html}</ul></div>'''
 
         elif component_id == "numbered_list":
             # Build numbered list HTML
@@ -1597,7 +1597,7 @@ Generate the content now:"""
                 margin = "0" if i == items_per_instance else "10px"
                 items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
 
-            return f'''<div style="padding: 24px; background: {{background}}; border-radius: 12px; border-left: 4px solid {{accent_color}}; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2;">{{list_title}}</h4><ol style="margin: 0; padding-left: 24px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY}; counter-reset: item;">{items_html}</ol></div>'''
+            return f'''<div style="padding: 24px; background: {{background}}; border-radius: 12px; border-left: 4px solid {{accent_color}}; box-shadow: 0 2px 8px rgba(0,0,0,0.05);"><h4 style="font-size: {HEADING_FONT_SIZE}; font-weight: 700; color: #1f2937; margin: 0 0 16px 0; line-height: 1.2;">{{list_title}}</h4><ol style="margin: 0; padding-left: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: {TEXT_SECONDARY}; counter-reset: item;">{items_html}</ol></div>'''
 
         elif component_id == "text_box":
             # Build items HTML for text_box based on list_style
@@ -1609,7 +1609,7 @@ Generate the content now:"""
                 for i in range(1, items_per_instance + 1):
                     margin = "0" if i == items_per_instance else "8px"
                     items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
-                list_html = f'<ol style="margin: 0; padding-left: 24px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{items_html}</ol>'
+                list_html = f'<ol style="margin: 0; padding-left: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{items_html}</ol>'
             elif list_style == "none":
                 # Plain text without bullets or numbers
                 items_html = ""
@@ -1623,7 +1623,7 @@ Generate the content now:"""
                 for i in range(1, items_per_instance + 1):
                     margin = "0" if i == items_per_instance else "8px"
                     items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
-                list_html = f'<ul style="list-style-type: disc; margin: 0; padding-left: 20px; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{items_html}</ul>'
+                list_html = f'<ul style="list-style-type: disc; margin: 0; padding-left: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{items_html}</ul>'
 
             # Determine border CSS
             border_css = "border: 2px solid rgba(0,0,0,0.1); " if border else ""
