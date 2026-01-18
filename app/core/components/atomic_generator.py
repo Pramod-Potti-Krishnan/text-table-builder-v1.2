@@ -1338,12 +1338,14 @@ Generate the content now:"""
                     scheme = METRICS_COLOR_SCHEMES[color]
                     final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', f'background: {scheme["pastel"]};', final_html)
                     final_html = final_html.replace('color: white;', f'color: {scheme["dark_text"]};')
+                    final_html = final_html.replace('color: rgba(255,255,255,0.95);', f'color: {scheme["dark_text"]};')
                     final_html = final_html.replace('color: rgba(255,255,255,0.9);', f'color: {scheme["dark_text"]};')
                     final_html = final_html.replace('color: rgba(255,255,255,0.8);', f'color: {scheme["dark_text"]};')
                 else:
                     # Default pastel blue with dark text
                     final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #dbeafe;', final_html)
                     final_html = final_html.replace('color: white;', 'color: #1e40af;')
+                    final_html = final_html.replace('color: rgba(255,255,255,0.95);', 'color: #1e40af;')
                     final_html = final_html.replace('color: rgba(255,255,255,0.9);', 'color: #1e40af;')
                     final_html = final_html.replace('color: rgba(255,255,255,0.8);', 'color: #1e40af;')
 
