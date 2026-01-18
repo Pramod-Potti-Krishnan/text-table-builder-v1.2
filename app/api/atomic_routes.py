@@ -83,7 +83,48 @@ def get_atomic_generator(
 # Helper Functions
 # =============================================================================
 
-def _build_response(result) -> AtomicComponentResponse:
+def _calculate_position(request) -> dict | None:
+    """
+    Calculate grid position from request. Returns None if no position specified.
+
+    Grid System:
+    - 32 columns x 18 rows
+    - Cell size: 60px per unit (1920x1080 slide)
+    - Content safe zone: rows 4-17, cols 2-31
+    - CSS Grid format: grid_row="start/end", grid_column="start/end"
+
+    Args:
+        request: AtomicComponentRequest with optional start_col, start_row,
+                 position_width, position_height fields
+
+    Returns:
+        Dict with position info or None if no position specified
+    """
+    # Only calculate position if at least one position field is specified
+    if request.start_col is None and request.start_row is None:
+        return None
+
+    # Use defaults if not specified
+    start_col = request.start_col if request.start_col is not None else 2
+    start_row = request.start_row if request.start_row is not None else 4
+    width = request.position_width if request.position_width is not None else request.gridWidth
+    height = request.position_height if request.position_height is not None else request.gridHeight
+
+    # Calculate end positions (CSS Grid uses exclusive end)
+    end_row = min(start_row + height, 19)
+    end_col = min(start_col + width, 33)
+
+    return {
+        "start_col": start_col,
+        "start_row": start_row,
+        "width": width,
+        "height": height,
+        "grid_row": f"{start_row}/{end_row}",
+        "grid_column": f"{start_col}/{end_col}"
+    }
+
+
+def _build_response(result, position_data: dict | None = None) -> AtomicComponentResponse:
     """Convert AtomicResult to AtomicComponentResponse."""
     return AtomicComponentResponse(
         success=result.success,
@@ -94,7 +135,8 @@ def _build_response(result) -> AtomicComponentResponse:
         variants_used=result.variants_used,
         character_counts=result.character_counts,
         metadata=result.metadata,
-        error=result.error
+        error=result.error,
+        grid_position=position_data
     )
 
 
@@ -137,6 +179,9 @@ async def generate_metrics(
     **Color Variants**: purple, pink, cyan, green
     """
     try:
+        # Calculate grid position if specified
+        position_data = _calculate_position(request)
+
         result = await generator.generate(
             component_type=ATOMIC_TYPE_MAP[AtomicType.METRICS],
             prompt=request.prompt,
@@ -152,7 +197,7 @@ async def generate_metrics(
             grid_cols=request.grid_cols,
             metrics_config=request.metrics_config
         )
-        return _build_response(result)
+        return _build_response(result, position_data)
 
     except asyncio.TimeoutError:
         raise HTTPException(status_code=504, detail="LLM request timed out")
@@ -594,6 +639,9 @@ async def generate_table(
     **Color Variants**: gray, blue, green, purple
     """
     try:
+        # Calculate grid position if specified
+        position_data = _calculate_position(request)
+
         # For TABLE, we need special handling since it has columns AND rows
         # items_per_instance will represent the structure as columns * rows
         table_structure = {"columns": request.columns, "rows": request.rows}
@@ -613,7 +661,7 @@ async def generate_table(
             grid_cols=request.grid_cols,
             table_config=request.table_config
         )
-        return _build_response(result)
+        return _build_response(result, position_data)
 
     except asyncio.TimeoutError:
         raise HTTPException(status_code=504, detail="LLM request timed out")
@@ -748,6 +796,9 @@ async def generate_text_box(
     **Legacy Gradient Variants**: gradient_purple, gradient_pink, gradient_cyan, gradient_green, gradient_orange, gradient_pastel
     """
     try:
+        # Calculate grid position if specified
+        position_data = _calculate_position(request)
+
         result = await generator.generate(
             component_type=ATOMIC_TYPE_MAP[AtomicType.TEXT_BOX],
             prompt=request.prompt,
@@ -779,7 +830,7 @@ async def generate_text_box(
             show_title=request.show_title,
             existing_colors=request.existing_colors
         )
-        return _build_response(result)
+        return _build_response(result, position_data)
 
     except asyncio.TimeoutError:
         raise HTTPException(status_code=504, detail="LLM request timed out")

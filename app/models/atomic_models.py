@@ -192,6 +192,32 @@ class AtomicComponentRequest(BaseModel):
         description="Box opacity (0.0-1.0). Uses component default if null"
     )
 
+    # Grid positioning (optional, for canvas placement)
+    start_col: Optional[int] = Field(
+        default=None,
+        ge=1,
+        le=32,
+        description="Starting column position (1-32). If null, defaults to 2."
+    )
+    start_row: Optional[int] = Field(
+        default=None,
+        ge=1,
+        le=18,
+        description="Starting row position (1-18). If null, defaults to 4."
+    )
+    position_width: Optional[int] = Field(
+        default=None,
+        ge=4,
+        le=32,
+        description="Width in grid units (4-32). If null, uses gridWidth."
+    )
+    position_height: Optional[int] = Field(
+        default=None,
+        ge=4,
+        le=18,
+        description="Height in grid units (4-18). If null, uses gridHeight."
+    )
+
     class Config:
         json_schema_extra = {
             "example": {
@@ -750,6 +776,10 @@ class AtomicComponentResponse(BaseModel):
         None,
         description="Error message if generation failed"
     )
+    grid_position: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Grid position: {start_col, start_row, width, height, grid_row, grid_column}"
+    )
 
     class Config:
         json_schema_extra = {
@@ -772,6 +802,14 @@ class AtomicComponentResponse(BaseModel):
                     "grid_dimensions": {"width": 24, "height": 12},
                     "space_category": "large",
                     "scaling_factor": 1.05
+                },
+                "grid_position": {
+                    "start_col": 2,
+                    "start_row": 4,
+                    "width": 28,
+                    "height": 12,
+                    "grid_row": "4/16",
+                    "grid_column": "2/30"
                 }
             }
         }
