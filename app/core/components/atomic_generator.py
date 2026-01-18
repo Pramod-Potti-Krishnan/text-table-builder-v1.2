@@ -1342,12 +1342,47 @@ Generate the content now:"""
                     final_html = final_html.replace('color: rgba(255,255,255,0.9);', f'color: {scheme["dark_text"]};')
                     final_html = final_html.replace('color: rgba(255,255,255,0.8);', f'color: {scheme["dark_text"]};')
                 else:
-                    # Default pastel blue with dark text
-                    final_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #dbeafe;', final_html)
-                    final_html = final_html.replace('color: white;', 'color: #1e40af;')
-                    final_html = final_html.replace('color: rgba(255,255,255,0.95);', 'color: #1e40af;')
-                    final_html = final_html.replace('color: rgba(255,255,255,0.9);', 'color: #1e40af;')
-                    final_html = final_html.replace('color: rgba(255,255,255,0.8);', 'color: #1e40af;')
+                    # Auto mode: Convert each variant gradient to its corresponding pastel
+                    # Map from gradient start color (from metrics_card.json variants) to (pastel_bg, dark_text)
+                    VARIANT_PASTEL_MAP = {
+                        "#667eea": ("#ede9fe", "#5b21b6"),  # purple variant
+                        "#f093fb": ("#fce7f3", "#9d174d"),  # pink variant
+                        "#4facfe": ("#cffafe", "#0e7490"),  # cyan variant
+                        "#11998e": ("#d1fae5", "#065f46"),  # green variant
+                    }
+
+                    def convert_card_to_pastel(card_html):
+                        """Convert a single metric card from gradient to pastel."""
+                        for start_color, (pastel_bg, dark_text) in VARIANT_PASTEL_MAP.items():
+                            if start_color.lower() in card_html.lower():
+                                # Replace gradient with pastel background
+                                card_html = re.sub(
+                                    r'background:\s*linear-gradient\([^)]+\);',
+                                    f'background: {pastel_bg};',
+                                    card_html
+                                )
+                                # Replace white text colors with dark text
+                                card_html = card_html.replace('color: white;', f'color: {dark_text};')
+                                card_html = card_html.replace('color: rgba(255,255,255,0.95);', f'color: {dark_text};')
+                                card_html = card_html.replace('color: rgba(255,255,255,0.9);', f'color: {dark_text};')
+                                card_html = card_html.replace('color: rgba(255,255,255,0.8);', f'color: {dark_text};')
+                                return card_html
+                        # Fallback to blue pastel if no variant matched
+                        card_html = re.sub(r'background:\s*linear-gradient\([^)]+\);', 'background: #dbeafe;', card_html)
+                        card_html = card_html.replace('color: white;', 'color: #1e40af;')
+                        card_html = card_html.replace('color: rgba(255,255,255,0.95);', 'color: #1e40af;')
+                        card_html = card_html.replace('color: rgba(255,255,255,0.9);', 'color: #1e40af;')
+                        card_html = card_html.replace('color: rgba(255,255,255,0.8);', 'color: #1e40af;')
+                        return card_html
+
+                    # Find each metric card div and convert it individually
+                    # Pattern matches metric card containers with gradients
+                    card_pattern = r'(<div style="padding:[^"]*background:\s*linear-gradient\([^)]+\)[^"]*"[^>]*>.*?</div>)'
+
+                    def replace_card(match):
+                        return convert_card_to_pastel(match.group(0))
+
+                    final_html = re.sub(card_pattern, replace_card, final_html, flags=re.DOTALL)
 
         # TABLE header color is now handled INSIDE the instance loop (before variant replacement)
         # This section handles: fallback placeholder replacement + regex cleanup of hardcoded values
