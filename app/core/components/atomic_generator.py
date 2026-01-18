@@ -423,7 +423,9 @@ class AtomicComponentGenerator:
                 existing_colors=existing_colors,
                 # Config objects for METRICS and TABLE
                 metrics_config=metrics_config,
-                table_config=table_config
+                table_config=table_config,
+                # Grid height for wrapper sizing
+                grid_height=grid_height
             )
 
             # Calculate metadata
@@ -1044,7 +1046,9 @@ Generate the content now:"""
         existing_colors: Optional[List[str]] = None,
         # Config objects for METRICS and TABLE
         metrics_config: Optional[Any] = None,
-        table_config: Optional[Any] = None
+        table_config: Optional[Any] = None,
+        # Grid height for wrapper sizing
+        grid_height: int = 10
     ) -> tuple[str, Dict[str, List[int]]]:
         """
         Assemble final HTML with optional dynamic template generation.
@@ -1270,6 +1274,10 @@ Generate the content now:"""
             wrapper = wrapper.replace("{column_count}", str(cols))
             wrapper = wrapper.replace("{row_count}", str(rows))
             wrapper = wrapper.replace("{gap}", str(component.arrangement_rules.gap_px))
+
+            # Calculate wrapper height from grid_height (each grid cell = 60px)
+            wrapper_height_px = grid_height * CELL_SIZE_PX
+            wrapper = wrapper.replace("{wrapper_height}", f"{wrapper_height_px}px")
 
             # Special handling for 3-box grid: first item spans full width (1 on top, 2 on bottom)
             if len(instance_htmls) == 3 and cols == 2 and arrangement.startswith("grid_"):
@@ -1654,11 +1662,12 @@ Generate the content now:"""
                 border_radius = "0px" if corners == "square" else "12px"
 
             # Build final template with new styling parameters
+            # height: 100% + box-sizing: border-box ensures boxes stretch to fill wrapper height
             if title_style == "colored-bg" and show_title:
                 # Badge outside content box, wrapped in flex-column container for vertical stacking
-                return f'''<div style="display: flex; flex-direction: column; width: 100%;">{heading_html}<div style="padding: 16px 24px 24px 24px; background: {{background}}; border-radius: {border_radius}; {border_css}box-shadow: 0 8px 24px rgba(0,0,0,0.1);">{list_html}</div></div>'''
+                return f'''<div style="display: flex; flex-direction: column; width: 100%; height: 100%; box-sizing: border-box;">{heading_html}<div style="padding: 16px 24px 24px 24px; background: {{background}}; border-radius: {border_radius}; {border_css}box-shadow: 0 8px 24px rgba(0,0,0,0.1); flex: 1;">{list_html}</div></div>'''
             else:
-                return f'''<div style="padding: 24px; background: {{background}}; border-radius: {border_radius}; {border_css}box-shadow: 0 8px 24px rgba(0,0,0,0.1);">{heading_html}{list_html}</div>'''
+                return f'''<div style="padding: 24px; background: {{background}}; border-radius: {border_radius}; {border_css}box-shadow: 0 8px 24px rgba(0,0,0,0.1); height: 100%; box-sizing: border-box;">{heading_html}{list_html}</div>'''
 
         else:
             # Return original template for components without flexible items
