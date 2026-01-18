@@ -1609,7 +1609,7 @@ Generate the content now:"""
                 for i in range(1, items_per_instance + 1):
                     margin = "0" if i == items_per_instance else "8px"
                     items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
-                list_html = f'<ol style="margin: 0; padding-left: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{items_html}</ol>'
+                list_html = f'<ol style="margin: 0; padding-left: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: left; list-style-position: inside;">{items_html}</ol>'
             elif list_style == "none":
                 # Plain text without bullets or numbers
                 items_html = ""
@@ -1623,7 +1623,7 @@ Generate the content now:"""
                 for i in range(1, items_per_instance + 1):
                     margin = "0" if i == items_per_instance else "8px"
                     items_html += f'<li style="margin-bottom: {margin};">{{item_{i}}}</li>'
-                list_html = f'<ul style="list-style-type: disc; margin: 0; padding-left: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: {content_align};">{items_html}</ul>'
+                list_html = f'<ul style="list-style-type: disc; margin: 0; padding-left: 0; font-size: {BODY_FONT_SIZE}; line-height: {BODY_LINE_HEIGHT}; color: var(--text-primary, {{item_color}}); text-align: left; list-style-position: inside;">{items_html}</ul>'
 
             # Determine border CSS
             border_css = "border: 2px solid rgba(0,0,0,0.1); " if border else ""
